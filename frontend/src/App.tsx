@@ -10,9 +10,11 @@ type AnalyzeResponse =
       classification_note?: string;
       suggested_format: string;
       suggested_examples: string[];
+      input_interpretation?: InputInterpretation;
     }
   | {
       supported: true;
+      input_interpretation?: InputInterpretation;
       normalized_input: {
         payer_country: string;
         payee_country: string;
@@ -39,6 +41,14 @@ type AnalyzeResponse =
         review_reason: string;
       };
     };
+
+type InputInterpretation = {
+  parser_source: "llm";
+  payer_country: string | null;
+  payee_country: string | null;
+  transaction_type: string;
+  matched_transaction_label: string | null;
+};
 
 const REFERENCE_ARCHIVES = [
   {
@@ -141,6 +151,33 @@ export default function App() {
     return FIELD_LABELS[field] ?? field;
   }
 
+  function renderInputInterpretation(inputInterpretation?: InputInterpretation) {
+    if (!inputInterpretation) {
+      return null;
+    }
+
+    return (
+      <div className="record-row">
+        <div className="row-label">How We Read This Input</div>
+        <div className="row-value">
+          <p>Parsed by LLM input parser</p>
+          <ul className="formal-list">
+            <li>
+              Payer country: {inputInterpretation.payer_country ?? "Not confidently identified"}
+            </li>
+            <li>
+              Payee country: {inputInterpretation.payee_country ?? "Not confidently identified"}
+            </li>
+            <li>Income type lane: {inputInterpretation.transaction_type}</li>
+            {inputInterpretation.matched_transaction_label && (
+              <li>Matched business wording: {inputInterpretation.matched_transaction_label}</li>
+            )}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="document-body">
       <header className="memo-header">
@@ -240,6 +277,8 @@ export default function App() {
                     <p>{result.result.summary}</p>
                   </div>
                 </div>
+
+                {renderInputInterpretation(result.input_interpretation)}
 
                 <div className="record-row">
                   <div className="row-label">Immediate Action</div>
@@ -372,6 +411,7 @@ export default function App() {
                   <div className="row-label text-red">Reason</div>
                   <div className="row-value courier-text">{result.reason}</div>
                 </div>
+                {renderInputInterpretation(result.input_interpretation)}
                 <div className="record-row">
                   <div className="row-label">Detail</div>
                   <div className="row-value">

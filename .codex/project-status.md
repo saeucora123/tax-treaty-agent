@@ -58,7 +58,23 @@ The repo now also has a live implementation base:
 - raw-text parser outputs now also preserve per-segment `raw_line_number`, and the generated dataset keeps that provenance so later debugging can jump back to exact input lines
 - the raw-text parser now also supports one semi-structured treaty-text shape with `Article` headings and numbered paragraphs, so the text-entry chain is no longer limited to heavily tagged parser-style input
 - the repo now also has a first narrow PDF entry path: a text-based PDF can be converted into extracted raw text and then run through the existing parser-like ingest workflow
+- that PDF entry path now also cleans two common text-extraction issues before parsing: wrapped paragraph lines and repeated header/page-number noise
+- the PDF path now also supports externally supplied document metadata, so a more realistic official-text PDF can enter the system without being pre-edited to include internal header lines
+- that external PDF metadata can now also come from a manifest JSON file, so the document-ingest path is starting to resemble a maintainable source catalog rather than a one-off command
+- the repo now also has a source-catalog batch ingest entrypoint, which can run mixed raw-text and text-PDF sources in one batch and emit a summary even when one source fails
 - public product identity has now been explicitly realigned around “bounded treaty pre-review tool,” distinct from the internal GitHub/resume goal
+- Phase 1 runtime LLM parsing is now user-auditable: when the LLM parser is used, responses can include a small `input_interpretation` block showing how payer/payee/income-type were read before treaty lookup
+- backend tests are now guarded against accidental paid live-model calls: under `pytest`, DeepSeek config stays off unless explicitly re-enabled for a deliberate live smoke run
+- the runtime LLM lane now also has a dedicated live smoke command, and a real DeepSeek run has already succeeded for a natural-language royalties scenario instead of only mocked tests
+- the runtime LLM lane now also has explicit conservative-boundary coverage for incomplete, out-of-scope, and non-tax inputs, so Phase 1 no longer depends only on a happy-path smoke demo
+- Phase 2 has now started in code too: a constrained offline LLM document-extraction path can read clean treaty text, generate a parser-like source payload, and flow it into a generated v3 dataset
+- the current Phase 2 path has already succeeded once with a real DeepSeek run on clean Article 11/12 treaty text, producing an extracted source fixture plus generated dataset/report artifacts
+- that Phase 2 lane is now also materially more product-compatible: obvious `10 per cent` rate caps can be backfilled from paragraph text during extraction, and the runtime matcher can prefer rate-bearing rules over earlier narrative paragraphs when reading generated datasets
+- the generated `from-llm` dataset has now been smoke-checked directly against the analysis service, and a royalties scenario can resolve to `Article 12(2)` with a `10%` rate using LLM-generated treaty data
+- runtime analysis now supports a controlled data-source switch: default requests still use the stable curated dataset, while an explicit `llm_generated` path can drive the same analysis flow from LLM-generated treaty data and report `data_source_used` in the response
+- the Phase 2 extractor now also normalizes rule-quality semantics more defensively: taxation-right paragraphs and rate-cap paragraphs can both receive actionable default `conditions` / `review_reason` text, and rate-bearing aliases like `source_tax_limit` are treated as the same family as `rate_limitation` instead of slipping through with empty guidance
+- the conservative runtime now also treats multi-rate treaty branches as a real ambiguity signal: if one article carries multiple distinct rate-bearing rules, the result escalates to `no auto conclusion` and can expose `alternative_rate_candidates` instead of quietly choosing one branch
+- that ambiguity handling is now broader: the runtime also catches same-paragraph multi-rate candidates, so future LLM extractions do not need perfectly separated paragraphs to keep the review engine conservative
 
 ## Recent Decisions
 
@@ -113,14 +129,18 @@ The repo now also has a live implementation base:
 - the ingestion path is now auditable in both success and failure cases, which makes it feel much closer to a real document-import workflow
 - a semi-structured ingest sample now runs end-to-end with `status: ok`, which is the first live step toward “more official-looking text can enter the system” without jumping straight to PDF parsing
 - a synthetic text-based PDF now also runs end-to-end through the new PDF ingest path, which is the first live proof that “PDF can enter the system” has started, even though OCR/scanned PDFs remain out of scope
+- the PDF path is now slightly less toy-like because it no longer assumes perfectly clean extracted text on every page
+- the PDF path is also less toy-like because it no longer assumes the official document body will already contain Codex-friendly metadata fields
+- the ingest layer is also less toy-like because sources no longer need to be run one by one by hand to approximate a maintained document pipeline
 
 ## Active Direction
 
 Use a staged roadmap:
 
-- Phase A: tighten the repo into a GitHub-strong project form
-- Phase B: evolve into a real-document-driven demo
-- Phase C: only later evaluate any path toward trial-tool usage
+- Phase 1: constrained LLM input understanding
+- Phase 2: real document-driven data generation
+- Phase 3: dynamic review guidance
+- Phase 4: multi-country expansion
 
 Current priority correction:
 
@@ -128,6 +148,7 @@ Current priority correction:
 - before more GitHub-polish work, re-evaluate how this tool can help in a narrow real workflow rather than only looking impressive as a portfolio piece
 - future sessions should anchor decisions to the original motivation: this repo exists to help the user build toward an `AI + international tax` direction through a real bounded product, not just a polished showcase
 - control expansion actively: after a meaningful checkpoint, prefer the next real pipeline advance over adjacent nice-to-have refinements
+- the current active slice is Phase 1: connect a real but tightly constrained LLM input parser without letting the model touch treaty facts or rates
 
 The concrete execution checklist for the current stage now lives in:
 
@@ -135,9 +156,11 @@ The concrete execution checklist for the current stage now lives in:
 
 ## Next Likely Work
 
-1. Clarify who the first genuinely helped user is and which narrow workflow the tool should improve.
-2. Tighten the output so it feels more like a usable pre-check work product, not just a result card.
-3. Only after that, decide how much additional GitHub-facing polish still helps Phase A directly.
+1. Phase 1 is now effectively locked: supported natural-language routing works, the runtime path is auditable, and clearly bad inputs refuse conservatively without widening model authority.
+2. Current mainline is now Phase 2: improve document-to-structured-data fidelity, especially extraction quality for rule typing, conditions, review reasons, and more complex rule branches.
+3. The controlled `stable` vs `llm_generated` runtime switch now gives the repo a safe way to prove the full offline-to-online loop without handing the default demo path to uncertain AI data.
+4. Avoid turning Phase 2 into orchestration sprawl; the next valuable gains are extraction quality and builder/runtime compatibility, not more wrappers.
+5. Treat the end of Phase 2 as the likely best stop line for a high-value GitHub/resume project.
 
 ## Risks To Watch
 

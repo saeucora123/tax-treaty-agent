@@ -3,9 +3,17 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from app.llm_input_parser import LLMInputParserError, parse_scenario_to_json
+
 
 DATA_PATH = (
     Path(__file__).resolve().parents[2] / "data" / "treaties" / "cn-nl.v3.json"
+)
+LLM_GENERATED_DATA_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "data"
+    / "treaties"
+    / "cn-nl.v3.generated.from-llm.json"
 )
 NORMAL_CONFIDENCE_THRESHOLD = 0.95
 AUTO_CONCLUSION_CONFIDENCE_THRESHOLD = 0.80
@@ -71,37 +79,55 @@ BOUNDARY_NOTE = (
 )
 
 
-def analyze_scenario(scenario: str) -> dict:
+def analyze_scenario(scenario: str, data_source: str = "stable") -> dict:
+    resolved_data_source = normalize_data_source(data_source)
     normalized = normalize_input(scenario)
+    input_interpretation = build_input_interpretation(normalized)
     if normalized["reason"] == "incomplete_scenario":
-        return {
+        response = {
+            "data_source_used": resolved_data_source,
             "supported": False,
             "reason": "incomplete_scenario",
             "message": "Please provide a clearer scenario with both payer and payee country context.",
             "immediate_action": build_unsupported_action("incomplete_scenario"),
             **build_input_guidance("incomplete_scenario", normalized),
         }
+        if input_interpretation is not None:
+            response["input_interpretation"] = input_interpretation
+        return response
 
     if set(normalized["country_pair"]) != {"CN", "NL"}:
-        return {
+        response = {
+            "data_source_used": resolved_data_source,
             "supported": False,
             "reason": "unsupported_country_pair",
             "message": "Current MVP supports only China-Netherlands treaty scenarios.",
             "immediate_action": build_unsupported_action("unsupported_country_pair"),
             **build_input_guidance("unsupported_country_pair", normalized),
         }
+        if input_interpretation is not None:
+            response["input_interpretation"] = input_interpretation
+        return response
 
-    match = find_treaty_entry(normalized["transaction_type"])
+    match = find_treaty_entry(
+        normalized["transaction_type"],
+        data_source=resolved_data_source,
+    )
     if match is None:
-        return {
+        response = {
+            "data_source_used": resolved_data_source,
             "supported": False,
             "reason": "unsupported_transaction_type",
             "message": "Current MVP supports only dividends, interest, and royalties.",
             "immediate_action": build_unsupported_action("unsupported_transaction_type"),
             **build_input_guidance("unsupported_transaction_type", normalized),
         }
+        if input_interpretation is not None:
+            response["input_interpretation"] = input_interpretation
+        return response
 
-    return {
+    response = {
+        "data_source_used": resolved_data_source,
         "supported": True,
         "normalized_input": {
             "payer_country": normalized["payer_country"],
@@ -110,9 +136,25 @@ def analyze_scenario(scenario: str) -> dict:
         },
         "result": shape_result(match),
     }
+    if input_interpretation is not None:
+        response["input_interpretation"] = input_interpretation
+    return response
+
+
+def normalize_data_source(data_source: str) -> str:
+    if data_source == "llm_generated":
+        return "llm_generated"
+    return "stable"
 
 
 def normalize_input(scenario: str) -> dict:
+    llm_normalized = try_llm_normalize_input(scenario)
+    if llm_normalized is not None:
+        return {
+            **llm_normalized,
+            "parser_source": llm_normalized.get("parser_source", "llm"),
+        }
+
     payer_country, payee_country = detect_flow_countries(scenario)
 
     if payer_country is None or payee_country is None:
@@ -130,8 +172,102 @@ def normalize_input(scenario: str) -> dict:
         "payee_country": payee_country,
         "transaction_type": transaction_type,
         "matched_transaction_label": matched_transaction_label,
+        "parser_source": "rules",
         "reason": reason,
     }
+
+
+def try_llm_normalize_input(scenario: str) -> dict | None:
+    try:
+        payload = parse_scenario_to_json(scenario)
+    except LLMInputParserError:
+        return None
+
+    if payload is None:
+        return None
+
+    payer_country = normalize_country_code(payload.get("payer_country"))
+    payee_country = normalize_country_code(payload.get("payee_country"))
+    transaction_type = normalize_transaction_type(payload.get("transaction_type"))
+    matched_transaction_label = normalize_optional_label(payload.get("matched_transaction_label"))
+    needs_clarification = bool(payload.get("needs_clarification"))
+
+    if needs_clarification or payer_country is None or payee_country is None:
+        country_pair = None
+        reason = "incomplete_scenario"
+    else:
+        country_pair = (payer_country, payee_country)
+        reason = "ok"
+
+    return {
+        "country_pair": country_pair,
+        "payer_country": payer_country,
+        "payee_country": payee_country,
+        "transaction_type": transaction_type,
+        "matched_transaction_label": matched_transaction_label,
+        "parser_source": "llm",
+        "reason": reason,
+    }
+
+
+def build_input_interpretation(normalized: dict) -> dict | None:
+    if normalized.get("parser_source") != "llm":
+        return None
+
+    return {
+        "parser_source": "llm",
+        "payer_country": normalized["payer_country"],
+        "payee_country": normalized["payee_country"],
+        "transaction_type": normalized["transaction_type"],
+        "matched_transaction_label": normalized["matched_transaction_label"],
+    }
+
+
+def normalize_country_code(raw_value: object) -> str | None:
+    if not isinstance(raw_value, str):
+        return None
+    normalized = raw_value.strip().upper()
+    if not normalized:
+        return None
+    alias_map = {
+        "CHINA": "CN",
+        "PRC": "CN",
+        "PEOPLE'S REPUBLIC OF CHINA": "CN",
+        "PEOPLES REPUBLIC OF CHINA": "CN",
+        "CN": "CN",
+        "NETHERLANDS": "NL",
+        "THE NETHERLANDS": "NL",
+        "HOLLAND": "NL",
+        "DUTCH": "NL",
+        "NL": "NL",
+        "UNITED STATES": "US",
+        "UNITED STATES OF AMERICA": "US",
+        "USA": "US",
+        "U.S.": "US",
+        "U.S.A.": "US",
+        "US": "US",
+    }
+    if normalized in alias_map:
+        return alias_map[normalized]
+    return normalized
+
+
+def normalize_transaction_type(raw_value: object) -> str:
+    if not isinstance(raw_value, str):
+        return "unknown"
+    normalized = raw_value.strip().lower()
+    if normalized in TRANSACTION_KEYWORDS:
+        return normalized
+    return "unknown"
+
+
+def normalize_optional_label(raw_value: object) -> str | None:
+    if not isinstance(raw_value, str):
+        return None
+    normalized = raw_value.strip()
+    if not normalized:
+        return None
+    return normalized
 
 
 def detect_flow_countries(scenario: str) -> tuple[str | None, str | None]:
@@ -174,50 +310,80 @@ def detect_transaction_type(scenario: str) -> tuple[str, str | None]:
     return "unknown", None
 
 
-def find_treaty_entry(transaction_type: str) -> dict | None:
-    with DATA_PATH.open("r", encoding="utf-8") as file:
+def find_treaty_entry(transaction_type: str, data_source: str = "stable") -> dict | None:
+    with resolve_data_path(data_source).open("r", encoding="utf-8") as file:
         payload = json.load(file)
 
     for article in payload["articles"]:
         if article["income_type"] == transaction_type:
+            selected_paragraph = None
+            selected_rule = None
             for paragraph in article["paragraphs"]:
                 base_rule = select_rate_rule(paragraph["rules"])
                 if base_rule is None:
                     continue
-                review_priority, review_reason, auto_conclusion_allowed = build_review_guidance(
-                    base_rule
+                if selected_rule is None or rule_preference_key(base_rule) > rule_preference_key(selected_rule):
+                    selected_paragraph = paragraph
+                    selected_rule = base_rule
+
+            if selected_paragraph is None or selected_rule is None:
+                continue
+
+            review_priority, review_reason, auto_conclusion_allowed = build_review_guidance(
+                selected_rule
+            )
+            alternative_rate_candidates = collect_alternative_rate_candidates(
+                article["paragraphs"],
+                selected_rule=selected_rule,
+                selected_source_reference=selected_paragraph["source_reference"],
+            )
+            if alternative_rate_candidates:
+                review_priority = "high"
+                auto_conclusion_allowed = False
+                review_reason = (
+                    f"{review_reason} Multiple treaty rate branches were found in this article, "
+                    "and the current scenario does not provide enough facts to choose one automatically."
                 )
-                return {
-                    "summary": build_summary(
-                        article_number=article["article_number"],
-                        article_title=article["article_title"],
-                        rate=base_rule["rate"],
-                        review_priority=review_priority,
-                        auto_conclusion_allowed=auto_conclusion_allowed,
-                    ),
-                    "boundary_note": BOUNDARY_NOTE,
-                    "immediate_action": build_immediate_action(
-                        review_priority=review_priority,
-                        auto_conclusion_allowed=auto_conclusion_allowed,
-                    ),
-                    "article_number": article["article_number"],
-                    "article_title": article["article_title"],
-                    "source_reference": paragraph["source_reference"],
-                    "source_language": paragraph["source_language"],
-                    "source_excerpt": paragraph["source_excerpt"],
-                    "rate": base_rule["rate"],
-                    "extraction_confidence": base_rule["extraction_confidence"],
-                    "auto_conclusion_allowed": auto_conclusion_allowed,
-                    "key_missing_facts": KEY_MISSING_FACTS[article["income_type"]],
-                    "review_checklist": REVIEW_CHECKLISTS[article["income_type"]],
-                    "conditions": base_rule["conditions"],
-                    "notes": article["notes"],
-                    "human_review_required": base_rule["human_review_required"],
-                    "review_priority": review_priority,
-                    "review_reason": review_reason,
-                }
+            result = {
+                "summary": build_summary(
+                    article_number=article["article_number"],
+                    article_title=article["article_title"],
+                    rate=selected_rule["rate"],
+                    review_priority=review_priority,
+                    auto_conclusion_allowed=auto_conclusion_allowed,
+                ),
+                "boundary_note": BOUNDARY_NOTE,
+                "immediate_action": build_immediate_action(
+                    review_priority=review_priority,
+                    auto_conclusion_allowed=auto_conclusion_allowed,
+                ),
+                "article_number": article["article_number"],
+                "article_title": article["article_title"],
+                "source_reference": selected_paragraph["source_reference"],
+                "source_language": selected_paragraph["source_language"],
+                "source_excerpt": selected_paragraph["source_excerpt"],
+                "rate": selected_rule["rate"],
+                "extraction_confidence": selected_rule["extraction_confidence"],
+                "auto_conclusion_allowed": auto_conclusion_allowed,
+                "key_missing_facts": KEY_MISSING_FACTS[article["income_type"]],
+                "review_checklist": REVIEW_CHECKLISTS[article["income_type"]],
+                "conditions": selected_rule["conditions"],
+                "notes": article["notes"],
+                "human_review_required": selected_rule["human_review_required"],
+                "review_priority": review_priority,
+                "review_reason": review_reason,
+            }
+            if alternative_rate_candidates:
+                result["alternative_rate_candidates"] = alternative_rate_candidates
+            return result
 
     return None
+
+
+def resolve_data_path(data_source: str) -> Path:
+    if data_source == "llm_generated":
+        return LLM_GENERATED_DATA_PATH
+    return DATA_PATH
 
 
 def select_rate_rule(rules: list[dict]) -> dict | None:
@@ -230,6 +396,53 @@ def select_rate_rule(rules: list[dict]) -> dict | None:
             return rule
 
     return None
+
+
+def rule_preference_key(rule: dict) -> tuple[int, float]:
+    has_numeric_rate = 0 if rule.get("rate") in {"", "N/A", None} else 1
+    return (has_numeric_rate, float(rule.get("extraction_confidence", 0)))
+
+
+def collect_alternative_rate_candidates(
+    paragraphs: list[dict],
+    *,
+    selected_rule: dict,
+    selected_source_reference: str,
+) -> list[dict]:
+    candidates: list[dict] = []
+    seen: set[tuple[str, str, str]] = set()
+    selected_rate = selected_rule.get("rate")
+    selected_rule_id = selected_rule.get("rule_id")
+
+    for paragraph in paragraphs:
+        for rule in paragraph["rules"]:
+            candidate_rate = rule.get("rate")
+            if candidate_rate in {"", "N/A", None}:
+                continue
+            if rule.get("rule_id") == selected_rule_id:
+                continue
+            if (
+                paragraph["source_reference"] == selected_source_reference
+                and candidate_rate == selected_rate
+            ):
+                continue
+            key = (
+                paragraph["source_reference"],
+                candidate_rate,
+                rule.get("rule_id", ""),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            candidates.append(
+                {
+                    "source_reference": paragraph["source_reference"],
+                    "rate": candidate_rate,
+                    "conditions": rule.get("conditions", []),
+                }
+            )
+
+    return candidates
 
 
 def build_review_guidance(rule: dict) -> tuple[str, str, bool]:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -68,11 +69,98 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_REPORT_OUTPUT_PATH,
         help="Output path for the ingest report JSON.",
     )
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        help="Optional JSON metadata manifest for the PDF source.",
+    )
+    parser.add_argument(
+        "--document-id",
+        type=str,
+        help="Optional document id to inject when the PDF text does not carry metadata lines.",
+    )
+    parser.add_argument(
+        "--title",
+        type=str,
+        help="Optional title to inject when the PDF text does not carry metadata lines.",
+    )
+    parser.add_argument(
+        "--jurisdictions",
+        type=str,
+        help="Optional comma-separated jurisdictions to inject when the PDF text does not carry metadata lines.",
+    )
+    parser.add_argument(
+        "--document-type",
+        type=str,
+        help="Optional document type to inject when the PDF text does not carry metadata lines.",
+    )
     return parser.parse_args()
+
+
+def load_manifest(manifest_path: Path | None) -> dict:
+    if manifest_path is None:
+        return {}
+    with manifest_path.open("r", encoding="utf-8") as file:
+        return json.load(file)
+
+
+def resolve_metadata(args: argparse.Namespace) -> dict:
+    manifest = load_manifest(args.manifest)
+    jurisdictions = args.jurisdictions
+    if jurisdictions is None and "jurisdictions" in manifest:
+        manifest_jurisdictions = manifest["jurisdictions"]
+        if isinstance(manifest_jurisdictions, list):
+            jurisdictions = ",".join(manifest_jurisdictions)
+        else:
+            jurisdictions = str(manifest_jurisdictions)
+
+    return {
+        "document_id": args.document_id or manifest.get("document_id"),
+        "title": args.title or manifest.get("title"),
+        "jurisdictions": jurisdictions,
+        "document_type": args.document_type or manifest.get("document_type"),
+    }
+
+
+def inject_document_metadata(extracted_text: str, metadata: dict) -> str:
+    lines = extracted_text.splitlines()
+    has_document_id = any(line.startswith("DOCUMENT_ID: ") for line in lines)
+    if has_document_id:
+        return extracted_text.strip() + "\n"
+
+    missing_fields: list[str] = []
+    if not metadata["document_id"]:
+        missing_fields.append("document_id")
+    if not metadata["title"]:
+        missing_fields.append("title")
+    if not metadata["jurisdictions"]:
+        missing_fields.append("jurisdictions")
+    if not metadata["document_type"]:
+        missing_fields.append("document_type")
+    if missing_fields:
+        raise ValueError(
+            "Missing PDF document metadata for extracted text without headers: "
+            + ", ".join(missing_fields)
+        )
+
+    header_lines = [
+        f"DOCUMENT_ID: {metadata['document_id']}",
+        f"TITLE: {metadata['title']}",
+        f"DOCUMENT_TYPE: {metadata['document_type']}",
+        f"JURISDICTIONS: {metadata['jurisdictions']}",
+    ]
+    body_lines = [line for line in lines if line.strip()]
+    return "\n".join(header_lines + body_lines).strip() + "\n"
 
 
 def main() -> int:
     args = parse_args()
+    try:
+        metadata = resolve_metadata(args)
+    except (OSError, ValueError, json.JSONDecodeError) as error:
+        write_report(build_error_report(None, "metadata", str(error)), args.report_output)
+        print(str(error), file=sys.stderr)
+        return 1
 
     try:
         extracted_text = extract_pdf_text(args.input)
@@ -85,8 +173,15 @@ def main() -> int:
         print(str(error), file=sys.stderr)
         return 1
 
-    write_text(extracted_text, args.raw_text_output)
-    lines = extracted_text.splitlines()
+    try:
+        raw_text = inject_document_metadata(extracted_text, metadata)
+    except ValueError as error:
+        write_report(build_error_report(None, "metadata", str(error)), args.report_output)
+        print(str(error), file=sys.stderr)
+        return 1
+
+    write_text(raw_text, args.raw_text_output)
+    lines = raw_text.splitlines()
 
     try:
         source_payload = parse_raw_text(lines)

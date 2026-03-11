@@ -24,6 +24,13 @@ test("shows structured treaty analysis after submitting a supported scenario", a
     ok: true,
     json: async () => ({
       supported: true,
+      input_interpretation: {
+        parser_source: "llm",
+        payer_country: "CN",
+        payee_country: "NL",
+        transaction_type: "royalties",
+        matched_transaction_label: "software license",
+      },
       normalized_input: {
         payer_country: "CN",
         payee_country: "NL",
@@ -75,6 +82,9 @@ test("shows structured treaty analysis after submitting a supported scenario", a
   expect(
     await screen.findByText(/preliminary view: article 12 royalties appears relevant/i),
   ).toBeInTheDocument();
+  expect(screen.getByText(/how we read this input/i)).toBeInTheDocument();
+  expect(screen.getByText(/parsed by llm input parser/i)).toBeInTheDocument();
+  expect(screen.getByText(/software license/i)).toBeInTheDocument();
   expect(await screen.findByText("Article 12 · Royalties")).toBeInTheDocument();
   expect(screen.getByText("Article 12(1)")).toBeInTheDocument();
   expect(

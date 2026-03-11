@@ -31,6 +31,23 @@ There is now also a narrow orchestration script for the PDF path:
 - `text PDF -> extracted raw text -> parser-like fixture -> generated dataset`
 - this path is intentionally limited to PDFs that already contain extractable text
 - it is not OCR and does not claim to support scanned documents yet
+- when the PDF text does not carry repo-specific metadata headers, the ingest command can inject document metadata at the CLI boundary instead of requiring the official text itself to be rewritten
+- the same metadata can also be supplied via a small JSON manifest, which is closer to how a maintained source-document catalog would work
+
+There is now also a narrow source-catalog batch script:
+
+- it reads a small JSON catalog of source entries
+- it can mix `raw_text` and `pdf_text` sources in one batch
+- it writes a batch summary with per-source status instead of requiring each source to be ingested by hand
+- failed sources do not prevent later sources from being attempted in the same batch
+
+Phase 2 has now started with a separate constrained LLM document-extraction lane:
+
+- clean treaty text can be sent to a real model for offline extraction
+- the model is only responsible for article / paragraph / rule extraction
+- document metadata and final parser-like fixture structure are still controlled locally
+- the extracted source payload can then flow through the existing builder into a generated v3 dataset
+- this is intentionally an offline data-production path, not a runtime fact-generation path
 
 ## Scope
 
@@ -110,7 +127,16 @@ The current PDF extractor stub is also intentionally narrow:
 
 - it only targets text-based PDFs
 - it normalizes extracted text into the same raw-text entry lane
+- it can now merge wrapped paragraph lines from extracted PDF text
+- it can now drop repeated header lines and simple page-number noise such as `Page 1`
 - if no extractable text is found, the PDF path fails conservatively instead of pretending OCR exists
+
+The current LLM document-ingest path is intentionally narrow too:
+
+- it targets clean treaty-text slices, not arbitrary long messy documents yet
+- it is designed to prove `clean text -> LLM extracted source payload -> generated dataset`
+- it keeps the model inside a bounded extraction role instead of letting the model define document metadata or runtime treaty facts
+- the next quality focus in this lane should be extraction fidelity for rate-bearing paragraphs and rule prioritization, not more orchestration layers
 
 The raw-text entry path now has two sample scales:
 

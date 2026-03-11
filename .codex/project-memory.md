@@ -107,6 +107,14 @@ Preferred path:
 - A version: small-data, real-architecture MVP
 - B version: real-treaty-driven upgrade
 
+Gemini-aligned staged path to preserve:
+
+- Phase 1: constrained LLM input understanding
+- Phase 2: real document-to-structured-data generation
+- Phase 3: dynamic review guidance only after phases 1-2 are real
+- Phase 4: multi-country expansion last
+- the best stop line for project value is around the end of Phase 2, not “keep building forever”
+
 Current B-stage direction:
 
 - move from result-centered treaty entries to article-centered treaty data
@@ -140,6 +148,23 @@ Current B-stage direction:
 - raw-text source segments now also preserve `raw_line_number`, so later debugging and provenance review can point back to exact input lines instead of only paragraph labels or page hints
 - the raw-text parser is no longer limited to tagged pseudo-parser lines: it now also accepts one narrow semi-structured treaty-text style with `Article ...` headings and numbered paragraphs, which is a more realistic bridge toward future PDF/text ingestion
 - the repo now also has its first narrow text-PDF ingestion path: extractable-text PDFs can be converted into raw treaty text and then fed through the same parser-like ingest chain; OCR is still intentionally out of scope
+- the narrow text-PDF path now also handles two realistic cleanup cases before parsing: wrapped paragraph lines and simple repeated header/page-number noise
+- the PDF ingest path no longer depends on the PDF body containing repo-specific metadata headers; maintainers can inject document metadata at the CLI boundary, which is closer to how real official source files will behave
+- the PDF path can now also read that metadata from a small JSON manifest, which is a better long-lived maintenance shape than repeating CLI fields for every document
+- the repo now also has a narrow source-catalog batch ingest path that can mix raw-text and text-PDF sources, write a batch summary, and keep going after individual source failures
+- Phase 1 has now started in code: runtime input normalization can first attempt a constrained LLM structured-output path and falls back to the existing rule parser if unavailable or uncertain
+- the constrained runtime LLM parser is now slightly hardened for real model behavior: it accepts fenced JSON content and the service layer normalizes common country-name outputs like `China` and `Netherlands` back into ISO-style routing codes before treaty lookup
+- when the constrained runtime LLM parser is used, the API/UI should expose a small user-auditable `input_interpretation` block so the model's reading of payer/payee/income-type can be checked without exposing raw prompts or letting the model touch treaty facts
+- automated test runs should not silently spend money or block on live model calls; runtime LLM config should stay off by default under `pytest` unless explicitly re-enabled for a deliberate live-parser test
+- the repo now also has a dedicated live input-parser smoke path (`scripts/run_llm_input_smoke.py`) that reports whether the scenario truly flowed through the LLM parser or silently fell back to rules
+- Phase 1 should be treated as “complete enough to stop” once the runtime LLM lane proves three things at once: supported natural-language routing works, clearly incomplete/out-of-scope cases refuse conservatively, and the model's reading can be audited without exposing raw prompt internals
+- Phase 2 has now genuinely started: the repo has a constrained offline LLM document-extraction lane that can turn clean treaty text into a builder-compatible parser-like source payload and then into a generated v3 dataset
+- in that Phase 2 lane, the model should stay responsible only for article/paragraph/rule extraction; document metadata injection, schema shaping, validation, and final dataset generation should remain deterministic local code
+- Phase 2 extraction quality now has a concrete guiding rule: rate-bearing paragraphs matter more than narrative treaty paragraphs, so the pipeline should backfill obvious rate caps from paragraph text and the runtime matcher should prefer rules that actually carry usable rates
+- runtime consumption of LLM-generated treaty data should stay feature-flagged: the stable curated dataset remains the default path, while `llm_generated` is an explicit opt-in lane used to prove the offline extraction pipeline can feed the conservative runtime engine without making the public demo brittle
+- Phase 2 quality normalization should not rely on one exact model label: rate-bearing rule families such as `rate_limitation`, `source_tax_limit`, and `withholding_tax_cap` should be treated as the same semantic lane so conditions and review reasons remain usable when the model varies its taxonomy
+- when one treaty article contains multiple distinct rate-bearing branches, the conservative runtime should not silently pick one and sound certain; it should surface alternative rate candidates and escalate to a no-auto-conclusion state until additional facts disambiguate the branch
+- that branch-ambiguity rule should apply even when the model puts multiple rate candidates inside the same paragraph/rule cluster, not only when different paragraphs carry different rates
 
 Important rule:
 

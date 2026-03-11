@@ -185,6 +185,7 @@ Current public identity:
 - a cross-border payment treaty pre-review tool
 - bounded, explainable, and source-aware
 - not a final opinion engine
+- default runtime stays on the stable curated dataset, while a controlled `llm_generated` data-source path exists for Phase 2 validation
 
 ## Run Locally
 
@@ -232,6 +233,29 @@ Frontend build:
 ```powershell
 cd frontend
 npm run build
+```
+
+Run a live LLM input-understanding smoke check:
+
+```powershell
+.\.venv\Scripts\python scripts/run_llm_input_smoke.py --scenario "我是北京的独立开发者，把软件授权给阿姆斯特丹的公司"
+```
+
+Run the first Phase 2 LLM document-ingest path:
+
+```powershell
+.\.venv\Scripts\python scripts/ingest_cn_nl_llm_text.py
+```
+
+Run the API against the LLM-generated dataset without changing the default demo path:
+
+```powershell
+@'
+{
+  "scenario": "中国居民企业向荷兰支付特许权使用费",
+  "data_source": "llm_generated"
+}
+'@ | curl.exe -X POST http://127.0.0.1:8000/analyze -H "Content-Type: application/json" --data-binary @-
 ```
 
 Rebuild generated treaty dataset:
