@@ -1,0 +1,12 @@
+{
+  "document_id": "cn-nl-semi-structured-raw-stub",
+  "status": "ok",
+  "article_count": 2,
+  "paragraph_count": 4,
+  "rule_count": 4,
+  "source_segment_count": 4,
+  "normalized_segment_count": 0,
+  "warning_segment_count": 0,
+  "attention_item_count": 0,
+  "attention_items": []
+}

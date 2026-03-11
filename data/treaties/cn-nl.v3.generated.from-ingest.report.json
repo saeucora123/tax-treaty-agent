@@ -1,0 +1,21 @@
+{
+  "document_id": "cn-nl-multi-article-raw-stub",
+  "status": "warning",
+  "article_count": 2,
+  "paragraph_count": 3,
+  "rule_count": 4,
+  "source_segment_count": 5,
+  "normalized_segment_count": 3,
+  "warning_segment_count": 1,
+  "attention_item_count": 1,
+  "attention_items": [
+    {
+      "paragraph_label": "Article 12(2)",
+      "source_reference": "Article 12(2)",
+      "reasons": [
+        "warning_segment_present",
+        "low_paragraph_confidence"
+      ]
+    }
+  ]
+}

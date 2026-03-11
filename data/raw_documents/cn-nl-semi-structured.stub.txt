@@ -1,0 +1,13 @@
+DOCUMENT_ID: cn-nl-semi-structured-raw-stub
+TITLE: China-Netherlands Tax Treaty Semi-Structured Stub
+DOCUMENT_TYPE: treaty_text
+JURISDICTIONS: CN,NL
+DOCUMENT_NOTE: Semi-structured treaty text stub for parser expansion.
+
+Article 11 Interest
+1. Interest arising in one of the States and paid to a resident of the other State may be taxed in that other State.
+2. However, such interest may also be taxed in the first-mentioned State, but the tax shall not exceed 10 per cent of the gross amount of the interest.
+
+Article 12 Royalties
+1. Royalties arising in one of the States and paid to a resident of the other State may be taxed in that other State.
+2. However, such royalties may also be taxed in the first-mentioned State, but the tax so charged shall not exceed 10 per cent of the gross amount of the royalties.

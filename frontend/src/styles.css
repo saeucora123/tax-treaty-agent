@@ -198,6 +198,16 @@ ul { padding-left: 20px; }
   gap: 8px;
 }
 
+.archive-list li {
+  padding-bottom: 10px;
+  border-bottom: 1px dotted var(--border-light);
+}
+
+.archive-list li:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
 .text-link-button {
   background: none;
   border: none;
@@ -214,6 +224,24 @@ ul { padding-left: 20px; }
 
 .text-link-button:hover {
   text-decoration-color: var(--link-blue);
+}
+
+.example-state-tag {
+  display: inline-block;
+  min-width: 124px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-ink);
+}
+
+.example-hint {
+  margin-top: 4px;
+  margin-left: 124px;
+  font-size: 0.84rem;
+  color: var(--text-dim);
+  line-height: 1.45;
+  font-style: italic;
 }
 
 .btn-seal {
@@ -456,5 +484,15 @@ ul { padding-left: 20px; }
   .memo-title {
     font-size: 1.05rem;
     letter-spacing: 0.12em;
+  }
+
+  .example-state-tag {
+    display: block;
+    min-width: 0;
+    margin-bottom: 4px;
+  }
+
+  .example-hint {
+    margin-left: 0;
   }
 }

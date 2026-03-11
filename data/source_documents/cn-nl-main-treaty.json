@@ -1,0 +1,194 @@
+{
+  "document": {
+    "document_id": "cn-nl-main-treaty",
+    "title": "China-Netherlands Tax Treaty",
+    "document_type": "treaty_text",
+    "jurisdictions": ["CN", "NL"],
+    "notes": [
+      "Parser-like intermediate representation for the import pipeline.",
+      "Still manually curated, but shaped to resemble future parser output."
+    ]
+  },
+  "parsed_articles": [
+    {
+      "article_number": "10",
+      "article_title": "Dividends",
+      "article_label": "Article 10",
+      "income_type": "dividends",
+      "summary": "Defines treaty treatment for dividends between the two jurisdictions.",
+      "article_notes": [
+        "Beneficial ownership and factual qualification may matter."
+      ],
+      "paragraphs": [
+        {
+          "paragraph_id": "art10-p1",
+          "paragraph_label": "Article 10(1)",
+          "source_reference": "Article 10(1)",
+          "source_language": "en",
+          "source_segments": [
+            {
+              "segment_id": "art10-p1-s1",
+              "segment_order": 1,
+              "page_hint": 4,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "Dividend treatment is governed by Article 10(1)."
+            },
+            {
+              "segment_id": "art10-p1-s2",
+              "segment_order": 2,
+              "page_hint": 4,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "normalized",
+              "text": "Treaty conditions and factual qualification may still affect the result."
+            }
+          ],
+          "extracted_rules": [
+            {
+              "rule_id": "cn-nl-art10-p1-base",
+              "rule_type": "withholding_tax_cap",
+              "rate": "10%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.98,
+              "derived_from_segments": ["art10-p1-s1", "art10-p1-s2"],
+              "conditions": [
+                "Treaty applicability depends on the facts of the payment."
+              ],
+              "human_review_required": true,
+              "review_reason": "Final eligibility depends on facts beyond v1 scope."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "11",
+      "article_title": "Interest",
+      "article_label": "Article 11",
+      "income_type": "interest",
+      "summary": "Defines treaty treatment for interest between the two jurisdictions.",
+      "article_notes": [
+        "Beneficial ownership and factual qualification may matter."
+      ],
+      "paragraphs": [
+        {
+          "paragraph_id": "art11-p1",
+          "paragraph_label": "Article 11(1)",
+          "source_reference": "Article 11(1)",
+          "source_language": "en",
+          "source_segments": [
+            {
+              "segment_id": "art11-p1-s1",
+              "segment_order": 1,
+              "page_hint": 5,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "Interest treatment is governed by Article 11(1)."
+            },
+            {
+              "segment_id": "art11-p1-s2",
+              "segment_order": 2,
+              "page_hint": 5,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "normalized",
+              "text": "Treaty conditions and factual qualification may still affect the result."
+            }
+          ],
+          "extracted_rules": [
+            {
+              "rule_id": "cn-nl-art11-p1-base",
+              "rule_type": "withholding_tax_cap",
+              "rate": "10%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.98,
+              "derived_from_segments": ["art11-p1-s1", "art11-p1-s2"],
+              "conditions": [
+                "Treaty applicability depends on the facts of the payment."
+              ],
+              "human_review_required": true,
+              "review_reason": "Final eligibility depends on facts beyond v1 scope."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "12",
+      "article_title": "Royalties",
+      "article_label": "Article 12",
+      "income_type": "royalties",
+      "summary": "Defines treaty treatment for royalties between the two jurisdictions.",
+      "article_notes": [
+        "Beneficial ownership and factual qualification may matter."
+      ],
+      "paragraphs": [
+        {
+          "paragraph_id": "art12-p1",
+          "paragraph_label": "Article 12(1)",
+          "source_reference": "Article 12(1)",
+          "source_language": "en",
+          "source_segments": [
+            {
+              "segment_id": "art12-p1-s1",
+              "segment_order": 1,
+              "page_hint": 6,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "Royalty treatment is governed by Article 12(1)."
+            },
+            {
+              "segment_id": "art12-p1-s2",
+              "segment_order": 2,
+              "page_hint": 6,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "normalized",
+              "text": "Treaty conditions and factual qualification may still affect the result."
+            }
+          ],
+          "extracted_rules": [
+            {
+              "rule_id": "cn-nl-art12-p1-base",
+              "rule_type": "withholding_tax_cap",
+              "rate": "10%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.98,
+              "derived_from_segments": ["art12-p1-s1", "art12-p1-s2"],
+              "conditions": [
+                "Treaty applicability depends on the facts of the payment."
+              ],
+              "human_review_required": true,
+              "review_reason": "Final eligibility depends on facts beyond v1 scope."
+            },
+            {
+              "rule_id": "cn-nl-art12-p1-alt",
+              "rule_type": "withholding_tax_cap",
+              "rate": "15%",
+              "direction": "bidirectional",
+              "candidate_rank": 2,
+              "is_primary_candidate": false,
+              "extraction_confidence": 0.41,
+              "derived_from_segments": ["art12-p1-s1"],
+              "conditions": [
+                "Lower-confidence alternate extraction candidate retained for pipeline review."
+              ],
+              "human_review_required": true,
+              "review_reason": "Alternate candidate retained for parser-review workflow only."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

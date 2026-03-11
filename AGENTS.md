@@ -72,6 +72,15 @@ The first release should stay within:
 
 Avoid expanding scope unless the user explicitly asks to do so.
 
+## Expansion Control
+
+- Treat this repo as a staged work product, not an unbounded long-running platform build.
+- Prefer one clear advancement slice at a time.
+- Do not stack more than 1-2 consecutive “polish/detail” slices without also advancing a harder core capability.
+- When choosing between extra refinement and a small real pipeline step, prefer the real pipeline step.
+- Stop a slice once it reaches a meaningful checkpoint with tests and a real run path; do not keep adding adjacent nice-to-haves in the same burst.
+- Keep temporary stubs narrow and auditable; do not let them grow into pseudo-general frameworks too early.
+
 ## Human-AI Collaboration
 
 Treat the user as:
@@ -109,4 +118,3 @@ If a stable repo fact or recurring workflow appears, update the smallest relevan
 - repo rule -> `AGENTS.md`
 - stable repo fact -> `.codex/project-memory.md`
 - current direction or next likely work -> `.codex/project-status.md`
-
