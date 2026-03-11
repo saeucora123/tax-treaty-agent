@@ -148,7 +148,7 @@ Current priority correction:
 - before more GitHub-polish work, re-evaluate how this tool can help in a narrow real workflow rather than only looking impressive as a portfolio piece
 - future sessions should anchor decisions to the original motivation: this repo exists to help the user build toward an `AI + international tax` direction through a real bounded product, not just a polished showcase
 - control expansion actively: after a meaningful checkpoint, prefer the next real pipeline advance over adjacent nice-to-have refinements
-- the current active slice is Phase 1: connect a real but tightly constrained LLM input parser without letting the model touch treaty facts or rates
+- the current active slice is Phase 2: improve offline treaty extraction quality while keeping the runtime conservative, auditable, and defaulted to stable curated data
 
 The concrete execution checklist for the current stage now lives in:
 
@@ -158,9 +158,10 @@ The concrete execution checklist for the current stage now lives in:
 
 1. Phase 1 is now effectively locked: supported natural-language routing works, the runtime path is auditable, and clearly bad inputs refuse conservatively without widening model authority.
 2. Current mainline is now Phase 2: improve document-to-structured-data fidelity, especially extraction quality for rule typing, conditions, review reasons, and more complex rule branches.
-3. The controlled `stable` vs `llm_generated` runtime switch now gives the repo a safe way to prove the full offline-to-online loop without handing the default demo path to uncertain AI data.
-4. Avoid turning Phase 2 into orchestration sprawl; the next valuable gains are extraction quality and builder/runtime compatibility, not more wrappers.
-5. Treat the end of Phase 2 as the likely best stop line for a high-value GitHub/resume project.
+3. The most valuable next concrete slice is to feed the offline LLM extractor a truer dividend branch sample (for example a 5% / 10% style Article 10 text) and verify that the generated dataset triggers the existing no-auto-conclusion branch guard without any hand-crafted runtime fixture.
+4. The controlled `stable` vs `llm_generated` runtime switch now gives the repo a safe way to prove the full offline-to-online loop without handing the default demo path to uncertain AI data.
+5. Avoid turning Phase 2 into orchestration sprawl; the next valuable gains are extraction quality and builder/runtime compatibility, not more wrappers.
+6. Treat the end of Phase 2 as the likely best stop line for a high-value GitHub/resume project.
 
 ## Risks To Watch
 
