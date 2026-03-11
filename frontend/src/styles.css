@@ -1,0 +1,174 @@
+:root {
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #1f2937;
+  background:
+    radial-gradient(circle at top left, rgba(246, 222, 194, 0.9), transparent 35%),
+    linear-gradient(160deg, #f5f1e8 0%, #e5eef5 52%, #f8f6f1 100%);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+.app-shell {
+  width: min(1120px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 48px 0 64px;
+  display: grid;
+  gap: 24px;
+}
+
+.hero-card,
+.result-card {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(99, 102, 241, 0.08);
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 24px 80px rgba(54, 65, 86, 0.12);
+}
+
+.eyebrow,
+.result-kicker {
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9b5d28;
+  font-weight: 700;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  max-width: 12ch;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  line-height: 0.95;
+  margin-bottom: 16px;
+  color: #10223d;
+}
+
+.intro,
+.placeholder,
+.summary-line,
+.review-flag {
+  color: #475569;
+}
+
+.scenario-form {
+  display: grid;
+  gap: 12px;
+}
+
+.scenario-form label {
+  font-weight: 700;
+  color: #173154;
+}
+
+.scenario-form textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 120px;
+  border-radius: 18px;
+  border: 1px solid rgba(23, 49, 84, 0.15);
+  padding: 16px 18px;
+  background: rgba(250, 249, 246, 0.95);
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+button {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 700;
+  cursor: pointer;
+  background: #173154;
+  color: white;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.ghost-button {
+  background: rgba(23, 49, 84, 0.08);
+  color: #173154;
+}
+
+.error-banner,
+.unsupported-card {
+  border-radius: 18px;
+  padding: 14px 16px;
+  background: rgba(185, 28, 28, 0.08);
+  color: #991b1b;
+}
+
+.result-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.result-panel {
+  border-radius: 20px;
+  padding: 18px;
+  background: rgba(247, 243, 236, 0.92);
+}
+
+.rate-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #f2c66c;
+  color: #10223d;
+  font-weight: 800;
+}
+
+.review-panel {
+  background: rgba(233, 241, 247, 0.95);
+}
+
+ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    width: min(100vw - 20px, 1120px);
+    padding: 24px 0 40px;
+  }
+
+  .hero-card,
+  .result-card {
+    padding: 20px;
+    border-radius: 20px;
+  }
+}

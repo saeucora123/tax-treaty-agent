@@ -1,0 +1,50 @@
+[
+  {
+    "treaty_id": "cn-nl",
+    "country_pair": ["CN", "NL"],
+    "transaction_type": "dividends",
+    "article_number": "10",
+    "article_title": "Dividends",
+    "rate": "10%",
+    "conditions": [
+      "Treaty applicability depends on the facts of the payment."
+    ],
+    "notes": [
+      "Beneficial ownership and factual details may affect the final conclusion."
+    ],
+    "human_review_required": true,
+    "review_reason": "Final eligibility depends on facts beyond v1 scope."
+  },
+  {
+    "treaty_id": "cn-nl",
+    "country_pair": ["CN", "NL"],
+    "transaction_type": "interest",
+    "article_number": "11",
+    "article_title": "Interest",
+    "rate": "10%",
+    "conditions": [
+      "Treaty applicability depends on the facts of the payment."
+    ],
+    "notes": [
+      "Beneficial ownership and factual details may affect the final conclusion."
+    ],
+    "human_review_required": true,
+    "review_reason": "Final eligibility depends on facts beyond v1 scope."
+  },
+  {
+    "treaty_id": "cn-nl",
+    "country_pair": ["CN", "NL"],
+    "transaction_type": "royalties",
+    "article_number": "12",
+    "article_title": "Royalties",
+    "rate": "10%",
+    "conditions": [
+      "Treaty applicability depends on the facts of the payment."
+    ],
+    "notes": [
+      "Beneficial ownership and factual details may affect the final conclusion."
+    ],
+    "human_review_required": true,
+    "review_reason": "Final eligibility depends on facts beyond v1 scope."
+  }
+]
