@@ -21,6 +21,7 @@ The repo now also has a live implementation base:
 - frontend demo shell added
 - local browser demo verified
 - parser behavior tightened for incomplete vs unsupported scenarios
+- China-Netherlands scenarios now support direction-aware parsing (`CN -> NL` and `NL -> CN`)
 
 ## Recent Decisions
 
@@ -36,6 +37,7 @@ The repo now also has a live implementation base:
   - dividends / interest / royalties only
 - The parser should not default missing country context to `CN -> NL`.
 - Incomplete scenarios and unsupported country pairs should be distinguished explicitly.
+- Direction matters: payer/payee should be inferred from the text flow around `向`, not from keyword presence alone.
 
 ## Active Direction
 

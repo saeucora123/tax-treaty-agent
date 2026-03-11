@@ -67,6 +67,23 @@ def test_returns_structured_result_for_supported_dividends_case():
     assert response.json()["result"]["article_title"] == "Dividends"
 
 
+def test_returns_structured_result_for_supported_reverse_direction_case():
+    response = client.post(
+        "/analyze",
+        json={"scenario": "荷兰公司向中国母公司支付股息"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["supported"] is True
+    assert response.json()["normalized_input"] == {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "dividends",
+    }
+    assert response.json()["result"]["article_number"] == "10"
+    assert response.json()["result"]["article_title"] == "Dividends"
+
+
 def test_rejects_supported_country_pair_with_unknown_transaction_type():
     response = client.post(
         "/analyze",

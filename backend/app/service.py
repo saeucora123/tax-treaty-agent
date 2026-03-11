@@ -18,7 +18,7 @@ def analyze_scenario(scenario: str) -> dict:
             "message": "Please provide a clearer scenario with both payer and payee country context.",
         }
 
-    if normalized["country_pair"] != ("CN", "NL"):
+    if set(normalized["country_pair"]) != {"CN", "NL"}:
         return {
             "supported": False,
             "reason": "unsupported_country_pair",
@@ -36,8 +36,8 @@ def analyze_scenario(scenario: str) -> dict:
     return {
         "supported": True,
         "normalized_input": {
-            "payer_country": normalized["country_pair"][0],
-            "payee_country": normalized["country_pair"][1],
+            "payer_country": normalized["payer_country"],
+            "payee_country": normalized["payee_country"],
             "transaction_type": normalized["transaction_type"],
         },
         "result": shape_result(match),
@@ -45,8 +45,7 @@ def analyze_scenario(scenario: str) -> dict:
 
 
 def normalize_input(scenario: str) -> dict:
-    payer_country = detect_country(scenario, country_codes=["CN"])
-    payee_country = detect_country(scenario, country_codes=["NL", "US"])
+    payer_country, payee_country = detect_flow_countries(scenario)
 
     if payer_country is None or payee_country is None:
         country_pair = None
@@ -66,9 +65,21 @@ def normalize_input(scenario: str) -> dict:
 
     return {
         "country_pair": country_pair,
+        "payer_country": payer_country,
+        "payee_country": payee_country,
         "transaction_type": transaction_type,
         "reason": reason,
     }
+
+
+def detect_flow_countries(scenario: str) -> tuple[str | None, str | None]:
+    if "向" in scenario:
+        payer_segment, payee_segment = scenario.split("向", 1)
+        payer_country = detect_country(payer_segment, country_codes=["CN", "NL", "US"])
+        payee_country = detect_country(payee_segment, country_codes=["CN", "NL", "US"])
+        return payer_country, payee_country
+
+    return None, None
 
 
 def detect_country(scenario: str, country_codes: list[str]) -> str | None:

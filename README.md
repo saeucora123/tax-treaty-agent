@@ -1,62 +1,92 @@
 # Tax Treaty Agent
 
-An international tax AI tool that turns a bounded treaty-analysis problem into a practical system.
+A bounded AI tool that turns a cross-border tax scenario into a structured treaty analysis.
 
-![Tax Treaty Agent demo](D:/AI_Projects/first%20agent/docs/superpowers/assets/tax-treaty-agent-demo.png)
-
-## What This MVP Does
-
-The current MVP is intentionally narrow:
-
-- China-Netherlands only
-- dividends, interest, royalties only
-- single-turn scenario input
-- structured output
-- conservative fallback for unsupported cases
-
-Example input:
-
-`中国居民企业向荷兰支付特许权使用费`
-
-Example output:
-
-- treaty article
-- rate
-- conditions
-- caution notes
-- human review guidance
+![Tax Treaty Agent demo](docs/superpowers/assets/tax-treaty-agent-demo.png)
 
 ## Why This Project Exists
 
-This project is designed to show how international tax business logic can be translated into a usable AI tool, instead of a generic chatbot.
+Most AI tax demos stop at a generic chat box. This project takes a different approach:
 
-The product goal is simple:
+- narrow scope over fake breadth
+- treaty-backed output over free-form guesswork
+- explicit refusal behavior over overconfident hallucination
+- productized workflow over prompt-only demos
 
-- act like a bounded professional tool
-- make the business logic visible
-- avoid free-form hallucinated tax answers
+The current MVP is built to show how international tax business logic can be translated into a usable AI system.
 
-## Current Repo Status
+## What The MVP Supports
 
-Already working:
+Current scope:
 
-- project design spec
-- implementation plan
-- backend MVP skeleton
-- seed treaty data
-- tested supported and unsupported backend paths
-- frontend demo shell connected to the backend
+- country pair: `China <-> Netherlands`
+- transaction types: `dividends`, `interest`, `royalties`
+- interaction mode: single-turn natural language input
+- output mode: structured analysis
 
-Planned next:
+Current output includes:
 
-- richer supported examples
-- stronger README presentation
-- more treaty coverage
-- more realistic retrieval/data pipelines
+- treaty article
+- treaty rate
+- flow direction
+- conditions
+- notes
+- human review guidance
+
+Current refusal behavior includes:
+
+- incomplete scenario
+- unsupported country pair
+- unsupported transaction type
+
+## Example Scenarios
+
+Supported:
+
+- `中国居民企业向荷兰支付特许权使用费`
+- `中国公司向荷兰公司支付股息`
+- `荷兰公司向中国母公司支付股息`
+- `中国企业向荷兰银行支付贷款利息`
+
+Rejected by design:
+
+- `中国居民企业向美国支付特许权使用费`
+- `中国居民企业向荷兰支付服务费`
+- `向荷兰公司支付股息`
+
+## System Shape
+
+```mermaid
+flowchart LR
+    A["User Scenario"] --> B["Frontend Demo"]
+    B --> C["FastAPI /analyze"]
+    C --> D["Scenario Parsing"]
+    D --> E["Scope Check"]
+    E --> F["Structured Treaty Data"]
+    F --> G["Structured Response"]
+    G --> H["Result Cards / Refusal State"]
+```
+
+Design intent:
+
+- frontend provides a clear demo surface
+- backend controls parsing and guardrails
+- treaty facts stay in structured data
+- unsupported cases fail conservatively
+
+## Repository Structure
+
+```text
+backend/   FastAPI app and tests
+frontend/  React + Vite demo shell
+data/      Seed treaty data
+docs/      Design docs, plans, assets
+.codex/    Project memory and status
+```
 
 ## Local Run
 
-### Backend
+### 1. Backend
 
 From the repo root:
 
@@ -64,7 +94,7 @@ From the repo root:
 .\.venv\Scripts\python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --app-dir backend
 ```
 
-### Frontend
+### 2. Frontend
 
 In a second terminal:
 
@@ -78,7 +108,7 @@ Then open:
 
 `http://127.0.0.1:4173`
 
-The Vite dev server proxies `/api` requests to the local FastAPI backend.
+The Vite dev server proxies `/api` to the local FastAPI backend.
 
 ## Verification
 
@@ -101,6 +131,32 @@ Frontend build:
 cd frontend
 npm run build
 ```
+
+## Current State
+
+Already working:
+
+- design spec and implementation plan
+- backend MVP with direction-aware parsing
+- structured treaty-backed outputs
+- conservative refusal behavior
+- frontend demo shell for GitHub-style presentation
+- local browser demo verified
+
+## Roadmap
+
+Near-term next steps:
+
+- improve unsupported / incomplete UX states
+- add stronger README storytelling and demo assets
+- expand structured treaty examples
+
+Future directions:
+
+- richer treaty coverage
+- more robust parsing
+- source-document processing
+- retrieval upgrades beyond seed JSON
 
 ## Key Docs
 

@@ -34,7 +34,7 @@ test("shows structured treaty analysis after submitting a supported scenario", a
     screen.getByLabelText(/cross-border scenario/i),
     "中国居民企业向荷兰支付特许权使用费",
   );
-  await user.click(screen.getByRole("button", { name: /analyze/i }));
+  await user.click(screen.getByRole("button", { name: /run review/i }));
 
   expect(await screen.findByText("Article 12 · Royalties")).toBeInTheDocument();
   expect(screen.getByText("10%")).toBeInTheDocument();
