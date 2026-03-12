@@ -1,0 +1,143 @@
+[
+  {
+    "id": "stage2-cn-sg-dividends-forward",
+    "category": "stable_supported",
+    "scenario": "中国公司向新加坡公司支付股息",
+    "expected": {
+      "supported": true,
+      "reason": null,
+      "review_state_code": "can_be_completed",
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "data_source_used": "stable",
+      "payment_direction": "CN -> SG"
+    }
+  },
+  {
+    "id": "stage2-cn-sg-interest-forward",
+    "category": "stable_supported",
+    "scenario": "中国企业向新加坡银行支付利息",
+    "expected": {
+      "supported": true,
+      "reason": null,
+      "review_state_code": "can_be_completed",
+      "article_number": "11",
+      "rate": "7% / 10%",
+      "data_source_used": "stable",
+      "payment_direction": "CN -> SG"
+    }
+  },
+  {
+    "id": "stage2-cn-sg-royalties-forward",
+    "category": "stable_supported",
+    "scenario": "中国居民企业向新加坡公司支付特许权使用费",
+    "expected": {
+      "supported": true,
+      "reason": null,
+      "review_state_code": "pre_review_complete",
+      "article_number": "12",
+      "rate": "10%",
+      "data_source_used": "stable",
+      "payment_direction": "CN -> SG"
+    }
+  },
+  {
+    "id": "stage2-sg-cn-dividends-reverse",
+    "category": "stable_supported",
+    "scenario": "新加坡公司向中国公司支付股息",
+    "expected": {
+      "supported": true,
+      "reason": null,
+      "review_state_code": "can_be_completed",
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "data_source_used": "stable",
+      "payment_direction": "SG -> CN"
+    }
+  },
+  {
+    "id": "stage2-sg-cn-interest-reverse",
+    "category": "stable_supported",
+    "scenario": "新加坡公司向中国公司支付利息",
+    "expected": {
+      "supported": true,
+      "reason": null,
+      "review_state_code": "can_be_completed",
+      "article_number": "11",
+      "rate": "7% / 10%",
+      "data_source_used": "stable",
+      "payment_direction": "SG -> CN"
+    }
+  },
+  {
+    "id": "stage2-sg-cn-royalties-reverse",
+    "category": "stable_supported",
+    "scenario": "新加坡公司向中国公司支付特许权使用费",
+    "expected": {
+      "supported": true,
+      "reason": null,
+      "review_state_code": "pre_review_complete",
+      "article_number": "12",
+      "rate": "10%",
+      "data_source_used": "stable",
+      "payment_direction": "SG -> CN"
+    }
+  },
+  {
+    "id": "stage2-cn-sg-generated-lane-rejected",
+    "category": "generated_unavailable",
+    "scenario": "中国居民企业向新加坡公司支付特许权使用费",
+    "data_source": "llm_generated",
+    "expected": {
+      "supported": false,
+      "reason": "unavailable_data_source",
+      "review_state_code": "needs_human_intervention",
+      "article_number": null,
+      "rate": null,
+      "data_source_used": "llm_generated",
+      "payment_direction": null
+    }
+  },
+  {
+    "id": "stage2-cn-us-still-rejected",
+    "category": "guardrail_regression",
+    "scenario": "中国居民企业向美国支付特许权使用费",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_country_pair",
+      "review_state_code": "out_of_scope",
+      "article_number": null,
+      "rate": null,
+      "data_source_used": "stable",
+      "payment_direction": null
+    }
+  },
+  {
+    "id": "stage2-cn-nl-regression-still-supported",
+    "category": "guardrail_regression",
+    "scenario": "中国居民企业向荷兰支付特许权使用费",
+    "expected": {
+      "supported": true,
+      "reason": null,
+      "review_state_code": "pre_review_complete",
+      "article_number": "12",
+      "rate": "10%",
+      "data_source_used": "stable",
+      "payment_direction": "CN -> NL"
+    }
+  },
+  {
+    "id": "stage2-cn-nl-dividend-stage4-lane-unchanged",
+    "category": "guardrail_regression",
+    "scenario": "中国公司向荷兰公司支付股息",
+    "expected": {
+      "supported": true,
+      "reason": null,
+      "review_state_code": "can_be_completed",
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "data_source_used": "stable",
+      "payment_direction": "CN -> NL"
+    }
+  }
+]

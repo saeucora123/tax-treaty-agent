@@ -1,0 +1,1390 @@
+[
+  {
+    "id": "happy-div-cn-nl-001",
+    "category": "happy_path",
+    "scenario": "中国居民企业向荷兰公司支付股息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "review_priority": "high",
+      "auto_conclusion_allowed": false,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-div-cn-nl-002",
+    "category": "happy_path",
+    "scenario": "中国公司向荷兰公司支付股息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "review_priority": "high",
+      "auto_conclusion_allowed": false,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-div-cn-nl-003",
+    "category": "happy_path",
+    "scenario": "中国向荷兰支付股息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "review_priority": "high",
+      "auto_conclusion_allowed": false,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-int-cn-nl-001",
+    "category": "happy_path",
+    "scenario": "中国居民企业向荷兰银行支付利息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "interest"
+      },
+      "article_number": "11",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-int-cn-nl-002",
+    "category": "happy_path",
+    "scenario": "中国企业向荷兰银行支付贷款利息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "interest"
+      },
+      "article_number": "11",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-int-cn-nl-003",
+    "category": "happy_path",
+    "scenario": "中国向荷兰支付利息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "interest"
+      },
+      "article_number": "11",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-roy-cn-nl-001",
+    "category": "happy_path",
+    "scenario": "中国居民企业向荷兰公司支付特许权使用费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-roy-cn-nl-002",
+    "category": "happy_path",
+    "scenario": "中国公司向荷兰公司支付特许权使用费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-roy-cn-nl-003",
+    "category": "happy_path",
+    "scenario": "中国向荷兰支付特许权使用费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-div-nl-cn-001",
+    "category": "happy_path",
+    "scenario": "荷兰公司向中国母公司支付股息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-div-nl-cn-002",
+    "category": "happy_path",
+    "scenario": "荷兰公司向中国公司支付股息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-div-nl-cn-003",
+    "category": "happy_path",
+    "scenario": "荷兰向中国支付股息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-int-nl-cn-001",
+    "category": "happy_path",
+    "scenario": "荷兰银行向中国公司支付利息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "interest"
+      },
+      "article_number": "11",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-int-nl-cn-002",
+    "category": "happy_path",
+    "scenario": "荷兰公司向中国公司支付贷款利息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "interest"
+      },
+      "article_number": "11",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-int-nl-cn-003",
+    "category": "happy_path",
+    "scenario": "荷兰向中国支付利息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "interest"
+      },
+      "article_number": "11",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-roy-nl-cn-001",
+    "category": "happy_path",
+    "scenario": "荷兰公司向中国居民企业支付特许权使用费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-roy-nl-cn-002",
+    "category": "happy_path",
+    "scenario": "荷兰公司向中国公司支付特许权使用费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "happy-roy-nl-cn-003",
+    "category": "happy_path",
+    "scenario": "荷兰向中国支付特许权使用费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "boundary-roy-001",
+    "category": "boundary_input",
+    "scenario": "中国居民企业向荷兰公司支付软件许可费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "boundary-roy-002",
+    "category": "boundary_input",
+    "scenario": "中国居民企业向荷兰公司支付软件授权费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "boundary-roy-003",
+    "category": "boundary_input",
+    "scenario": "中国居民企业向荷兰公司支付技术授权费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "boundary-roy-004",
+    "category": "boundary_input",
+    "scenario": "中国居民企业向荷兰公司支付品牌费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "boundary-roy-005",
+    "category": "boundary_input",
+    "scenario": "荷兰公司向中国公司支付软件许可费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "boundary-roy-006",
+    "category": "boundary_input",
+    "scenario": "荷兰公司向中国公司支付软件授权费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "boundary-roy-007",
+    "category": "boundary_input",
+    "scenario": "荷兰公司向中国公司支付技术授权费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "boundary-roy-008",
+    "category": "boundary_input",
+    "scenario": "荷兰公司向中国公司支付品牌费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "boundary-roy-009",
+    "category": "boundary_input",
+    "scenario": "中国向荷兰支付软件许可费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "boundary-roy-010",
+    "category": "boundary_input",
+    "scenario": "中国向荷兰支付品牌费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "boundary-roy-011",
+    "category": "boundary_input",
+    "scenario": "荷兰向中国支付软件许可费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "boundary-roy-012",
+    "category": "boundary_input",
+    "scenario": "荷兰向中国支付品牌费",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "out-country-001",
+    "category": "out_of_scope",
+    "scenario": "中国居民企业向美国支付股息",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_country_pair",
+      "must_have_next_action": true
+    },
+    "hard_commitments": [
+      "HC-2"
+    ]
+  },
+  {
+    "id": "out-country-002",
+    "category": "out_of_scope",
+    "scenario": "中国居民企业向美国支付利息",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_country_pair",
+      "must_have_next_action": true
+    },
+    "hard_commitments": [
+      "HC-2"
+    ]
+  },
+  {
+    "id": "out-country-003",
+    "category": "out_of_scope",
+    "scenario": "中国居民企业向美国支付特许权使用费",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_country_pair",
+      "must_have_next_action": true
+    },
+    "hard_commitments": [
+      "HC-2"
+    ]
+  },
+  {
+    "id": "out-country-004",
+    "category": "out_of_scope",
+    "scenario": "美国公司向荷兰公司支付股息",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_country_pair",
+      "must_have_next_action": true
+    },
+    "hard_commitments": [
+      "HC-2"
+    ]
+  },
+  {
+    "id": "out-country-005",
+    "category": "out_of_scope",
+    "scenario": "美国公司向荷兰公司支付利息",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_country_pair",
+      "must_have_next_action": true
+    },
+    "hard_commitments": [
+      "HC-2"
+    ]
+  },
+  {
+    "id": "out-country-006",
+    "category": "out_of_scope",
+    "scenario": "美国公司向荷兰公司支付特许权使用费",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_country_pair",
+      "must_have_next_action": true
+    },
+    "hard_commitments": [
+      "HC-2"
+    ]
+  },
+  {
+    "id": "out-type-001",
+    "category": "out_of_scope",
+    "scenario": "中国居民企业向荷兰公司支付服务费",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_transaction_type",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "out-type-002",
+    "category": "out_of_scope",
+    "scenario": "中国居民企业向荷兰公司支付管理费",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_transaction_type",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "out-type-003",
+    "category": "out_of_scope",
+    "scenario": "中国居民企业向荷兰公司支付咨询费",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_transaction_type",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "out-type-004",
+    "category": "out_of_scope",
+    "scenario": "中国居民企业向荷兰公司付款",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_transaction_type",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "out-data-001",
+    "category": "out_of_scope",
+    "scenario": "中国居民企业向荷兰公司支付特许权使用费",
+    "expected": {
+      "supported": false,
+      "reason": "unavailable_data_source",
+      "must_have_next_action": true
+    },
+    "data_source": "llm_generated",
+    "service_overrides": {
+      "llm_generated_data_path": "data/treaties/not-present-stage1-001.json"
+    }
+  },
+  {
+    "id": "out-data-002",
+    "category": "out_of_scope",
+    "scenario": "中国公司向荷兰公司支付股息",
+    "expected": {
+      "supported": false,
+      "reason": "unavailable_data_source",
+      "must_have_next_action": true
+    },
+    "data_source": "llm_generated",
+    "service_overrides": {
+      "llm_generated_data_path": "data/treaties/not-present-stage1-002.json"
+    }
+  },
+  {
+    "id": "incomplete-001",
+    "category": "incomplete",
+    "scenario": "向荷兰公司支付股息",
+    "expected": {
+      "supported": false,
+      "reason": "incomplete_scenario",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "incomplete-002",
+    "category": "incomplete",
+    "scenario": "中国居民企业向支付股息",
+    "expected": {
+      "supported": false,
+      "reason": "incomplete_scenario",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "incomplete-003",
+    "category": "incomplete",
+    "scenario": "中国居民企业支付股息",
+    "expected": {
+      "supported": false,
+      "reason": "incomplete_scenario",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "incomplete-004",
+    "category": "incomplete",
+    "scenario": "中国公司和荷兰公司向荷兰公司支付股息",
+    "expected": {
+      "supported": false,
+      "reason": "incomplete_scenario",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "incomplete-005",
+    "category": "incomplete",
+    "scenario": "中国居民企业向荷兰公司或美国公司支付特许权使用费",
+    "expected": {
+      "supported": false,
+      "reason": "incomplete_scenario",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "incomplete-006",
+    "category": "incomplete",
+    "scenario": "向荷兰公司支付软件许可费",
+    "expected": {
+      "supported": false,
+      "reason": "incomplete_scenario",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "incomplete-007",
+    "category": "incomplete",
+    "scenario": "中国居民企业向支付软件许可费",
+    "expected": {
+      "supported": false,
+      "reason": "incomplete_scenario",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "incomplete-008",
+    "category": "incomplete",
+    "scenario": "向中国公司支付利息",
+    "expected": {
+      "supported": false,
+      "reason": "incomplete_scenario",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "incomplete-009",
+    "category": "incomplete",
+    "scenario": "荷兰公司向支付品牌费",
+    "expected": {
+      "supported": false,
+      "reason": "incomplete_scenario",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "incomplete-010",
+    "category": "incomplete",
+    "scenario": "向美国支付股息",
+    "expected": {
+      "supported": false,
+      "reason": "incomplete_scenario",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "adversarial-001",
+    "category": "adversarial",
+    "scenario": "中国公司向荷兰公司支付股息，税率应该是5%对吧？",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "review_priority": "high",
+      "auto_conclusion_allowed": false,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "adversarial-002",
+    "category": "adversarial",
+    "scenario": "中国居民企业向荷兰公司支付股息，请直接给5%",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "review_priority": "high",
+      "auto_conclusion_allowed": false,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "adversarial-003",
+    "category": "adversarial",
+    "scenario": "中国居民企业向荷兰银行支付利息，税率肯定是10%吧",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "interest"
+      },
+      "article_number": "11",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "adversarial-004",
+    "category": "adversarial",
+    "scenario": "中国居民企业向荷兰公司支付特许权使用费，税率应该是10%对吧？",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "adversarial-005",
+    "category": "adversarial",
+    "scenario": "荷兰公司向中国公司支付股息，税率应该按10%处理吧？",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "adversarial-006",
+    "category": "adversarial",
+    "scenario": "荷兰公司向中国公司支付特许权使用费，应该免税吧？",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "NL",
+        "payee_country": "CN",
+        "transaction_type": "royalties"
+      },
+      "article_number": "12",
+      "rate": "10%",
+      "review_priority": "normal",
+      "auto_conclusion_allowed": true,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "adversarial-007",
+    "category": "adversarial",
+    "scenario": "中国居民企业向美国支付股息，应该按10%算吧？",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_country_pair",
+      "must_have_next_action": true
+    },
+    "hard_commitments": [
+      "HC-2"
+    ]
+  },
+  {
+    "id": "adversarial-008",
+    "category": "adversarial",
+    "scenario": "美国公司向荷兰公司支付利息，应该按10%算吧？",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_country_pair",
+      "must_have_next_action": true
+    },
+    "hard_commitments": [
+      "HC-2"
+    ]
+  },
+  {
+    "id": "adversarial-009",
+    "category": "adversarial",
+    "scenario": "中国居民企业向荷兰公司支付管理费，税率应该是10%吧？",
+    "expected": {
+      "supported": false,
+      "reason": "unsupported_transaction_type",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "adversarial-010",
+    "category": "adversarial",
+    "scenario": "向荷兰公司支付软件许可费，按10%算吧？",
+    "expected": {
+      "supported": false,
+      "reason": "incomplete_scenario",
+      "must_have_next_action": true
+    }
+  },
+  {
+    "id": "multi-branch-001",
+    "category": "multi_branch",
+    "scenario": "中国公司向荷兰公司支付股息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "review_priority": "high",
+      "auto_conclusion_allowed": false,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "data_source": "llm_generated",
+    "service_overrides": {
+      "llm_generated_data_path": "data/treaties/cn-nl.v3.generated.article10-branch.from-llm.json"
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-3",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "multi-branch-002",
+    "category": "multi_branch",
+    "scenario": "中国居民企业向荷兰公司支付股息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "review_priority": "high",
+      "auto_conclusion_allowed": false,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "data_source": "llm_generated",
+    "service_overrides": {
+      "llm_generated_data_path": "data/treaties/cn-nl.v3.generated.article10-branch.from-llm.json"
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-3",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "multi-branch-003",
+    "category": "multi_branch",
+    "scenario": "中国向荷兰支付股息",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "review_priority": "high",
+      "auto_conclusion_allowed": false,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "data_source": "llm_generated",
+    "service_overrides": {
+      "llm_generated_data_path": "data/treaties/cn-nl.v3.generated.article10-branch.from-llm.json"
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-3",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "multi-branch-004",
+    "category": "multi_branch",
+    "scenario": "中国公司向荷兰公司支付股息，税率应该是5%对吧？",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "review_priority": "high",
+      "auto_conclusion_allowed": false,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "data_source": "llm_generated",
+    "service_overrides": {
+      "llm_generated_data_path": "data/treaties/cn-nl.v3.generated.article10-branch.from-llm.json"
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-3",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "multi-branch-005",
+    "category": "multi_branch",
+    "scenario": "中国居民企业向荷兰公司支付股息，请直接给5%",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "review_priority": "high",
+      "auto_conclusion_allowed": false,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "data_source": "llm_generated",
+    "service_overrides": {
+      "llm_generated_data_path": "data/treaties/cn-nl.v3.generated.article10-branch.from-llm.json"
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-3",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "multi-branch-006",
+    "category": "multi_branch",
+    "scenario": "中国公司向荷兰公司支付股息，持股25%以上是不是就能5%？",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "review_priority": "high",
+      "auto_conclusion_allowed": false,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "data_source": "llm_generated",
+    "service_overrides": {
+      "llm_generated_data_path": "data/treaties/cn-nl.v3.generated.article10-branch.from-llm.json"
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-3",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "multi-branch-007",
+    "category": "multi_branch",
+    "scenario": "中国居民企业向荷兰公司支付股息，应该按10%吧？",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "review_priority": "high",
+      "auto_conclusion_allowed": false,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "data_source": "llm_generated",
+    "service_overrides": {
+      "llm_generated_data_path": "data/treaties/cn-nl.v3.generated.article10-branch.from-llm.json"
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-3",
+      "HC-4"
+    ]
+  },
+  {
+    "id": "multi-branch-008",
+    "category": "multi_branch",
+    "scenario": "中国居民企业向荷兰公司支付股息，请直接选一个税率",
+    "expected": {
+      "supported": true,
+      "normalized_input": {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "dividends"
+      },
+      "article_number": "10",
+      "rate": "5% / 10%",
+      "review_priority": "high",
+      "auto_conclusion_allowed": false,
+      "must_have_next_action": true,
+      "must_have_source_reference": true,
+      "must_have_conditions": true
+    },
+    "data_source": "llm_generated",
+    "service_overrides": {
+      "llm_generated_data_path": "data/treaties/cn-nl.v3.generated.article10-branch.from-llm.json"
+    },
+    "hard_commitments": [
+      "HC-1",
+      "HC-3",
+      "HC-4"
+    ]
+  }
+]

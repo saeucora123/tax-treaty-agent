@@ -1,8 +1,141 @@
 import { FormEvent, useState } from "react";
 
+type ReviewState = {
+  state_code:
+    | "pre_review_complete"
+    | "can_be_completed"
+    | "partial_review"
+    | "needs_human_intervention"
+    | "out_of_scope";
+  state_label_zh: string;
+  state_summary: string;
+};
+
+type NextAction = {
+  priority: "high" | "medium" | "low";
+  action: string;
+  reason: string;
+};
+
+type ConfirmedScope = {
+  applicable_treaty: string;
+  applicable_article: string;
+  payment_direction: string;
+  income_type: string;
+};
+
+type FactCompletionQuestion = {
+  fact_key: string;
+  prompt: string;
+  input_type: "single_select";
+  options: Array<"yes" | "no" | "unknown">;
+};
+
+type FactCompletion = {
+  flow_type: "bounded_form";
+  session_type: "pseudo_multiturn";
+  user_declaration_note: string;
+  facts: FactCompletionQuestion[];
+};
+
+type UserDeclaredFacts = {
+  declaration_label: string;
+  facts: Array<{
+    fact_key: string;
+    value: "yes" | "no" | "unknown";
+    label: string;
+  }>;
+};
+
+type FactCompletionStatus = {
+  status_code:
+    | "awaiting_user_facts"
+    | "completed_narrowed"
+    | "terminated_unknown_facts"
+    | "terminated_pe_exclusion"
+    | "terminated_beneficial_owner_unconfirmed"
+    | "terminated_conflicting_user_facts";
+  status_label_zh: string;
+  status_summary: string;
+};
+
+type ChangeSummary = {
+  summary_label: string;
+  state_change: string;
+  rate_change: string;
+  trigger_facts: string[];
+};
+
+type SourceTrace = {
+  treaty_full_name: string;
+  version_note: string;
+  source_document_title: string;
+  language_version: string;
+  official_source_ids: string[];
+  protocol_note: string | null;
+  working_paper_ref: string | null;
+};
+
+type MLIContext = {
+  covered_tax_agreement: boolean;
+  ppt_applies: boolean;
+  summary: string;
+  human_review_note: string;
+  official_source_ids: string[];
+};
+
+type MachineHandoff = {
+  schema_version: "stage5.v1";
+  record_kind: "supported" | "unsupported" | "incomplete";
+  review_state_code: ReviewState["state_code"];
+  recommended_route:
+    | "standard_review"
+    | "complete_facts_then_rerun"
+    | "manual_review"
+    | "out_of_scope_rewrite";
+  applicable_treaty: string | null;
+  payment_direction: string | null;
+  income_type: string | null;
+  article_number: string | null;
+  article_title: string | null;
+  rate_display: string | null;
+  auto_conclusion_allowed: boolean;
+  human_review_required: boolean;
+  data_source_used: "stable" | "llm_generated";
+  source_reference: string | null;
+  source_excerpt?: string | null;
+  treaty_version?: string | null;
+  mli_summary?: string | null;
+  review_priority: "none" | "normal" | "high";
+  blocking_facts: string[];
+  next_actions: NextAction[];
+  user_declared_facts: Array<{
+    fact_key: string;
+    value: "yes" | "no" | "unknown";
+    label: string;
+  }>;
+};
+
+type HumanReviewBrief = {
+  brief_title: string;
+  headline: string;
+  disposition: string;
+  summary_lines: string[];
+  facts_to_verify: string[];
+  handoff_note: string;
+};
+
+type HandoffPackage = {
+  machine_handoff: MachineHandoff;
+  human_review_brief: HumanReviewBrief;
+};
+
 type AnalyzeResponse =
   | {
       supported: false;
+      review_state?: ReviewState;
+      next_actions?: NextAction[];
+      handoff_package?: HandoffPackage;
       reason: string;
       message: string;
       immediate_action: string;
@@ -14,7 +147,15 @@ type AnalyzeResponse =
     }
   | {
       supported: true;
+      review_state?: ReviewState;
+      next_actions?: NextAction[];
+      confirmed_scope?: ConfirmedScope;
       input_interpretation?: InputInterpretation;
+      fact_completion_status?: FactCompletionStatus | null;
+      change_summary?: ChangeSummary | null;
+      fact_completion?: FactCompletion | null;
+      user_declared_facts?: UserDeclaredFacts | null;
+      handoff_package?: HandoffPackage;
       normalized_input: {
         payer_country: string;
         payee_country: string;
@@ -29,6 +170,8 @@ type AnalyzeResponse =
         source_reference: string;
         source_language: string;
         source_excerpt: string;
+        source_trace?: SourceTrace;
+        mli_context?: MLIContext;
         rate: string;
         extraction_confidence: number;
         auto_conclusion_allowed: boolean;
@@ -63,12 +206,12 @@ const REFERENCE_ARCHIVES = [
   },
   {
     state: "Supported",
-    hint: "Reverse-direction supported case for dividend review.",
-    scenario: "荷兰公司向中国母公司支付股息",
+    hint: "Second pilot pair example for China-Singapore treaty review.",
+    scenario: "中国居民企业向新加坡公司支付特许权使用费",
   },
   {
     state: "Unsupported",
-    hint: "Shows how the tool refuses scenarios outside the China-Netherlands treaty scope.",
+    hint: "Shows how the tool refuses scenarios outside the current pilot treaty-pair scope.",
     scenario: "中国居民企业向美国支付特许权使用费",
   },
   {
@@ -88,11 +231,9 @@ export default function App() {
   const [result, setResult] = useState<AnalyzeResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [factSelections, setFactSelections] = useState<Record<string, string>>({});
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!scenario.trim()) return;
-
+  async function submitReview(factInputs?: Record<string, string>) {
     setIsLoading(true);
     setError("");
 
@@ -100,7 +241,11 @@ export default function App() {
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scenario }),
+        body: JSON.stringify(
+          factInputs
+            ? { scenario, fact_inputs: factInputs }
+            : { scenario },
+        ),
       });
 
       if (!response.ok) {
@@ -109,12 +254,36 @@ export default function App() {
 
       const payload = (await response.json()) as AnalyzeResponse;
       setResult(payload);
+      setFactSelections(buildInitialFactSelections(payload));
     } catch {
       setError("The review request failed. Check that the backend service is running.");
       setResult(null);
+      setFactSelections({});
     } finally {
       setIsLoading(false);
     }
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!scenario.trim()) return;
+    await submitReview();
+  }
+
+  async function handleFactCompletionSubmit() {
+    if (!scenario.trim()) return;
+    await submitReview(factSelections);
+  }
+
+  function buildInitialFactSelections(payload: AnalyzeResponse) {
+    if (!payload.supported || !payload.fact_completion) {
+      return {};
+    }
+    const nextSelections: Record<string, string> = {};
+    for (const fact of payload.fact_completion.facts) {
+      nextSelections[fact.fact_key] = "unknown";
+    }
+    return nextSelections;
   }
 
   function formatSourceLanguage(language: string) {
@@ -174,6 +343,18 @@ export default function App() {
     return FIELD_LABELS[field] ?? field;
   }
 
+  function formatActionPriority(priority: NextAction["priority"]) {
+    if (priority === "high") return "High";
+    if (priority === "medium") return "Medium";
+    return "Low";
+  }
+
+  function formatFactValue(value: "yes" | "no" | "unknown") {
+    if (value === "yes") return "yes";
+    if (value === "no") return "no";
+    return "unknown";
+  }
+
   function renderInputInterpretation(inputInterpretation?: InputInterpretation) {
     if (!inputInterpretation) {
       return null;
@@ -201,12 +382,293 @@ export default function App() {
     );
   }
 
+  function renderReviewStateBlock(reviewState?: ReviewState) {
+    if (!reviewState) {
+      return null;
+    }
+
+    return (
+      <div className="record-row highlight-row">
+        <div className="row-label">Review State</div>
+        <div className="row-value">
+          <p><strong>{reviewState.state_label_zh}</strong></p>
+          <p>{reviewState.state_summary}</p>
+        </div>
+      </div>
+    );
+  }
+
+  function renderConfirmedScope(confirmedScope?: ConfirmedScope) {
+    if (!confirmedScope) {
+      return null;
+    }
+
+    return (
+      <div className="record-row">
+        <div className="row-label">Confirmed Scope</div>
+        <div className="row-value">
+          <ul className="formal-list">
+            <li>Treaty: {confirmedScope.applicable_treaty}</li>
+            <li>Article: {confirmedScope.applicable_article}</li>
+            <li>Direction: {confirmedScope.payment_direction}</li>
+            <li>Income type: {confirmedScope.income_type}</li>
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
+  function renderSourceChain(
+    sourceTrace?: SourceTrace,
+    mliContext?: MLIContext,
+  ) {
+    if (!sourceTrace && !mliContext) {
+      return null;
+    }
+
+    return (
+      <div className="record-row">
+        <div className="row-label">Source Chain</div>
+        <div className="row-value">
+          {sourceTrace && (
+            <ul className="formal-list">
+              <li>Treaty text: {sourceTrace.treaty_full_name}</li>
+              <li>Version note: {sourceTrace.version_note}</li>
+              <li>Source document: {sourceTrace.source_document_title}</li>
+              <li>Language version: {sourceTrace.language_version}</li>
+              <li>Official source ids: {sourceTrace.official_source_ids.join(", ")}</li>
+              {sourceTrace.protocol_note && <li>Protocol context: {sourceTrace.protocol_note}</li>}
+              {sourceTrace.working_paper_ref && <li>Working paper: {sourceTrace.working_paper_ref}</li>}
+            </ul>
+          )}
+          {mliContext && (
+            <>
+              <p><strong>MLI / PPT</strong></p>
+              <ul className="formal-list">
+                <li>Covered tax agreement: {mliContext.covered_tax_agreement ? "yes" : "no"}</li>
+                <li>PPT applies: {mliContext.ppt_applies ? "yes" : "no"}</li>
+                <li>{mliContext.summary}</li>
+                <li>{mliContext.human_review_note}</li>
+                <li>MLI source ids: {mliContext.official_source_ids.join(", ")}</li>
+              </ul>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  function renderNextActions(nextActions?: NextAction[]) {
+    if (!nextActions || nextActions.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="record-row">
+        <div className="row-label">Next Actions</div>
+        <div className="row-value">
+          <ul className="formal-list">
+            {nextActions.map((item, idx) => (
+              <li key={idx}>
+                [{formatActionPriority(item.priority)}] {item.action} — {item.reason}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
+  function renderUserDeclaredFacts(userDeclaredFacts?: UserDeclaredFacts | null) {
+    if (!userDeclaredFacts || userDeclaredFacts.facts.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="record-row">
+        <div className="row-label">{userDeclaredFacts.declaration_label}</div>
+        <div className="row-value">
+          <ul className="formal-list">
+            {userDeclaredFacts.facts.map((fact) => (
+              <li key={fact.fact_key}>
+                {fact.label} {"->"} {formatFactValue(fact.value)}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
+  function renderFactCompletionStatus(
+    factCompletionStatus?: FactCompletionStatus | null,
+  ) {
+    if (!factCompletionStatus) {
+      return null;
+    }
+
+    return (
+      <div className="record-row highlight-row">
+        <div className="row-label">Fact Completion Status</div>
+        <div className="row-value">
+          <p><strong>{factCompletionStatus.status_label_zh}</strong></p>
+          <p>{factCompletionStatus.status_summary}</p>
+        </div>
+      </div>
+    );
+  }
+
+  function renderChangeSummary(changeSummary?: ChangeSummary | null) {
+    if (!changeSummary) {
+      return null;
+    }
+
+    return (
+      <div className="record-row">
+        <div className="row-label">{changeSummary.summary_label}</div>
+        <div className="row-value">
+          <ul className="formal-list">
+            <li>{changeSummary.state_change}</li>
+            <li>{changeSummary.rate_change}</li>
+            {changeSummary.trigger_facts.map((fact, idx) => (
+              <li key={idx}>{fact}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
+  function renderFactCompletion(
+    supportedResult: Extract<AnalyzeResponse, { supported: true }>,
+  ) {
+    if (!supportedResult.fact_completion) {
+      return null;
+    }
+
+    return (
+      <div className="record-row highlight-row">
+        <div className="row-label">Complete Missing Facts</div>
+        <div className="row-value">
+          <p>{supportedResult.fact_completion.user_declaration_note}</p>
+          <div>
+            {supportedResult.fact_completion.facts.map((fact) => (
+              <div key={fact.fact_key}>
+                <label htmlFor={`fact-${fact.fact_key}`}>{fact.prompt}</label>
+                <div>
+                  <select
+                    id={`fact-${fact.fact_key}`}
+                    value={factSelections[fact.fact_key] ?? "unknown"}
+                    onChange={(event) =>
+                      setFactSelections((current) => ({
+                        ...current,
+                        [fact.fact_key]: event.target.value,
+                      }))
+                    }
+                  >
+                    {fact.options.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="action-row">
+            <button
+              type="button"
+              className="btn-seal"
+              onClick={() => void handleFactCompletionSubmit()}
+              disabled={isLoading}
+            >
+              {isLoading ? "Running Review..." : "Re-run With These Facts"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function renderWorkflowHandoff(handoffPackage?: HandoffPackage) {
+    if (!handoffPackage) {
+      return null;
+    }
+
+    const { machine_handoff: machineHandoff, human_review_brief: humanReviewBrief } = handoffPackage;
+
+    return (
+      <div className="record-row highlight-row">
+        <div className="row-label">Workflow Handoff</div>
+        <div className="row-value">
+          <p><strong>{humanReviewBrief.brief_title}</strong></p>
+          <p>{humanReviewBrief.headline}</p>
+          <p>{humanReviewBrief.disposition}</p>
+          <ul className="formal-list">
+            <li>Recommended route: {machineHandoff.recommended_route}</li>
+            <li>Record kind: {machineHandoff.record_kind}</li>
+            <li>Review state: {machineHandoff.review_state_code}</li>
+            <li>Data source: {machineHandoff.data_source_used}</li>
+            {machineHandoff.article_number && machineHandoff.article_title && (
+              <li>
+                Article lane: {machineHandoff.article_number} · {machineHandoff.article_title}
+              </li>
+            )}
+            {machineHandoff.rate_display && (
+              <li>Rate display: {machineHandoff.rate_display}</li>
+            )}
+            {machineHandoff.treaty_version && (
+              <li>Treaty version: {machineHandoff.treaty_version}</li>
+            )}
+            {machineHandoff.mli_summary && (
+              <li>MLI / PPT: {machineHandoff.mli_summary}</li>
+            )}
+          </ul>
+          {humanReviewBrief.summary_lines.length > 0 && (
+            <>
+              <p>Summary lines:</p>
+              <ul className="formal-list">
+                {humanReviewBrief.summary_lines.map((line, idx) => (
+                  <li key={`summary-${idx}`}>{line}</li>
+                ))}
+              </ul>
+            </>
+          )}
+          {humanReviewBrief.facts_to_verify.length > 0 && (
+            <>
+              <p>Facts to verify:</p>
+              <ul className="formal-list">
+                {humanReviewBrief.facts_to_verify.map((fact, idx) => (
+                  <li key={`fact-${idx}`}>{fact}</li>
+                ))}
+              </ul>
+            </>
+          )}
+          {machineHandoff.user_declared_facts.length > 0 && (
+            <>
+              <p>Unverified user-declared facts:</p>
+              <ul className="formal-list">
+                {machineHandoff.user_declared_facts.map((fact) => (
+                  <li key={fact.fact_key}>
+                    {fact.label} {"->"} {formatFactValue(fact.value)}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+          <p>{humanReviewBrief.handoff_note}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="document-body">
       <header className="memo-header">
         <div className="memo-stamp">
           <span className="stamp-seal">TTA-MVP</span>
-          <span className="stamp-date">SCOPE: CN-NL</span>
+          <span className="stamp-date">SCOPE: CN-NL / CN-SG</span>
         </div>
         <div className="memo-title-block">
           <h1 className="memo-title">TAX TREATY AGENT</h1>
@@ -294,6 +756,9 @@ export default function App() {
               </div>
 
               <div className="record-body">
+                {renderReviewStateBlock(result.review_state)}
+                {renderFactCompletionStatus(result.fact_completion_status)}
+
                 <div className="record-row highlight-row">
                   <div className="row-label">Preliminary View</div>
                   <div className="row-value">
@@ -302,6 +767,10 @@ export default function App() {
                 </div>
 
                 {renderInputInterpretation(result.input_interpretation)}
+                {renderConfirmedScope(result.confirmed_scope)}
+                {renderSourceChain(result.result.source_trace, result.result.mli_context)}
+                {renderUserDeclaredFacts(result.user_declared_facts)}
+                {renderChangeSummary(result.change_summary)}
 
                 <div className="record-row">
                   <div className="row-label">Immediate Action</div>
@@ -309,6 +778,10 @@ export default function App() {
                     <p>{result.result.immediate_action}</p>
                   </div>
                 </div>
+
+                {renderNextActions(result.next_actions)}
+                {renderFactCompletion(result)}
+                {renderWorkflowHandoff(result.handoff_package)}
 
                 <div className="record-row">
                   <div className="row-label">Transaction Flow</div>
@@ -452,6 +925,7 @@ export default function App() {
               </div>
 
               <div className="record-body">
+                {renderReviewStateBlock(result.review_state)}
                 <div className="record-row">
                   <div className="row-label text-red">Reason</div>
                   <div className="row-value courier-text">{result.reason}</div>
@@ -469,6 +943,8 @@ export default function App() {
                     <p>{result.immediate_action}</p>
                   </div>
                 </div>
+                {renderNextActions(result.next_actions)}
+                {renderWorkflowHandoff(result.handoff_package)}
                 <div className="record-row">
                   <div className="row-label">How To Fix This Input</div>
                   <div className="row-value">

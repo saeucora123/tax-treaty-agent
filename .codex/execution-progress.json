@@ -1,0 +1,181 @@
+{
+  "last_updated": "2026-03-13",
+  "current_focus": [
+    "cross_cutting_infrastructure"
+  ],
+  "global_note": "Execution control is installed. Stage 1, Stage 2, Stage 3, Stage 3.5, Stage 4, Stage 5, and Stage 6 are complete; the next material decision is which post-Stage-6 slice to pursue without weakening the newly closed source-chain contract.",
+  "stages": {
+    "stage_1": {
+      "status_summary": "Stage 1 has passed gate with a deterministic 70-case evidence pack, zero Critical/Major/Minor overreach in the fixed suite, and whitepaper-backed metrics plus System Behavior Commitments.",
+      "current_checkpoint": "Stage 1 gate is now PASS; the repo has a replayable 70-case evidence pack, generated report/summary artifacts, and published Chinese whitepaper metrics + commitments sections.",
+      "completed_items": [
+        "Execution decision memo created",
+        "Stage 1 gate-review scaffold created",
+        "Stage 1 evidence-pack checklist created",
+        "Execution preflight control script installed",
+        "Initial Stage 1 fixed case file created under data/evals/stage1",
+        "Stage 1 evaluation module added in backend/app/stage1_eval.py",
+        "Stage 1 runner script added in scripts/run_stage1_eval.py",
+        "Initial Stage 1 JSON report generated under docs/superpowers/research/stage-1-evidence",
+        "Initial Stage 1 markdown summary generated under docs/superpowers/research/stage-1-evidence",
+        "Initial Stage 1 case construction note added",
+        "Stage 1 suite expanded to the memo minimum counts across all six categories",
+        "Stage 1 metrics now include scope, sample note, bias note, supported-scope denominators, and Minor overreach tracking",
+        "Stage 1 hard-commitment mapping artifact generated",
+        "Chinese whitepaper now includes metrics and System Behavior Commitments sections"
+      ],
+      "in_progress_items": [],
+      "next_items": [],
+      "blocking_items": [],
+      "targets": [
+        "docs/superpowers/plans/gate-reviews/stage-1-gate-review.md",
+        "docs/superpowers/plans/2026-03-12-tax-treaty-agent-stage-1-evidence-pack-checklist.md"
+      ]
+    },
+    "stage_3": {
+      "status_summary": "Stage 3 has passed gate with live five-state backend/frontend wiring, explicit trigger evidence, a documented CN-SG pressure test, and unchanged Stage 1 guardrails.",
+      "current_checkpoint": "Stage 3 is complete and the project has advanced to Stage 3.5 user calibration preparation.",
+      "completed_items": [
+        "Stage 3 gate-review scaffold created",
+        "Execution memo defines five user states and Stage 3 gate criteria",
+        "Stage 3 conservative-output design artifact created",
+        "Stage 3 implementation plan created",
+        "Stage 3 CN-SG pressure-test plan created",
+        "Backend Stage 3 state contract implemented in analyze responses",
+        "Frontend Stage 3 state rendering implemented for review_state, confirmed_scope, and next_actions",
+        "Backend and frontend tests now cover the initial Stage 3 state-contract slice",
+        "Stage 3 five-state trigger matrix recorded",
+        "CN-SG source-summary pack, hand-encoded sample, and pressure-test report recorded",
+        "Stage 1 fixed-suite regression rerun after Stage 3 changes remains 70/70 with zero Critical/Major/Minor overreach"
+      ],
+      "in_progress_items": [],
+      "next_items": [],
+      "blocking_items": [],
+      "targets": [
+        "docs/superpowers/plans/gate-reviews/stage-3-gate-review.md"
+      ]
+    },
+    "stage_3_5": {
+      "status_summary": "Stage 3.5 has passed gate with a structured synthesis of teacher feedback, a recorded final decision, and explicit promotion into Stage 4.",
+      "current_checkpoint": "Stage 3.5 is complete; the project has formally decided to enter Stage 4 with CN-NL dividend fact branching as the first target.",
+      "completed_items": [
+        "Stage 3 gate has passed",
+        "Stage 3 conservative-output behavior is now live in backend and frontend",
+        "Stage 3.5 user-calibration brief created",
+        "Stage 3.5 session-note template created",
+        "Stage 3.5 aggregated-summary template created",
+        "Teacher review pack created with four live scenario examples",
+        "Four specialist teacher reviews read and synthesized into a structured Stage 3.5 summary",
+        "Teacher-facing Stage 4 construction-targets one-pager created",
+        "Stage 3.5 final decision recorded and gate closed in favor of Stage 4"
+      ],
+      "in_progress_items": [],
+      "next_items": [],
+      "blocking_items": [],
+      "targets": [
+        "docs/superpowers/plans/gate-reviews/stage-3-5-gate-review.md"
+      ]
+    },
+    "stage_4": {
+      "status_summary": "Stage 4 has passed gate with a live bounded CN-NL dividend pseudo-multiturn lane, a replayable 16-case precision pack, and four explicit guided termination families.",
+      "current_checkpoint": "Slice 5 is complete: the Stage 4 precision pack now covers 16 bounded CN-NL dividend scenarios and confirms awaiting-facts, narrowed, terminated-unknown-facts, terminated-conflicting-user-facts, terminated-PE-exclusion, and terminated-beneficial-owner-unconfirmed behavior without regression.",
+      "completed_items": [
+        "Stage 4 gate-review scaffold exists",
+        "Stage 3.5 final decision points to Stage 4",
+        "Teacher feedback confirms CN-NL dividends as the first Stage 4 target",
+        "Stage 4 bounded implementation plan created",
+        "Stable CN-NL Article 10 dataset upgraded from flat 10% to structured 5% / 10% dividend branches",
+        "Backend analyze API now accepts bounded fact_inputs for Stage 4",
+        "Backend CN-NL dividend path now exposes fact_completion and user_declared_facts contracts",
+        "Frontend now renders the bounded dividend fact-completion form and re-run flow",
+        "Stage 4 slice-1 checkpoint artifact recorded under docs/superpowers/research/stage-4-evidence",
+        "Backend and frontend now expose fact_completion_status and change_summary for the bounded dividend lane",
+        "Unknown key facts can now terminate the current fact-completion loop and route the user into a guided human-intervention exit",
+        "Stage 4 slice-2 checkpoint artifact recorded under docs/superpowers/research/stage-4-evidence",
+        "Stage 4 evaluation helper, fixture tests, and runner now exist for bounded precision-pack replay",
+        "A 10-case Stage 4 precision pack now runs green and meets the G4.1 minimum scenario-count threshold",
+        "Stage 4 precision report and markdown summary recorded under docs/superpowers/research/stage-4-evidence",
+        "The bounded dividend fact-completion form now includes a PE / fixed-base exclusion question",
+        "PE-triggered cases can now terminate the current Article 10 branch flow into a guided exclusion-review exit",
+        "Stage 4 slice-4 checkpoint artifact recorded under docs/superpowers/research/stage-4-evidence",
+        "Beneficial-owner prerequisite cases can now terminate the current dividend branch flow into a guided conservative stop",
+        "Conflicting user-declared direct-holding facts now terminate the current dividend branch flow instead of collapsing into a misleading 10% result",
+        "Stage 4 slice-5 checkpoint artifact recorded under docs/superpowers/research/stage-4-evidence",
+        "Stage 4 precision pack now runs 16/16 and covers four explicit guided stop families"
+      ],
+      "in_progress_items": [],
+      "next_items": [],
+      "blocking_items": [],
+      "targets": [
+        "docs/superpowers/plans/gate-reviews/stage-4-gate-review.md"
+      ]
+    },
+    "stage_2": {
+      "status_summary": "Stage 2 has passed gate: the CN-SG stable pilot pair is live, the onboarding evidence pack is complete, and the recorded G2.4 threshold confirms architecture reuse without CN-SG-specific online-engine branching.",
+      "current_checkpoint": "Stage 2 gate is now PASS with CN-SG validation 10/10, Stage 1 regression 70/70, Stage 4 precision 16/16, backend tests 48/48 across analyze + Stage 2 suites, and frontend tests 16/16 while API request shape remains unchanged.",
+      "completed_items": [
+        "Stage 2 onboarding plan created for CN-SG second-pair onboarding",
+        "CN-SG source governance package added with official source registry and usage map",
+        "CN-SG parser-like source payload, stable runtime dataset, and builder-generated dataset added",
+        "Stable runtime treaty lookup now routes through a pair-aware registry that supports CN-NL and CN-SG",
+        "Stage 2 CN-SG runtime suite and evaluation suite now pass at 10/10",
+        "Stage 1, Stage 4, backend, and frontend regression reruns remain green after CN-SG onboarding",
+        "Stage 2 cost record, validation summary, and unexpected findings artifacts recorded under stage-2-evidence",
+        "G2.4 threshold is now recorded explicitly: core online-engine changes remain inside two runtime files with zero pair-specific decision branches",
+        "Stage 2 gate review is now PASS and Stage 5 promotion is unlocked"
+      ],
+      "in_progress_items": [],
+      "next_items": [],
+      "blocking_items": [],
+      "targets": [
+        "docs/superpowers/plans/gate-reviews/stage-2-gate-review.md"
+      ]
+    },
+    "stage_5": {
+      "status_summary": "Stage 5 has passed gate: the first deterministic workflow-handoff slice is live, replayable, and documented for both human review and machine-consumer use without changing the request contract.",
+      "current_checkpoint": "Stage 5 gate is now PASS with a 6-case handoff replay pack, Stage 1 regression 70/70, Stage 2 validation 10/10, Stage 4 precision 16/16, backend Stage 5 eval tests green, frontend tests 16/16, and production build green.",
+      "completed_items": [
+        "Stage 5 gate-review scaffold created",
+        "Backend analyze responses now attach a deterministic handoff_package for all response families",
+        "Machine-readable handoff records now map from existing review_state, result, next_actions, and user_declared_facts fields without introducing a new endpoint",
+        "Human-readable handoff briefs now use fixed templates instead of free-form generation",
+        "Frontend result cards now render a Workflow Handoff block for supported, unsupported, incomplete, and Stage 4 cases",
+        "Backend and frontend tests now cover the first Stage 5 handoff slice",
+        "README now states that structured output also includes a workflow handoff package",
+        "Stage 5 case pack, validation report, validation summary, and integration note are now recorded under stage-5-evidence",
+        "Stage 5 gate review is now PASS and Stage 6 promotion is unlocked"
+      ],
+      "in_progress_items": [],
+      "next_items": [],
+      "blocking_items": [],
+      "targets": [
+        "docs/superpowers/plans/gate-reviews/stage-5-gate-review.md"
+      ]
+    },
+    "stage_6": {
+      "status_summary": "Stage 6 has passed gate: the system now exposes treaty-version notes, paragraph-level excerpts, working-paper lineage, and fact-based MLI/PPT prompts across both supported treaty pairs and all three supported income types.",
+      "current_checkpoint": "Stage 6 gate is now PASS with CN-SG treaty truth-check completed, CN-NL alignment checks recorded, a 6-case source-chain replay pack passing, and a documented 15-minute human-review exercise.",
+      "completed_items": [
+        "Stage 6 target narrowed from generic controlled expansion to source chain closure",
+        "CN-SG dividends truth-check corrected the runtime branch from 7% / 12% to 5% / 10%",
+        "CN-SG interest and royalties now carry treaty-verified paragraph excerpts instead of placeholder samples",
+        "CN-SG official source registry now includes OECD MLI status and peer-review sources",
+        "CN-SG source fixture, curated dataset, and generated dataset now preserve source_trace and fact-based mli_context",
+        "CN-NL dividends, interest, and royalties now have Stage 6 alignment checks and paragraph-level source anchors",
+        "Analyze responses now expose treaty version notes, working-paper references, and fact-based MLI/PPT prompts in result and handoff layers",
+        "Stage 6 evaluation module, fixture tests, runner, and 6-case replay pack added",
+        "Stage 6 evidence pack recorded under docs/superpowers/research/stage-6-evidence",
+        "Stage 6 gate review is now PASS"
+      ],
+      "in_progress_items": [],
+      "next_items": [
+        "Choose the first post-Stage-6 slice without weakening the new source-chain contract",
+        "Keep treaty-version, paragraph-reference, and fact-based MLI prompts stable unless a deliberate redesign is recorded"
+      ],
+      "blocking_items": [],
+      "targets": [
+        "docs/superpowers/plans/gate-reviews/stage-6-gate-review.md"
+      ]
+    }
+  }
+}

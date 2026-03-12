@@ -6,8 +6,34 @@
     "jurisdictions": ["CN", "NL"],
     "notes": [
       "Parser-like intermediate representation for the import pipeline.",
-      "Still manually curated, but shaped to resemble future parser output."
-    ]
+      "Stage 6 alignment version uses paragraph-level treaty excerpts for all three supported income types."
+    ],
+    "source_trace": {
+      "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+      "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+      "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+      "language_version": "en",
+      "official_source_ids": [
+        "sat-cn-nl-2013-en-pdf",
+        "nl-2013-consolidated-text"
+      ],
+      "working_papers": {
+        "dividends": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md",
+        "interest": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-interest-alignment-check.md",
+        "royalties": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-royalties-alignment-check.md"
+      },
+      "protocol_note": null
+    },
+    "mli_context": {
+      "covered_tax_agreement": true,
+      "ppt_applies": true,
+      "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+      "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+      "official_source_ids": [
+        "oecd-mli-signatories-and-parties",
+        "sat-cn-nl-mli-en-pdf"
+      ]
+    }
   },
   "parsed_articles": [
     {
@@ -21,42 +47,67 @@
       ],
       "paragraphs": [
         {
-          "paragraph_id": "art10-p1",
-          "paragraph_label": "Article 10(1)",
-          "source_reference": "Article 10(1)",
+          "paragraph_id": "art10-p2b",
+          "paragraph_label": "Article 10(2)(b)",
+          "source_reference": "Article 10(2)(b)",
           "source_language": "en",
           "source_segments": [
             {
-              "segment_id": "art10-p1-s1",
+              "segment_id": "art10-p2b-s1",
               "segment_order": 1,
-              "page_hint": 4,
+              "page_hint": 8,
               "source_kind": "article_paragraph",
               "text_quality": "clean",
               "normalization_status": "verbatim",
-              "text": "Dividend treatment is governed by Article 10(1)."
-            },
-            {
-              "segment_id": "art10-p1-s2",
-              "segment_order": 2,
-              "page_hint": 4,
-              "source_kind": "article_paragraph",
-              "text_quality": "clean",
-              "normalization_status": "normalized",
-              "text": "Treaty conditions and factual qualification may still affect the result."
+              "text": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends."
             }
           ],
           "extracted_rules": [
             {
-              "rule_id": "cn-nl-art10-p1-base",
-              "rule_type": "withholding_tax_cap",
+              "rule_id": "cn-nl-art10-p2b-general",
+              "rule_type": "source_tax_limit",
               "rate": "10%",
               "direction": "bidirectional",
               "candidate_rank": 1,
               "is_primary_candidate": true,
               "extraction_confidence": 0.98,
-              "derived_from_segments": ["art10-p1-s1", "art10-p1-s2"],
+              "derived_from_segments": ["art10-p2b-s1"],
               "conditions": [
-                "Treaty applicability depends on the facts of the payment."
+                "Applies when the reduced-rate branch is not established."
+              ],
+              "human_review_required": true,
+              "review_reason": "Final eligibility depends on facts beyond v1 scope."
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art10-p2a",
+          "paragraph_label": "Article 10(2)(a)",
+          "source_reference": "Article 10(2)(a)",
+          "source_language": "en",
+          "source_segments": [
+            {
+              "segment_id": "art10-p2a-s1",
+              "segment_order": 1,
+              "page_hint": 8,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "However, such dividends may also be taxed in the State of source, but the tax so charged shall not exceed 5 per cent of the gross amount of the dividends if the beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+            }
+          ],
+          "extracted_rules": [
+            {
+              "rule_id": "cn-nl-art10-p2a-reduced",
+              "rule_type": "source_tax_limit",
+              "rate": "5%",
+              "direction": "payer_to_payee",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.98,
+              "derived_from_segments": ["art10-p2a-s1"],
+              "conditions": [
+                "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
               ],
               "human_review_required": true,
               "review_reason": "Final eligibility depends on facts beyond v1 scope."
@@ -72,46 +123,37 @@
       "income_type": "interest",
       "summary": "Defines treaty treatment for interest between the two jurisdictions.",
       "article_notes": [
-        "Beneficial ownership and factual qualification may matter."
+        "Current stable runtime keeps only the general 10 per cent cap in this bounded lane."
       ],
       "paragraphs": [
         {
-          "paragraph_id": "art11-p1",
-          "paragraph_label": "Article 11(1)",
-          "source_reference": "Article 11(1)",
+          "paragraph_id": "art11-p2",
+          "paragraph_label": "Article 11(2)",
+          "source_reference": "Article 11(2)",
           "source_language": "en",
           "source_segments": [
             {
-              "segment_id": "art11-p1-s1",
+              "segment_id": "art11-p2-s1",
               "segment_order": 1,
-              "page_hint": 5,
+              "page_hint": 9,
               "source_kind": "article_paragraph",
               "text_quality": "clean",
               "normalization_status": "verbatim",
-              "text": "Interest treatment is governed by Article 11(1)."
-            },
-            {
-              "segment_id": "art11-p1-s2",
-              "segment_order": 2,
-              "page_hint": 5,
-              "source_kind": "article_paragraph",
-              "text_quality": "clean",
-              "normalization_status": "normalized",
-              "text": "Treaty conditions and factual qualification may still affect the result."
+              "text": "However, such interest may also be taxed in the Contracting State in which it arises and according to the laws of that State, but if the beneficial owner of the interest is a resident of the other Contracting State, the tax so charged shall not exceed 10 per cent of the gross amount of the interest."
             }
           ],
           "extracted_rules": [
             {
-              "rule_id": "cn-nl-art11-p1-base",
+              "rule_id": "cn-nl-art11-p2-base",
               "rule_type": "withholding_tax_cap",
               "rate": "10%",
               "direction": "bidirectional",
               "candidate_rank": 1,
               "is_primary_candidate": true,
               "extraction_confidence": 0.98,
-              "derived_from_segments": ["art11-p1-s1", "art11-p1-s2"],
+              "derived_from_segments": ["art11-p2-s1"],
               "conditions": [
-                "Treaty applicability depends on the facts of the payment."
+                "The beneficial owner of the interest is a resident of the other Contracting State."
               ],
               "human_review_required": true,
               "review_reason": "Final eligibility depends on facts beyond v1 scope."
@@ -131,60 +173,36 @@
       ],
       "paragraphs": [
         {
-          "paragraph_id": "art12-p1",
-          "paragraph_label": "Article 12(1)",
-          "source_reference": "Article 12(1)",
+          "paragraph_id": "art12-p2",
+          "paragraph_label": "Article 12(2)",
+          "source_reference": "Article 12(2)",
           "source_language": "en",
           "source_segments": [
             {
-              "segment_id": "art12-p1-s1",
+              "segment_id": "art12-p2-s1",
               "segment_order": 1,
-              "page_hint": 6,
+              "page_hint": 10,
               "source_kind": "article_paragraph",
               "text_quality": "clean",
               "normalization_status": "verbatim",
-              "text": "Royalty treatment is governed by Article 12(1)."
-            },
-            {
-              "segment_id": "art12-p1-s2",
-              "segment_order": 2,
-              "page_hint": 6,
-              "source_kind": "article_paragraph",
-              "text_quality": "clean",
-              "normalization_status": "normalized",
-              "text": "Treaty conditions and factual qualification may still affect the result."
+              "text": "However, such royalties may also be taxed in the Contracting State in which they arise, and according to the laws of that State, but if the beneficial owner of the royalties is a resident of the other Contracting State, the tax so charged shall not exceed 10 per cent of the gross amount of the royalties."
             }
           ],
           "extracted_rules": [
             {
-              "rule_id": "cn-nl-art12-p1-base",
+              "rule_id": "cn-nl-art12-p2-base",
               "rule_type": "withholding_tax_cap",
               "rate": "10%",
               "direction": "bidirectional",
               "candidate_rank": 1,
               "is_primary_candidate": true,
               "extraction_confidence": 0.98,
-              "derived_from_segments": ["art12-p1-s1", "art12-p1-s2"],
+              "derived_from_segments": ["art12-p2-s1"],
               "conditions": [
-                "Treaty applicability depends on the facts of the payment."
+                "The beneficial owner of the royalties is a resident of the other Contracting State."
               ],
               "human_review_required": true,
               "review_reason": "Final eligibility depends on facts beyond v1 scope."
-            },
-            {
-              "rule_id": "cn-nl-art12-p1-alt",
-              "rule_type": "withholding_tax_cap",
-              "rate": "15%",
-              "direction": "bidirectional",
-              "candidate_rank": 2,
-              "is_primary_candidate": false,
-              "extraction_confidence": 0.41,
-              "derived_from_segments": ["art12-p1-s1"],
-              "conditions": [
-                "Lower-confidence alternate extraction candidate retained for pipeline review."
-              ],
-              "human_review_required": true,
-              "review_reason": "Alternate candidate retained for parser-review workflow only."
             }
           ]
         }

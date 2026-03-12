@@ -4,7 +4,7 @@
     "CN",
     "NL"
   ],
-  "last_reviewed_on": "2026-03-12",
+  "last_reviewed_on": "2026-03-13",
   "sources": [
     {
       "source_id": "sat-tax-treaty-index",
@@ -184,6 +184,30 @@
       "status": "confirmed",
       "preferred_use": "historical_reference",
       "notes": "Dutch official gazette publication for entry into force, referenced from the 2013 treaty metadata page."
+    },
+    {
+      "source_id": "oecd-mli-signatories-and-parties",
+      "title": "Signatories and Parties to the Multilateral Convention to Implement Tax Treaty Related Measures to Prevent Base Erosion and Profit Shifting",
+      "issuing_authority": "Organisation for Economic Co-operation and Development",
+      "jurisdictions": ["CN", "NL"],
+      "source_type": "mli_status_table",
+      "official_url": "https://www.oecd.org/content/dam/oecd/en/topics/policy-sub-issues/beps-mli/signatories-and-parties.pdf",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "mli_context_only",
+      "notes": "OECD status table used in Stage 6 to verify that China and the Netherlands have both ratified the MLI and to capture their entry-into-force dates."
+    },
+    {
+      "source_id": "oecd-netherlands-mli-peer-review-2024",
+      "title": "Netherlands - Peer Review Report on the Implementation of the MLI (2024)",
+      "issuing_authority": "Organisation for Economic Co-operation and Development",
+      "jurisdictions": ["CN", "NL"],
+      "source_type": "mli_peer_review",
+      "official_url": "https://www.oecd.org/content/dam/oecd/en/topics/policy-sub-issues/beps-mli/mli-peer-review-netherlands.pdf",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "mli_context_only",
+      "notes": "OECD peer-review material used in Stage 6 to confirm China-Netherlands CTA coverage and PPT applicability alongside the SAT synthesised text."
     }
   ]
 }

@@ -10,6 +10,24 @@ from app import service
 client = TestClient(app)
 
 
+def assert_machine_handoff(
+    payload: dict,
+    *,
+    record_kind: str,
+    review_state_code: str,
+    recommended_route: str,
+) -> dict:
+    assert "handoff_package" in payload
+    handoff = payload["handoff_package"]
+    assert handoff["machine_handoff"]["schema_version"] == "stage5.v1"
+    assert handoff["machine_handoff"]["record_kind"] == record_kind
+    assert handoff["machine_handoff"]["review_state_code"] == review_state_code
+    assert handoff["machine_handoff"]["recommended_route"] == recommended_route
+    assert handoff["human_review_brief"]["brief_title"] == "Treaty Pre-Review Brief"
+    assert "not a final tax opinion" in handoff["human_review_brief"]["handoff_note"]
+    return handoff
+
+
 def test_rejects_unsupported_country_pair():
     response = client.post(
         "/analyze",
@@ -17,20 +35,47 @@ def test_rejects_unsupported_country_pair():
     )
 
     assert response.status_code == 200
-    assert response.json() == {
-        "data_source_used": "stable",
-        "supported": False,
-        "reason": "unsupported_country_pair",
-        "message": "Current MVP supports only China-Netherlands treaty scenarios.",
-        "immediate_action": "Rewrite the scenario into the supported China-Netherlands scope before running another review.",
-        "missing_fields": [],
-        "suggested_format": "Try a sentence like: 中国居民企业向荷兰公司支付特许权使用费",
-        "suggested_examples": [
-            "中国居民企业向荷兰公司支付股息",
-            "中国居民企业向荷兰银行支付利息",
-            "中国居民企业向荷兰公司支付特许权使用费",
-        ],
+    payload = response.json()
+    assert payload["data_source_used"] == "stable"
+    assert payload["supported"] is False
+    assert payload["reason"] == "unsupported_country_pair"
+    assert payload["message"] == (
+        "Current pilot scope supports only China-Netherlands, China-Singapore treaty scenarios."
+    )
+    assert payload["immediate_action"] == (
+        "Rewrite the scenario into the supported pilot treaty pair list before running another review."
+    )
+    assert payload["missing_fields"] == []
+    assert payload["suggested_format"] == "Try a sentence like: 中国居民企业向新加坡公司支付特许权使用费"
+    assert payload["suggested_examples"] == [
+        "中国居民企业向荷兰公司支付股息",
+        "中国居民企业向荷兰银行支付利息",
+        "中国居民企业向荷兰公司支付特许权使用费",
+        "中国居民企业向新加坡公司支付股息",
+        "中国居民企业向新加坡银行支付利息",
+        "中国居民企业向新加坡公司支付特许权使用费",
+    ]
+    assert payload["review_state"] == {
+        "state_code": "out_of_scope",
+        "state_label_zh": "不在支持范围",
+        "state_summary": "当前查询超出本产品的国家对或收入类型支持范围。",
     }
+    assert payload["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "改写为当前试点国家对列表内、且属于股息、利息或特许权使用费的查询后再重试。",
+            "reason": "当前场景属于产品边界之外；目前稳定数据源只支持 China-Netherlands, China-Singapore 两个试点国家对。",
+        }
+    ]
+    handoff = assert_machine_handoff(
+        payload,
+        record_kind="unsupported",
+        review_state_code="out_of_scope",
+        recommended_route="out_of_scope_rewrite",
+    )
+    assert handoff["machine_handoff"]["article_number"] is None
+    assert handoff["machine_handoff"]["rate_display"] is None
+    assert handoff["human_review_brief"]["disposition"] == "Rewrite the scenario inside the supported pilot scope."
 
 
 def test_returns_structured_result_for_supported_royalties_case():
@@ -40,47 +85,67 @@ def test_returns_structured_result_for_supported_royalties_case():
     )
 
     assert response.status_code == 200
-    assert response.json() == {
-        "data_source_used": "stable",
-        "supported": True,
-        "normalized_input": {
-            "payer_country": "CN",
-            "payee_country": "NL",
-            "transaction_type": "royalties",
-        },
-        "result": {
-            "summary": "Preliminary view: Article 12 Royalties appears relevant, with a treaty rate ceiling of 10%. Manual review is still recommended.",
-            "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
-            "immediate_action": "Proceed with standard manual review before relying on the treaty position.",
-            "article_number": "12",
-            "article_title": "Royalties",
-            "source_reference": "Article 12(1)",
-            "source_language": "en",
-            "source_excerpt": "Royalty treatment is governed by Article 12(1), subject to treaty conditions and factual qualification.",
-            "rate": "10%",
-            "extraction_confidence": 0.98,
-            "auto_conclusion_allowed": True,
-            "key_missing_facts": [
-                "Whether the payment is truly for qualifying intellectual property use.",
-                "Whether the recipient is the beneficial owner of the royalty income.",
-                "Whether the contract and payment flow support treaty characterization.",
-            ],
-            "review_checklist": [
-                "Confirm the payment is actually for the use of, or right to use, qualifying intellectual property.",
-                "Confirm the recipient is the beneficial owner of the royalty income.",
-                "Check the underlying contract, invoice, and payment flow for factual consistency.",
-            ],
-            "conditions": [
-                "Treaty applicability depends on the facts of the payment."
-            ],
-            "notes": [
-                "Beneficial ownership and factual qualification may matter."
-            ],
-            "human_review_required": True,
-            "review_priority": "normal",
-            "review_reason": "Final eligibility depends on facts outside the current review scope.",
-        },
+    payload = response.json()
+    assert payload["data_source_used"] == "stable"
+    assert payload["supported"] is True
+    assert payload["normalized_input"] == {
+        "payer_country": "CN",
+        "payee_country": "NL",
+        "transaction_type": "royalties",
     }
+    assert payload["result"]["treaty_id"] == "cn-nl"
+    assert payload["result"]["treaty_title"] == "China-Netherlands Tax Treaty"
+    assert payload["result"]["article_number"] == "12"
+    assert payload["result"]["article_title"] == "Royalties"
+    assert payload["result"]["rate"] == "10%"
+    assert payload["result"]["source_reference"] == "Article 12(2)"
+    assert "sample" not in payload["result"]["source_excerpt"].lower()
+    assert payload["result"]["source_trace"]["language_version"] == "en"
+    assert "2013" in payload["result"]["source_trace"]["version_note"]
+    assert "sat-cn-nl-2013-en-pdf" in payload["result"]["source_trace"]["official_source_ids"]
+    assert payload["result"]["source_trace"]["working_paper_ref"].endswith(
+        "cn-nl-royalties-alignment-check.md"
+    )
+    assert payload["result"]["mli_context"]["covered_tax_agreement"] is True
+    assert payload["result"]["mli_context"]["ppt_applies"] is True
+    assert "PPT" in payload["result"]["mli_context"]["summary"]
+    assert "人工复核" not in payload["result"]["mli_context"]["summary"]
+    assert payload["review_state"] == {
+        "state_code": "pre_review_complete",
+        "state_label_zh": "预审完成",
+        "state_summary": "系统已完成第一轮预审，请按标准复核流程继续。",
+    }
+    assert payload["confirmed_scope"] == {
+        "applicable_treaty": "中国-荷兰税收协定",
+        "applicable_article": "Article 12 - Royalties",
+        "payment_direction": "CN -> NL",
+        "income_type": "royalties",
+    }
+    assert payload["next_actions"] == [
+        {
+            "priority": "medium",
+            "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+            "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。",
+        }
+    ]
+    handoff = assert_machine_handoff(
+        payload,
+        record_kind="supported",
+        review_state_code="pre_review_complete",
+        recommended_route="standard_review",
+    )
+    assert handoff["machine_handoff"]["applicable_treaty"] == "中国-荷兰税收协定"
+    assert handoff["machine_handoff"]["payment_direction"] == "CN -> NL"
+    assert handoff["machine_handoff"]["article_number"] == "12"
+    assert handoff["machine_handoff"]["rate_display"] == "10%"
+    assert handoff["machine_handoff"]["source_excerpt"] == payload["result"]["source_excerpt"]
+    assert handoff["machine_handoff"]["treaty_version"] == payload["result"]["source_trace"]["version_note"]
+    assert handoff["machine_handoff"]["mli_summary"] == payload["result"]["mli_context"]["summary"]
+    assert handoff["human_review_brief"]["disposition"] == "Proceed with standard human review."
+    assert any("2013" in line for line in handoff["human_review_brief"]["summary_lines"])
+    assert any("PPT" in line for line in handoff["human_review_brief"]["summary_lines"])
+    if "input_interpretation" in payload:
+        assert payload["input_interpretation"]["parser_source"] == "llm"
 
 
 def test_returns_structured_result_for_supported_dividends_case():
@@ -97,15 +162,17 @@ def test_returns_structured_result_for_supported_dividends_case():
         "transaction_type": "dividends",
     }
     assert response.json()["result"]["summary"] == (
-        "Preliminary view: Article 10 Dividends appears relevant, with a treaty rate ceiling of 10%. "
-        "Manual review is still recommended."
+        "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches "
+        "(5% / 10%) are possible and this version should not issue an automatic conclusion."
     )
     assert response.json()["result"]["boundary_note"] == (
         "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope."
     )
     assert response.json()["result"]["immediate_action"] == (
-        "Proceed with standard manual review before relying on the treaty position."
+        "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion."
     )
+    assert response.json()["result"]["rate"] == "5% / 10%"
+    assert response.json()["result"]["auto_conclusion_allowed"] is False
     assert response.json()["result"]["key_missing_facts"] == [
         "Whether the payment is legally a dividend rather than another type of return.",
         "Whether the recipient is the beneficial owner of the dividend income.",
@@ -118,6 +185,415 @@ def test_returns_structured_result_for_supported_dividends_case():
         "Confirm the recipient is the beneficial owner of the dividend income.",
         "Check shareholding facts and supporting corporate records before relying on the treaty rate.",
     ]
+    assert response.json()["review_state"] == {
+        "state_code": "can_be_completed",
+        "state_label_zh": "可补全",
+        "state_summary": "系统已缩小范围；补充少量关键事实后，可进一步明确结果。",
+    }
+    assert response.json()["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "先核实股息分支所需的关键事实，再判断候选税率分支。",
+            "reason": "当前存在多个可信税率分支，系统不会自动替你选择其一。",
+        }
+    ]
+    assert response.json()["fact_completion"] == {
+        "flow_type": "bounded_form",
+        "session_type": "pseudo_multiturn",
+        "user_declaration_note": "Facts entered here are user-declared and not independently verified.",
+        "facts": [
+            {
+                "fact_key": "direct_holding_confirmed",
+                "prompt": "Does the Dutch recipient directly hold capital in the Chinese payer?",
+                "input_type": "single_select",
+                "options": ["yes", "no", "unknown"],
+            },
+            {
+                "fact_key": "direct_holding_threshold_met",
+                "prompt": "If the holding is direct, is the direct holding at least 25%?",
+                "input_type": "single_select",
+                "options": ["yes", "no", "unknown"],
+            },
+            {
+                "fact_key": "pe_effectively_connected",
+                "prompt": "Is the dividend effectively connected with a permanent establishment or fixed base of the Dutch recipient in China?",
+                "input_type": "single_select",
+                "options": ["yes", "no", "unknown"],
+            },
+            {
+                "fact_key": "beneficial_owner_confirmed",
+                "prompt": "Has beneficial-owner status been separately confirmed outside this tool?",
+                "input_type": "single_select",
+                "options": ["yes", "no", "unknown"],
+            },
+        ],
+    }
+
+
+def test_dividend_fact_completion_narrows_to_reduced_rate_when_direct_threshold_is_met():
+    response = client.post(
+        "/analyze",
+        json={
+            "scenario": "中国公司向荷兰公司支付股息",
+            "fact_inputs": {
+                "direct_holding_confirmed": "yes",
+                "direct_holding_threshold_met": "yes",
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["supported"] is True
+    assert response.json()["result"]["rate"] == "5%"
+    assert response.json()["result"]["summary"] == (
+        "Preliminary view: Article 10 Dividends appears relevant, with a treaty rate ceiling of 5%. "
+        "Manual review is still recommended."
+    )
+    assert response.json()["review_state"] == {
+        "state_code": "pre_review_complete",
+        "state_label_zh": "预审完成",
+        "state_summary": "系统已完成第一轮预审，请按标准复核流程继续。",
+    }
+    assert response.json()["fact_completion_status"] == {
+        "status_code": "completed_narrowed",
+        "status_label_zh": "已缩减",
+        "status_summary": "系统已根据用户声明事实将股息分支缩减为单一候选税率。",
+    }
+    assert response.json()["change_summary"] == {
+        "summary_label": "Result Change Summary",
+        "state_change": "可补全 -> 预审完成",
+        "rate_change": "5% / 10% -> 5%",
+        "trigger_facts": [
+            "Direct holding confirmed: yes",
+            "Direct holding is at least 25%: yes",
+        ],
+    }
+    assert response.json()["user_declared_facts"] == {
+        "declaration_label": "User-declared facts (unverified)",
+        "facts": [
+            {
+                "fact_key": "direct_holding_confirmed",
+                "value": "yes",
+                "label": "Direct holding confirmed",
+            },
+            {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "yes",
+                "label": "Direct holding is at least 25%",
+            },
+        ],
+    }
+    assert response.json()["result"]["key_missing_facts"] == [
+        "Whether the payment is legally a dividend rather than another type of return.",
+        "Whether the recipient is the beneficial owner of the dividend income.",
+        "Whether shareholding facts support relying on the treaty position.",
+    ]
+    assert response.json()["fact_completion"] is None
+    handoff = assert_machine_handoff(
+        response.json(),
+        record_kind="supported",
+        review_state_code="pre_review_complete",
+        recommended_route="standard_review",
+    )
+    assert handoff["machine_handoff"]["user_declared_facts"] == [
+        {
+            "fact_key": "direct_holding_confirmed",
+            "value": "yes",
+            "label": "Direct holding confirmed",
+        },
+        {
+            "fact_key": "direct_holding_threshold_met",
+            "value": "yes",
+            "label": "Direct holding is at least 25%",
+        },
+    ]
+
+
+def test_dividend_fact_completion_narrows_to_general_rate_when_direct_threshold_is_not_met():
+    response = client.post(
+        "/analyze",
+        json={
+            "scenario": "中国公司向荷兰公司支付股息",
+            "fact_inputs": {
+                "direct_holding_confirmed": "yes",
+                "direct_holding_threshold_met": "no",
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["supported"] is True
+    assert response.json()["result"]["rate"] == "10%"
+    assert response.json()["result"]["summary"] == (
+        "Preliminary view: Article 10 Dividends appears relevant, with a treaty rate ceiling of 10%. "
+        "Manual review is still recommended."
+    )
+    assert response.json()["fact_completion_status"] == {
+        "status_code": "completed_narrowed",
+        "status_label_zh": "已缩减",
+        "status_summary": "系统已根据用户声明事实将股息分支缩减为单一候选税率。",
+    }
+    assert response.json()["change_summary"] == {
+        "summary_label": "Result Change Summary",
+        "state_change": "可补全 -> 预审完成",
+        "rate_change": "5% / 10% -> 10%",
+        "trigger_facts": [
+            "Direct holding confirmed: yes",
+            "Direct holding is at least 25%: no",
+        ],
+    }
+    assert response.json()["user_declared_facts"] == {
+        "declaration_label": "User-declared facts (unverified)",
+        "facts": [
+            {
+                "fact_key": "direct_holding_confirmed",
+                "value": "yes",
+                "label": "Direct holding confirmed",
+            },
+            {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "no",
+                "label": "Direct holding is at least 25%",
+            },
+        ],
+    }
+    assert response.json()["fact_completion"] is None
+
+
+def test_dividend_fact_completion_stops_when_key_facts_remain_unknown():
+    response = client.post(
+        "/analyze",
+        json={
+            "scenario": "中国公司向荷兰公司支付股息",
+            "fact_inputs": {
+                "direct_holding_confirmed": "yes",
+                "direct_holding_threshold_met": "unknown",
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["supported"] is True
+    assert response.json()["result"]["rate"] == "5% / 10%"
+    assert response.json()["review_state"] == {
+        "state_code": "needs_human_intervention",
+        "state_label_zh": "需要人工介入",
+        "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。",
+    }
+    assert response.json()["fact_completion_status"] == {
+        "status_code": "terminated_unknown_facts",
+        "status_label_zh": "停止自动缩减",
+        "status_summary": "关键事实仍未确认，系统结束当前补事实流程并建议先在线下核实。",
+    }
+    assert response.json()["change_summary"] == {
+        "summary_label": "Result Change Summary",
+        "state_change": "可补全 -> 需要人工介入",
+        "rate_change": "5% / 10% -> 5% / 10%",
+        "trigger_facts": [
+            "Direct holding confirmed: yes",
+            "Direct holding is at least 25%: unknown",
+        ],
+    }
+    assert response.json()["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "先在线下确认直接持股比例和持股方式，再重新发起预审或转交人工复核。",
+            "reason": "当前关键分支事实仍未确认，系统不会继续自动缩减股息税率分支。",
+        }
+    ]
+    assert response.json()["fact_completion"] is None
+    assert response.json()["user_declared_facts"] == {
+        "declaration_label": "User-declared facts (unverified)",
+        "facts": [
+            {
+                "fact_key": "direct_holding_confirmed",
+                "value": "yes",
+                "label": "Direct holding confirmed",
+            },
+            {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "unknown",
+                "label": "Direct holding is at least 25%",
+            },
+        ],
+    }
+
+
+def test_dividend_fact_completion_stops_when_pe_exclusion_is_triggered():
+    response = client.post(
+        "/analyze",
+        json={
+            "scenario": "中国公司向荷兰公司支付股息",
+            "fact_inputs": {
+                "pe_effectively_connected": "yes",
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["supported"] is True
+    assert response.json()["result"]["rate"] == "5% / 10%"
+    assert response.json()["review_state"] == {
+        "state_code": "needs_human_intervention",
+        "state_label_zh": "需要人工介入",
+        "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。",
+    }
+    assert response.json()["fact_completion_status"] == {
+        "status_code": "terminated_pe_exclusion",
+        "status_label_zh": "转入排除情形复核",
+        "status_summary": "当前场景触发了与中国常设机构或固定基地实际联系的排除提醒，系统结束 Article 10 分支自动缩减。",
+    }
+    assert response.json()["change_summary"] == {
+        "summary_label": "Result Change Summary",
+        "state_change": "可补全 -> 需要人工介入",
+        "rate_change": "5% / 10% -> Article 10 branch excluded",
+        "trigger_facts": [
+            "Dividend effectively connected with a China PE / fixed base: yes",
+        ],
+    }
+    assert response.json()["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "停止依赖当前股息分支自动缩减，并确认荷兰收款方是否在中国存在与该股息实际联系的常设机构或固定基地。",
+            "reason": "如果该排除情形成立，当前场景可能需要转入其他条款并进行人工复核，而不是继续沿用 Article 10 分支结果。",
+        }
+    ]
+    assert response.json()["fact_completion"] is None
+    assert response.json()["user_declared_facts"] == {
+        "declaration_label": "User-declared facts (unverified)",
+        "facts": [
+            {
+                "fact_key": "pe_effectively_connected",
+                "value": "yes",
+                "label": "Dividend effectively connected with a China PE / fixed base",
+            }
+        ],
+    }
+
+
+def test_dividend_fact_completion_stops_when_beneficial_owner_prerequisite_is_not_confirmed():
+    response = client.post(
+        "/analyze",
+        json={
+            "scenario": "中国公司向荷兰公司支付股息",
+            "fact_inputs": {
+                "direct_holding_confirmed": "yes",
+                "direct_holding_threshold_met": "yes",
+                "beneficial_owner_confirmed": "no",
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["supported"] is True
+    assert response.json()["result"]["rate"] == "5% / 10%"
+    assert response.json()["review_state"] == {
+        "state_code": "needs_human_intervention",
+        "state_label_zh": "需要人工介入",
+        "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。",
+    }
+    assert response.json()["fact_completion_status"] == {
+        "status_code": "terminated_beneficial_owner_unconfirmed",
+        "status_label_zh": "受益所有人前提未确认",
+        "status_summary": "协定优惠前提中的受益所有人身份尚未被单独确认，系统结束当前股息分支自动缩减。",
+    }
+    assert response.json()["change_summary"] == {
+        "summary_label": "Result Change Summary",
+        "state_change": "可补全 -> 需要人工介入",
+        "rate_change": "5% -> treaty rate cannot be relied on yet",
+        "trigger_facts": [
+            "Direct holding confirmed: yes",
+            "Direct holding is at least 25%: yes",
+            "Beneficial owner status separately confirmed: no",
+        ],
+    }
+    assert response.json()["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "先单独确认受益所有人身份及其支持材料，在未确认前不要依赖当前协定优惠税率分支。",
+            "reason": "受益所有人是协定优惠适用的前提条件；系统不会仅凭当前输入替你判断这一点是否成立。",
+        }
+    ]
+    assert response.json()["fact_completion"] is None
+    assert response.json()["user_declared_facts"] == {
+        "declaration_label": "User-declared facts (unverified)",
+        "facts": [
+            {
+                "fact_key": "direct_holding_confirmed",
+                "value": "yes",
+                "label": "Direct holding confirmed",
+            },
+            {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "yes",
+                "label": "Direct holding is at least 25%",
+            },
+            {
+                "fact_key": "beneficial_owner_confirmed",
+                "value": "no",
+                "label": "Beneficial owner status separately confirmed",
+            },
+        ],
+    }
+
+
+def test_dividend_fact_completion_stops_when_user_declared_facts_conflict():
+    response = client.post(
+        "/analyze",
+        json={
+            "scenario": "中国公司向荷兰公司支付股息",
+            "fact_inputs": {
+                "direct_holding_confirmed": "no",
+                "direct_holding_threshold_met": "yes",
+            },
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["supported"] is True
+    assert response.json()["result"]["rate"] == "5% / 10%"
+    assert response.json()["review_state"] == {
+        "state_code": "needs_human_intervention",
+        "state_label_zh": "需要人工介入",
+        "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。",
+    }
+    assert response.json()["fact_completion_status"] == {
+        "status_code": "terminated_conflicting_user_facts",
+        "status_label_zh": "用户声明事实冲突",
+        "status_summary": "已提交的补事实答案彼此冲突，系统结束当前股息分支自动缩减。",
+    }
+    assert response.json()["change_summary"] == {
+        "summary_label": "Result Change Summary",
+        "state_change": "可补全 -> 需要人工介入",
+        "rate_change": "5% / 10% -> treaty rate cannot be narrowed due to conflicting facts",
+        "trigger_facts": [
+            "Direct holding confirmed: no",
+            "Direct holding is at least 25%: yes",
+        ],
+    }
+    assert response.json()["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "先核对直接持股方式和持股比例的真实情况；当前答案彼此冲突，系统不会继续自动缩减股息税率分支。",
+            "reason": "例如，在未直接持股的情况下不能同时把直接持股门槛判断为已满足；请先在线下核实后再重新预审。",
+        }
+    ]
+    assert response.json()["fact_completion"] is None
+    assert response.json()["user_declared_facts"] == {
+        "declaration_label": "User-declared facts (unverified)",
+        "facts": [
+            {
+                "fact_key": "direct_holding_confirmed",
+                "value": "no",
+                "label": "Direct holding confirmed",
+            },
+            {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "yes",
+                "label": "Direct holding is at least 25%",
+            },
+        ],
+    }
 
 
 def test_returns_structured_result_for_supported_reverse_direction_case():
@@ -159,8 +635,8 @@ def test_analysis_respects_direction_specific_rule_branches(tmp_path: Path, monk
                 "paragraphs": [
                     {
                         "paragraph_id": "art12-p1",
-                        "paragraph_label": "Article 12(1)",
-                        "source_reference": "Article 12(1)",
+                        "paragraph_label": "Article 12(2)",
+                        "source_reference": "Article 12(2)",
                         "source_language": "en",
                         "source_excerpt": "Forward branch.",
                         "source_segments": [],
@@ -255,20 +731,32 @@ def test_rejects_supported_country_pair_with_unknown_transaction_type():
     )
 
     assert response.status_code == 200
-    assert response.json() == {
-        "data_source_used": "stable",
-        "supported": False,
-        "reason": "unsupported_transaction_type",
-        "message": "Current MVP supports only dividends, interest, and royalties.",
-        "immediate_action": "Restate the payment using a supported income type before relying on treaty review output.",
-        "missing_fields": ["transaction_type"],
-        "suggested_format": "Try a sentence like: 中国居民企业向荷兰公司支付特许权使用费",
-        "suggested_examples": [
-            "中国居民企业向荷兰公司支付股息",
-            "中国居民企业向荷兰银行支付利息",
-            "中国居民企业向荷兰公司支付特许权使用费",
-        ],
+    payload = response.json()
+    assert payload["data_source_used"] == "stable"
+    assert payload["supported"] is False
+    assert payload["reason"] == "unsupported_transaction_type"
+    assert payload["missing_fields"] == ["transaction_type"]
+    assert payload["suggested_format"] == "Try a sentence like: 中国居民企业向新加坡公司支付特许权使用费"
+    assert payload["suggested_examples"] == [
+        "中国居民企业向荷兰公司支付股息",
+        "中国居民企业向荷兰银行支付利息",
+        "中国居民企业向荷兰公司支付特许权使用费",
+        "中国居民企业向新加坡公司支付股息",
+        "中国居民企业向新加坡银行支付利息",
+        "中国居民企业向新加坡公司支付特许权使用费",
+    ]
+    assert payload["review_state"] == {
+        "state_code": "out_of_scope",
+        "state_label_zh": "不在支持范围",
+        "state_summary": "当前查询超出本产品的国家对或收入类型支持范围。",
     }
+    assert payload["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "改写为当前试点国家对列表内、且属于股息、利息或特许权使用费的查询后再重试。",
+            "reason": "当前场景属于产品边界之外；目前稳定数据源只支持 China-Netherlands, China-Singapore 两个试点国家对。",
+        }
+    ]
 
 
 def test_rejects_incomplete_scenario_when_country_pair_cannot_be_confirmed():
@@ -278,19 +766,28 @@ def test_rejects_incomplete_scenario_when_country_pair_cannot_be_confirmed():
     )
 
     assert response.status_code == 200
-    assert response.json() == {
-        "data_source_used": "stable",
-        "supported": False,
-        "reason": "incomplete_scenario",
-        "message": "Please provide a clearer scenario with both payer and payee country context.",
-        "immediate_action": "Add the missing scenario facts before running the treaty review again.",
-        "missing_fields": ["payer_country"],
-        "suggested_format": "Try a sentence like: 中国居民企业向荷兰公司支付股息",
-        "suggested_examples": [
-            "中国居民企业向荷兰公司支付股息",
-            "荷兰公司向中国公司支付利息",
-        ],
+    payload = response.json()
+    assert payload["data_source_used"] == "stable"
+    assert payload["supported"] is False
+    assert payload["reason"] == "incomplete_scenario"
+    assert payload["missing_fields"] == ["payer_country"]
+    assert payload["suggested_format"] == "Try a sentence like: 中国居民企业向荷兰公司支付股息"
+    assert payload["suggested_examples"] == [
+        "中国居民企业向荷兰公司支付股息",
+        "中国居民企业向荷兰银行支付利息",
+    ]
+    assert payload["review_state"] == {
+        "state_code": "can_be_completed",
+        "state_label_zh": "可补全",
+        "state_summary": "系统仍在当前预审范围内，但需要补充缺失事实后才能继续缩小结果。",
     }
+    assert payload["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "补充付款方国家或付款方主体信息后重新提交查询。",
+            "reason": "当前缺少足够的付款方事实，系统无法确认交易方向。",
+        }
+    ]
 
 
 def test_incomplete_alias_input_gets_bridge_note_but_keeps_formal_template():
@@ -300,23 +797,18 @@ def test_incomplete_alias_input_gets_bridge_note_but_keeps_formal_template():
     )
 
     assert response.status_code == 200
-    assert response.json() == {
-        "data_source_used": "stable",
-        "supported": False,
-        "reason": "incomplete_scenario",
-        "message": "Please provide a clearer scenario with both payer and payee country context.",
-        "immediate_action": "Add the missing scenario facts before running the treaty review again.",
-        "missing_fields": ["payer_country"],
-        "classification_note": (
-            "Current review maps `软件许可费` into the royalties lane for first-pass treaty review. "
-            "Use a fuller scenario so the tool can test the treaty position under the standard treaty royalties framework."
-        ),
-        "suggested_format": "Try a sentence like: 中国居民企业向荷兰公司支付特许权使用费",
-        "suggested_examples": [
-            "中国居民企业向荷兰公司支付股息",
-            "荷兰公司向中国公司支付利息",
-        ],
-    }
+    payload = response.json()
+    assert payload["reason"] == "incomplete_scenario"
+    assert payload["missing_fields"] == ["payer_country"]
+    assert payload["classification_note"] == (
+        "Current review maps `软件许可费` into the royalties lane for first-pass treaty review. "
+        "Use a fuller scenario so the tool can test the treaty position under the standard treaty royalties framework."
+    )
+    assert payload["suggested_format"] == "Try a sentence like: 中国居民企业向荷兰公司支付特许权使用费"
+    assert payload["suggested_examples"] == [
+        "中国居民企业向荷兰公司支付股息",
+        "中国居民企业向荷兰银行支付利息",
+    ]
 
 
 def test_rejects_ambiguous_payer_country_instead_of_guessing():
@@ -326,19 +818,13 @@ def test_rejects_ambiguous_payer_country_instead_of_guessing():
     )
 
     assert response.status_code == 200
-    assert response.json() == {
-        "data_source_used": "stable",
-        "supported": False,
-        "reason": "incomplete_scenario",
-        "message": "Please provide a clearer scenario with both payer and payee country context.",
-        "immediate_action": "Add the missing scenario facts before running the treaty review again.",
-        "missing_fields": ["payer_country"],
-        "suggested_format": "Try a sentence like: 中国居民企业向荷兰公司支付股息",
-        "suggested_examples": [
-            "中国居民企业向荷兰公司支付股息",
-            "荷兰公司向中国公司支付利息",
-        ],
-    }
+    payload = response.json()
+    assert payload["reason"] == "incomplete_scenario"
+    assert payload["missing_fields"] == ["payer_country"]
+    assert payload["suggested_examples"] == [
+        "中国居民企业向荷兰公司支付股息",
+        "中国居民企业向荷兰银行支付利息",
+    ]
 
 
 def test_rejects_ambiguous_payee_country_instead_of_guessing():
@@ -348,19 +834,13 @@ def test_rejects_ambiguous_payee_country_instead_of_guessing():
     )
 
     assert response.status_code == 200
-    assert response.json() == {
-        "data_source_used": "stable",
-        "supported": False,
-        "reason": "incomplete_scenario",
-        "message": "Please provide a clearer scenario with both payer and payee country context.",
-        "immediate_action": "Add the missing scenario facts before running the treaty review again.",
-        "missing_fields": ["payee_country"],
-        "suggested_format": "Try a sentence like: 中国居民企业向荷兰公司支付特许权使用费",
-        "suggested_examples": [
-            "中国居民企业向荷兰公司支付股息",
-            "荷兰公司向中国公司支付利息",
-        ],
-    }
+    payload = response.json()
+    assert payload["reason"] == "incomplete_scenario"
+    assert payload["missing_fields"] == ["payee_country"]
+    assert payload["suggested_examples"] == [
+        "中国居民企业向荷兰公司支付股息",
+        "中国居民企业向荷兰银行支付利息",
+    ]
 
 
 def test_rejects_unsupported_country_pair_with_supported_scope_examples():
@@ -370,20 +850,19 @@ def test_rejects_unsupported_country_pair_with_supported_scope_examples():
     )
 
     assert response.status_code == 200
-    assert response.json() == {
-        "data_source_used": "stable",
-        "supported": False,
-        "reason": "unsupported_country_pair",
-        "message": "Current MVP supports only China-Netherlands treaty scenarios.",
-        "immediate_action": "Rewrite the scenario into the supported China-Netherlands scope before running another review.",
-        "missing_fields": [],
-        "suggested_format": "Try a sentence like: 中国居民企业向荷兰公司支付特许权使用费",
-        "suggested_examples": [
-            "中国居民企业向荷兰公司支付股息",
-            "中国居民企业向荷兰银行支付利息",
-            "中国居民企业向荷兰公司支付特许权使用费",
-        ],
-    }
+    payload = response.json()
+    assert payload["reason"] == "unsupported_country_pair"
+    assert payload["message"] == (
+        "Current pilot scope supports only China-Netherlands, China-Singapore treaty scenarios."
+    )
+    assert payload["suggested_examples"] == [
+        "中国居民企业向荷兰公司支付股息",
+        "中国居民企业向荷兰银行支付利息",
+        "中国居民企业向荷兰公司支付特许权使用费",
+        "中国居民企业向新加坡公司支付股息",
+        "中国居民企业向新加坡银行支付利息",
+        "中国居民企业向新加坡公司支付特许权使用费",
+    ]
 
 
 def test_medium_confidence_match_is_escalated_to_priority_review(tmp_path: Path, monkeypatch):
@@ -476,8 +955,8 @@ def test_analysis_prefers_rate_bearing_rule_over_earlier_narrative_paragraph(tmp
                 "paragraphs": [
                     {
                         "paragraph_id": "art12-p1",
-                        "paragraph_label": "Article 12(1)",
-                        "source_reference": "Article 12(1)",
+                        "paragraph_label": "Article 12(2)",
+                        "source_reference": "Article 12(2)",
                         "source_language": "en",
                         "source_excerpt": "Royalties arising in one of the States and paid to a resident of the other State may be taxed in that other State.",
                         "source_segments": [],
@@ -637,27 +1116,18 @@ def test_llm_input_parser_can_route_out_of_scope_country_pair_into_unsupported(m
     )
 
     assert response.status_code == 200
-    assert response.json() == {
-        "data_source_used": "stable",
-        "supported": False,
-        "reason": "unsupported_country_pair",
-        "message": "Current MVP supports only China-Netherlands treaty scenarios.",
-        "immediate_action": "Rewrite the scenario into the supported China-Netherlands scope before running another review.",
-        "missing_fields": [],
-        "suggested_format": "Try a sentence like: 中国居民企业向荷兰公司支付特许权使用费",
-        "suggested_examples": [
-            "中国居民企业向荷兰公司支付股息",
-            "中国居民企业向荷兰银行支付利息",
-            "中国居民企业向荷兰公司支付特许权使用费",
-        ],
-        "input_interpretation": {
-            "parser_source": "llm",
-            "payer_country": "CN",
-            "payee_country": "US",
-            "transaction_type": "dividends",
-            "matched_transaction_label": "股息",
-        },
+    payload = response.json()
+    assert payload["reason"] == "unsupported_country_pair"
+    assert payload["input_interpretation"] == {
+        "parser_source": "llm",
+        "payer_country": "CN",
+        "payee_country": "US",
+        "transaction_type": "dividends",
+        "matched_transaction_label": "股息",
     }
+    assert payload["message"] == (
+        "Current pilot scope supports only China-Netherlands, China-Singapore treaty scenarios."
+    )
 
 
 def test_llm_input_parser_rejects_non_tax_smalltalk_as_incomplete(monkeypatch):
@@ -681,29 +1151,23 @@ def test_llm_input_parser_rejects_non_tax_smalltalk_as_incomplete(monkeypatch):
     )
 
     assert response.status_code == 200
-    assert response.json() == {
-        "data_source_used": "stable",
-        "supported": False,
-        "reason": "incomplete_scenario",
-        "message": "Please provide a clearer scenario with both payer and payee country context.",
-        "immediate_action": "Add the missing scenario facts before running the treaty review again.",
-        "missing_fields": [
-            "payer_country",
-            "payee_country",
-            "transaction_type",
-        ],
-        "suggested_format": "Try a sentence like: 中国居民企业向荷兰公司支付特许权使用费",
-        "suggested_examples": [
-            "中国居民企业向荷兰公司支付股息",
-            "荷兰公司向中国公司支付利息",
-        ],
-        "input_interpretation": {
-            "parser_source": "llm",
-            "payer_country": None,
-            "payee_country": None,
-            "transaction_type": "unknown",
-            "matched_transaction_label": None,
-        },
+    payload = response.json()
+    assert payload["reason"] == "incomplete_scenario"
+    assert payload["missing_fields"] == [
+        "payer_country",
+        "payee_country",
+        "transaction_type",
+    ]
+    assert payload["suggested_examples"] == [
+        "中国居民企业向荷兰公司支付股息",
+        "中国居民企业向荷兰银行支付利息",
+    ]
+    assert payload["input_interpretation"] == {
+        "parser_source": "llm",
+        "payer_country": None,
+        "payee_country": None,
+        "transaction_type": "unknown",
+        "matched_transaction_label": None,
     }
 
 
@@ -805,7 +1269,7 @@ def test_analyze_uses_llm_generated_dataset_when_requested(tmp_path: Path, monke
     stable_payload = json.loads(Path(service.DATA_PATH).read_text(encoding="utf-8"))
     llm_payload = json.loads(Path(service.DATA_PATH).read_text(encoding="utf-8"))
 
-    stable_payload["articles"][2]["paragraphs"][0]["source_reference"] = "Article 12(1)"
+    stable_payload["articles"][2]["paragraphs"][0]["source_reference"] = "Article 12(2)"
     stable_payload["articles"][2]["paragraphs"][0]["rules"][0]["rate"] = "10%"
 
     llm_payload["articles"][2]["paragraphs"][0]["source_reference"] = "Article 12(2)"
@@ -839,7 +1303,7 @@ def test_analyze_uses_llm_generated_dataset_when_requested(tmp_path: Path, monke
 
     assert default_response.status_code == 200
     assert default_response.json()["data_source_used"] == "stable"
-    assert default_response.json()["result"]["source_reference"] == "Article 12(1)"
+    assert default_response.json()["result"]["source_reference"] == "Article 12(2)"
     assert default_response.json()["result"]["rate"] == "10%"
 
     assert llm_response.status_code == 200
@@ -875,7 +1339,8 @@ def test_analyze_returns_controlled_failure_when_llm_generated_dataset_is_missin
     )
 
     assert response.status_code == 200
-    assert response.json() == {
+    payload = response.json()
+    assert {key: value for key, value in payload.items() if key != "handoff_package"} == {
         "data_source_used": "llm_generated",
         "supported": False,
         "reason": "unavailable_data_source",
@@ -887,7 +1352,27 @@ def test_analyze_returns_controlled_failure_when_llm_generated_dataset_is_missin
             "Use the default stable dataset for a normal review run.",
             "Regenerate the LLM-derived treaty dataset, then retry the same scenario.",
         ],
+        "review_state": {
+            "state_code": "needs_human_intervention",
+            "state_label_zh": "需要人工介入",
+            "state_summary": "当前结果无法在现有自动化边界内继续推进，应转入人工处理。",
+        },
+        "next_actions": [
+            {
+                "priority": "high",
+                "action": "切回稳定数据源，或在人工确认数据已生成后再重试。",
+                "reason": "当前请求的数据集不可用，系统不会伪造协定结论。",
+            }
+        ],
     }
+    handoff = assert_machine_handoff(
+        payload,
+        record_kind="unsupported",
+        review_state_code="needs_human_intervention",
+        recommended_route="manual_review",
+    )
+    assert handoff["machine_handoff"]["data_source_used"] == "llm_generated"
+    assert handoff["human_review_brief"]["disposition"] == "Escalate this scenario for manual review."
 
 
 def test_analysis_escalates_when_multiple_rate_branches_exist_under_one_article(
@@ -1001,6 +1486,18 @@ def test_analysis_escalates_when_multiple_rate_branches_exist_under_one_article(
         }
     ]
     assert "Multiple treaty rate branches were found" in response.json()["result"]["review_reason"]
+    assert response.json()["review_state"] == {
+        "state_code": "can_be_completed",
+        "state_label_zh": "可补全",
+        "state_summary": "系统已缩小范围；补充少量关键事实后，可进一步明确结果。",
+    }
+    assert response.json()["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "先核实股息分支所需的关键事实，再判断候选税率分支。",
+            "reason": "当前存在多个可信税率分支，系统不会自动替你选择其一。",
+        }
+    ]
 
 
 def test_analysis_escalates_when_one_paragraph_contains_multiple_rate_rules(
@@ -1100,5 +1597,164 @@ def test_analysis_escalates_when_one_paragraph_contains_multiple_rate_rules(
             "conditions": [
                 "Reduced rate branch if the ownership threshold is satisfied."
             ],
+        }
+    ]
+    assert response.json()["review_state"] == {
+        "state_code": "can_be_completed",
+        "state_label_zh": "可补全",
+        "state_summary": "系统已缩小范围；补充少量关键事实后，可进一步明确结果。",
+    }
+    assert response.json()["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "先核实股息分支所需的关键事实，再判断候选税率分支。",
+            "reason": "当前存在多个可信税率分支，系统不会自动替你选择其一。",
+        }
+    ]
+
+
+def test_stage3_state_contract_marks_supported_clear_case_as_pre_review_complete():
+    response = client.post(
+        "/analyze",
+        json={"scenario": "中国居民企业向荷兰支付特许权使用费"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["review_state"] == {
+        "state_code": "pre_review_complete",
+        "state_label_zh": "预审完成",
+        "state_summary": "系统已完成第一轮预审，请按标准复核流程继续。",
+    }
+    assert response.json()["confirmed_scope"] == {
+        "applicable_treaty": "中国-荷兰税收协定",
+        "applicable_article": "Article 12 - Royalties",
+        "payment_direction": "CN -> NL",
+        "income_type": "royalties",
+    }
+    assert response.json()["next_actions"] == [
+        {
+            "priority": "medium",
+            "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+            "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。",
+        }
+    ]
+
+
+def test_stage3_state_contract_marks_incomplete_case_as_can_be_completed():
+    response = client.post(
+        "/analyze",
+        json={"scenario": "向荷兰公司支付股息"},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["review_state"] == {
+        "state_code": "can_be_completed",
+        "state_label_zh": "可补全",
+        "state_summary": "系统仍在当前预审范围内，但需要补充缺失事实后才能继续缩小结果。",
+    }
+    assert payload["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "补充付款方国家或付款方主体信息后重新提交查询。",
+            "reason": "当前缺少足够的付款方事实，系统无法确认交易方向。",
+        }
+    ]
+    handoff = assert_machine_handoff(
+        payload,
+        record_kind="incomplete",
+        review_state_code="can_be_completed",
+        recommended_route="complete_facts_then_rerun",
+    )
+    assert handoff["machine_handoff"]["article_number"] is None
+    assert handoff["machine_handoff"]["rate_display"] is None
+    assert handoff["human_review_brief"]["disposition"] == "Complete the missing facts and rerun the pre-review."
+
+
+def test_stage3_state_contract_marks_priority_review_case_as_partial_review(
+    tmp_path: Path, monkeypatch
+):
+    payload = json.loads(Path(service.DATA_PATH).read_text(encoding="utf-8"))
+    payload["articles"][2]["paragraphs"][0]["rules"][0]["extraction_confidence"] = 0.88
+
+    temp_data_path = tmp_path / "cn-nl.stage3-partial-review.json"
+    temp_data_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(service, "DATA_PATH", temp_data_path)
+
+    response = client.post(
+        "/analyze",
+        json={"scenario": "中国居民企业向荷兰支付特许权使用费"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["review_state"] == {
+        "state_code": "partial_review",
+        "state_label_zh": "预审部分完成",
+        "state_summary": "系统已完成结构化缩减，但当前结果仍需优先人工复核。",
+    }
+    assert response.json()["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "优先核验条款适用条件、来源质量和关键事实后再引用该结果。",
+            "reason": "当前来源置信度不足以支持常规依赖，但已完成条款缩减。",
+        }
+    ]
+
+
+def test_stage3_state_contract_marks_low_confidence_hold_as_human_intervention(
+    tmp_path: Path, monkeypatch
+):
+    payload = json.loads(Path(service.DATA_PATH).read_text(encoding="utf-8"))
+    payload["articles"][2]["paragraphs"][0]["rules"][0]["extraction_confidence"] = 0.72
+
+    temp_data_path = tmp_path / "cn-nl.stage3-human-intervention.json"
+    temp_data_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(service, "DATA_PATH", temp_data_path)
+
+    response = client.post(
+        "/analyze",
+        json={"scenario": "中国居民企业向荷兰支付特许权使用费"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["review_state"] == {
+        "state_code": "needs_human_intervention",
+        "state_label_zh": "需要人工介入",
+        "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。",
+    }
+    assert response.json()["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "停止自动结论流程，并将当前条款、来源和待核事实交给人工复核。",
+            "reason": "当前来源置信度过低，系统不应继续自动推进。",
+        }
+    ]
+
+
+def test_stage3_state_contract_marks_unsupported_scope_as_out_of_scope():
+    response = client.post(
+        "/analyze",
+        json={"scenario": "中国居民企业向美国支付特许权使用费"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["review_state"] == {
+        "state_code": "out_of_scope",
+        "state_label_zh": "不在支持范围",
+        "state_summary": "当前查询超出本产品的国家对或收入类型支持范围。",
+    }
+    assert response.json()["next_actions"] == [
+        {
+            "priority": "high",
+            "action": "改写为当前试点国家对列表内、且属于股息、利息或特许权使用费的查询后再重试。",
+            "reason": "当前场景属于产品边界之外；目前稳定数据源只支持 China-Netherlands, China-Singapore 两个试点国家对。",
         }
     ]

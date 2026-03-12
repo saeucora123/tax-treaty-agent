@@ -37,6 +37,8 @@ Public-facing product identity:
 - a cross-border payment treaty pre-review tool
 - bounded, source-aware, and conservative
 - not a final tax opinion engine
+- best positioned as a smart triage layer inside a professional workflow, not a standalone replacement for IBFD / Bloomberg Tax / Checkpoint
+- user validation should start before formal commercialization work: lightweight workflow interviews and early trial feedback matter once conservative outputs become usable
 
 Internal project-selection goal:
 
@@ -107,13 +109,23 @@ Preferred path:
 - A version: small-data, real-architecture MVP
 - B version: real-treaty-driven upgrade
 
-Gemini-aligned staged path to preserve:
+Gemini-aligned broad roadmap to preserve:
 
 - Phase 1: constrained LLM input understanding
 - Phase 2: real document-to-structured-data generation
 - Phase 3: dynamic review guidance only after phases 1-2 are real
 - Phase 4: multi-country expansion last
+- naming note: these broad `Phase` labels are legacy product-roadmap shorthand, not the same thing as the current execution-control `Stage` numbers
 - the best stop line for project value is around the end of Phase 2, not “keep building forever”
+- the first real scalability proof should be one second country-pair onboarding with measured marginal cost and high pipeline reuse, not breadth for its own sake
+- a strong second-pair outcome means schema / builder / parser reuse stays high and the online runtime engine needs little or no behavior change
+- route refinement from audit: Phase 1 evidence work and Phase 3 conservative-output design should partially overlap, not wait on strict serial completion
+- before true multi-turn, prefer a lighter pseudo-multi-turn step such as fact-completion forms embedded in the result flow
+- the first live pseudo-multi-turn slice should stay extremely narrow: `CN -> NL` dividends only, with closed-ended direct-holding facts and explicit user-declared-fact labeling
+- that first live pseudo-multi-turn slice now also includes a closed-ended PE / fixed-base exclusion question; when triggered, the system should stop the current Article 10 branch flow and route to guided human review rather than guessing the downstream article
+- that first live pseudo-multi-turn slice now also includes two more conservative stop families: beneficial-owner-prerequisite failure and conflicting user-declared direct-holding facts
+- the current bounded Stage 4 proof is now considered complete once all four guided stop families are replayable: unknown facts, conflicting facts, PE exclusion, and beneficial-owner-unconfirmed
+- when designing conservative output states or fact-completion UX, perform a paper-fit check against a likely second treaty shape (currently `CN-SG`) so China-Netherlands-specific assumptions do not harden into product contracts
 
 Current B-stage direction:
 
@@ -188,6 +200,13 @@ Important rule:
 - Treaty facts should live in structured data.
 - Unsupported cases should refuse or recommend review.
 - This should feel like a professional tool, not a casual chatbot.
+- Conservative outputs should still reduce the user's work: confirm what is known, show credible candidate branches, expose missing facts, and give prioritized next actions.
+- Future multi-turn support should stay constrained: closed-ended clarification only, short turn caps, explicit fact audit, and repeated reminder that the tool is a pre-review layer.
+- Future trust claims should emphasize behavior commitments and near-zero boundary-breach / overreach, not only raw accuracy language.
+- Do not chase a higher effective-output rate by weakening guardrails; restraint metrics are part of product quality, not friction to be gamed.
+- Boundary-breach metrics should distinguish critical wrong-rate overreach, major out-of-scope substantive answers, and minor confidence-language slips.
+- Evidence reporting should always carry metric-scope notes and known-limitations notes; transparent measurement language is part of the trust story, not documentation garnish.
+- Stage 1 credibility evidence is no longer only a scaffold: the repo now has a deterministic 70-case fixed suite that meets the memo minimum category counts, yields zero Critical / Major / Minor overreach in the fixed run, and maps Hard Commitments to validating cases.
 
 ## Current Durable Working Surface
 

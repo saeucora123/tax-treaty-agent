@@ -1,0 +1,56 @@
+{
+  "map_id": "cn-sg-source-usage-map",
+  "registry_id": "cn-sg-official-sources",
+  "last_reviewed_on": "2026-03-13",
+  "artifacts": [
+    {
+      "artifact_path": "data/source_documents/cn-sg-main-treaty.json",
+      "artifact_role": "stage2_parsed_source_payload",
+      "derived_from_source_ids": [
+        "iras-cn-sg-dta-full-text-pdf",
+        "iras-cn-sg-third-protocol-newsroom",
+        "iras-cn-sg-second-protocol-newsroom",
+        "oecd-mli-signatories-and-parties",
+        "oecd-singapore-mli-peer-review-2024"
+      ],
+      "governance_status": "hand_encoded_source_fixture",
+      "coverage_note": "Stage 6 parser-like source fixture with treaty-verified excerpts, working-paper refs, and fact-based MLI context for all three supported income types."
+    },
+    {
+      "artifact_path": "data/treaties/cn-sg.v3.json",
+      "artifact_role": "stable_curated_runtime_dataset",
+      "derived_from_source_ids": [
+        "iras-cn-sg-dta-full-text-pdf",
+        "iras-cn-sg-third-protocol-newsroom",
+        "iras-cn-sg-second-protocol-newsroom",
+        "chinatax-cn-sg-second-protocol-notice",
+        "oecd-mli-signatories-and-parties",
+        "oecd-singapore-mli-peer-review-2024"
+      ],
+      "governance_status": "curated_subset",
+      "coverage_note": "Stage 6 stable pilot dataset for China-Singapore with paragraph-level excerpts, working-paper lineage, and fact-based MLI/PPT prompts."
+    },
+    {
+      "artifact_path": "data/treaties/cn-sg.v3.generated.json",
+      "artifact_role": "builder_generated_dataset",
+      "derived_from_source_ids": [
+        "iras-cn-sg-dta-full-text-pdf",
+        "iras-cn-sg-third-protocol-newsroom",
+        "iras-cn-sg-second-protocol-newsroom",
+        "oecd-mli-signatories-and-parties",
+        "oecd-singapore-mli-peer-review-2024"
+      ],
+      "governance_status": "generated_demo_artifact",
+      "coverage_note": "Regenerated in Stage 6 from the CN-SG source fixture after treaty truth-check, proving the builder preserves source-trace and MLI metadata."
+    },
+    {
+      "artifact_path": "data/pressure_tests/cn-sg.stage3.hand-encoded.json",
+      "artifact_role": "stage3_pressure_test_sample",
+      "derived_from_source_ids": [
+        "iras-cn-sg-dta-full-text-pdf"
+      ],
+      "governance_status": "manual_pressure_test_sample",
+      "coverage_note": "Earlier Stage 3 paper-fit sample reused as a comparison point during second-pair onboarding."
+    }
+  ]
+}

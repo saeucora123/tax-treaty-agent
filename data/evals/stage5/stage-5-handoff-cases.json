@@ -1,0 +1,97 @@
+[
+  {
+    "id": "stage5-supported-clear-001",
+    "category": "supported_clear",
+    "scenario": "中国居民企业向荷兰支付特许权使用费",
+    "expected": {
+      "supported": true,
+      "review_state_code": "pre_review_complete",
+      "recommended_route": "standard_review",
+      "record_kind": "supported",
+      "article_number": "12",
+      "rate_display": "10%",
+      "human_disposition": "Proceed with standard human review.",
+      "user_declared_facts_present": false
+    }
+  },
+  {
+    "id": "stage5-supported-ambiguous-001",
+    "category": "supported_ambiguous",
+    "scenario": "中国公司向新加坡公司支付股息",
+    "expected": {
+      "supported": true,
+      "review_state_code": "can_be_completed",
+      "recommended_route": "complete_facts_then_rerun",
+      "record_kind": "supported",
+      "article_number": "10",
+      "rate_display": "5% / 10%",
+      "human_disposition": "Complete the missing facts and rerun the pre-review.",
+      "user_declared_facts_present": false
+    }
+  },
+  {
+    "id": "stage5-stage4-bounded-001",
+    "category": "stage4_bounded",
+    "scenario": "中国公司向荷兰公司支付股息",
+    "fact_inputs": {
+      "direct_holding_confirmed": "yes",
+      "direct_holding_threshold_met": "yes"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "pre_review_complete",
+      "recommended_route": "standard_review",
+      "record_kind": "supported",
+      "article_number": "10",
+      "rate_display": "5%",
+      "human_disposition": "Proceed with standard human review.",
+      "user_declared_facts_present": true
+    }
+  },
+  {
+    "id": "stage5-unsupported-001",
+    "category": "unsupported",
+    "scenario": "中国居民企业向美国支付特许权使用费",
+    "expected": {
+      "supported": false,
+      "review_state_code": "out_of_scope",
+      "recommended_route": "out_of_scope_rewrite",
+      "record_kind": "unsupported",
+      "article_number": null,
+      "rate_display": null,
+      "human_disposition": "Rewrite the scenario inside the supported pilot scope.",
+      "user_declared_facts_present": false
+    }
+  },
+  {
+    "id": "stage5-incomplete-001",
+    "category": "incomplete",
+    "scenario": "向荷兰公司支付股息",
+    "expected": {
+      "supported": false,
+      "review_state_code": "can_be_completed",
+      "recommended_route": "complete_facts_then_rerun",
+      "record_kind": "incomplete",
+      "article_number": null,
+      "rate_display": null,
+      "human_disposition": "Complete the missing facts and rerun the pre-review.",
+      "user_declared_facts_present": false
+    }
+  },
+  {
+    "id": "stage5-unavailable-001",
+    "category": "unavailable_data_source",
+    "scenario": "中国居民企业向新加坡公司支付特许权使用费",
+    "data_source": "llm_generated",
+    "expected": {
+      "supported": false,
+      "review_state_code": "needs_human_intervention",
+      "recommended_route": "manual_review",
+      "record_kind": "unsupported",
+      "article_number": null,
+      "rate_display": null,
+      "human_disposition": "Escalate this scenario for manual review.",
+      "user_declared_facts_present": false
+    }
+  }
+]

@@ -1,0 +1,280 @@
+[
+  {
+    "id": "stage4-awaiting-001",
+    "category": "multi_branch_dividend",
+    "scenario": "中国公司向荷兰公司支付股息",
+    "expected": {
+      "supported": true,
+      "review_state_code": "can_be_completed",
+      "rate": "5% / 10%",
+      "fact_completion_status_code": "awaiting_user_facts",
+      "fact_completion_present": true,
+      "change_summary_present": false,
+      "user_declared_facts_present": false
+    }
+  },
+  {
+    "id": "stage4-awaiting-002",
+    "category": "multi_branch_dividend",
+    "scenario": "中国居民企业向荷兰公司支付股息",
+    "expected": {
+      "supported": true,
+      "review_state_code": "can_be_completed",
+      "rate": "5% / 10%",
+      "fact_completion_status_code": "awaiting_user_facts",
+      "fact_completion_present": true,
+      "change_summary_present": false,
+      "user_declared_facts_present": false
+    }
+  },
+  {
+    "id": "stage4-narrowed-001",
+    "category": "multi_branch_dividend",
+    "scenario": "中国公司向荷兰公司支付股息",
+    "fact_inputs": {
+      "direct_holding_confirmed": "yes",
+      "direct_holding_threshold_met": "yes"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "pre_review_complete",
+      "rate": "5%",
+      "fact_completion_status_code": "completed_narrowed",
+      "fact_completion_present": false,
+      "change_summary_present": true,
+      "user_declared_facts_present": true
+    }
+  },
+  {
+    "id": "stage4-narrowed-002",
+    "category": "multi_branch_dividend",
+    "scenario": "中国居民企业向荷兰公司支付股息",
+    "fact_inputs": {
+      "direct_holding_confirmed": "yes",
+      "direct_holding_threshold_met": "no"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "pre_review_complete",
+      "rate": "10%",
+      "fact_completion_status_code": "completed_narrowed",
+      "fact_completion_present": false,
+      "change_summary_present": true,
+      "user_declared_facts_present": true
+    }
+  },
+  {
+    "id": "stage4-narrowed-003",
+    "category": "multi_branch_dividend",
+    "scenario": "中国公司向荷兰母公司支付股息",
+    "fact_inputs": {
+      "direct_holding_confirmed": "no",
+      "direct_holding_threshold_met": "unknown"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "pre_review_complete",
+      "rate": "10%",
+      "fact_completion_status_code": "completed_narrowed",
+      "fact_completion_present": false,
+      "change_summary_present": true,
+      "user_declared_facts_present": true
+    }
+  },
+  {
+    "id": "stage4-narrowed-004",
+    "category": "multi_branch_dividend",
+    "scenario": "中国居民企业向荷兰母公司支付股息",
+    "fact_inputs": {
+      "direct_holding_confirmed": "no",
+      "direct_holding_threshold_met": "no"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "pre_review_complete",
+      "rate": "10%",
+      "fact_completion_status_code": "completed_narrowed",
+      "fact_completion_present": false,
+      "change_summary_present": true,
+      "user_declared_facts_present": true
+    }
+  },
+  {
+    "id": "stage4-terminated-001",
+    "category": "multi_branch_dividend",
+    "scenario": "中国公司向荷兰公司支付股息",
+    "fact_inputs": {
+      "direct_holding_confirmed": "yes",
+      "direct_holding_threshold_met": "unknown"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "needs_human_intervention",
+      "rate": "5% / 10%",
+      "fact_completion_status_code": "terminated_unknown_facts",
+      "fact_completion_present": false,
+      "change_summary_present": true,
+      "user_declared_facts_present": true
+    }
+  },
+  {
+    "id": "stage4-terminated-002",
+    "category": "multi_branch_dividend",
+    "scenario": "中国居民企业向荷兰公司支付股息",
+    "fact_inputs": {
+      "direct_holding_confirmed": "unknown",
+      "direct_holding_threshold_met": "unknown"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "needs_human_intervention",
+      "rate": "5% / 10%",
+      "fact_completion_status_code": "terminated_unknown_facts",
+      "fact_completion_present": false,
+      "change_summary_present": true,
+      "user_declared_facts_present": true
+    }
+  },
+  {
+    "id": "stage4-terminated-003",
+    "category": "multi_branch_dividend",
+    "scenario": "中国公司向荷兰母公司支付股息",
+    "fact_inputs": {
+      "direct_holding_confirmed": "unknown",
+      "direct_holding_threshold_met": "yes"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "needs_human_intervention",
+      "rate": "5% / 10%",
+      "fact_completion_status_code": "terminated_conflicting_user_facts",
+      "fact_completion_present": false,
+      "change_summary_present": true,
+      "user_declared_facts_present": true
+    }
+  },
+  {
+    "id": "stage4-awaiting-003",
+    "category": "multi_branch_dividend",
+    "scenario": "中国母公司向荷兰子公司支付股息",
+    "expected": {
+      "supported": true,
+      "review_state_code": "can_be_completed",
+      "rate": "5% / 10%",
+      "fact_completion_status_code": "awaiting_user_facts",
+      "fact_completion_present": true,
+      "change_summary_present": false,
+      "user_declared_facts_present": false
+    }
+  },
+  {
+    "id": "stage4-terminated-pe-001",
+    "category": "multi_branch_dividend",
+    "scenario": "中国公司向荷兰公司支付股息",
+    "fact_inputs": {
+      "pe_effectively_connected": "yes"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "needs_human_intervention",
+      "rate": "5% / 10%",
+      "fact_completion_status_code": "terminated_pe_exclusion",
+      "fact_completion_present": false,
+      "change_summary_present": true,
+      "user_declared_facts_present": true
+    }
+  },
+  {
+    "id": "stage4-terminated-pe-002",
+    "category": "multi_branch_dividend",
+    "scenario": "中国居民企业向荷兰母公司支付股息",
+    "fact_inputs": {
+      "direct_holding_confirmed": "yes",
+      "direct_holding_threshold_met": "yes",
+      "pe_effectively_connected": "yes"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "needs_human_intervention",
+      "rate": "5% / 10%",
+      "fact_completion_status_code": "terminated_pe_exclusion",
+      "fact_completion_present": false,
+      "change_summary_present": true,
+      "user_declared_facts_present": true
+    }
+  },
+  {
+    "id": "stage4-terminated-bo-001",
+    "category": "multi_branch_dividend",
+    "scenario": "中国公司向荷兰公司支付股息",
+    "fact_inputs": {
+      "direct_holding_confirmed": "yes",
+      "direct_holding_threshold_met": "yes",
+      "beneficial_owner_confirmed": "no"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "needs_human_intervention",
+      "rate": "5% / 10%",
+      "fact_completion_status_code": "terminated_beneficial_owner_unconfirmed",
+      "fact_completion_present": false,
+      "change_summary_present": true,
+      "user_declared_facts_present": true
+    }
+  },
+  {
+    "id": "stage4-terminated-bo-002",
+    "category": "multi_branch_dividend",
+    "scenario": "中国居民企业向荷兰母公司支付股息",
+    "fact_inputs": {
+      "direct_holding_confirmed": "no",
+      "direct_holding_threshold_met": "unknown",
+      "beneficial_owner_confirmed": "no"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "needs_human_intervention",
+      "rate": "5% / 10%",
+      "fact_completion_status_code": "terminated_beneficial_owner_unconfirmed",
+      "fact_completion_present": false,
+      "change_summary_present": true,
+      "user_declared_facts_present": true
+    }
+  },
+  {
+    "id": "stage4-terminated-conflict-001",
+    "category": "multi_branch_dividend",
+    "scenario": "中国公司向荷兰公司支付股息",
+    "fact_inputs": {
+      "direct_holding_confirmed": "no",
+      "direct_holding_threshold_met": "yes"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "needs_human_intervention",
+      "rate": "5% / 10%",
+      "fact_completion_status_code": "terminated_conflicting_user_facts",
+      "fact_completion_present": false,
+      "change_summary_present": true,
+      "user_declared_facts_present": true
+    }
+  },
+  {
+    "id": "stage4-terminated-conflict-002",
+    "category": "multi_branch_dividend",
+    "scenario": "中国居民企业向荷兰母公司支付股息",
+    "fact_inputs": {
+      "direct_holding_confirmed": "unknown",
+      "direct_holding_threshold_met": "yes"
+    },
+    "expected": {
+      "supported": true,
+      "review_state_code": "needs_human_intervention",
+      "rate": "5% / 10%",
+      "fact_completion_status_code": "terminated_conflicting_user_facts",
+      "fact_completion_present": false,
+      "change_summary_present": true,
+      "user_declared_facts_present": true
+    }
+  }
+]

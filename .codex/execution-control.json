@@ -1,0 +1,124 @@
+{
+  "authority_memo": "docs/superpowers/plans/2026-03-12-tax-treaty-agent-execution-decision-memo.md",
+  "progress_file": ".codex/execution-progress.json",
+  "active_workstreams": [
+    "cross_cutting_infrastructure"
+  ],
+  "next_decision_point": "post_stage_6_route_selection",
+  "stages": {
+    "stage_1": {
+      "label": "Stage 1: credibility evidence pack",
+      "status": "completed",
+      "gate_review": "docs/superpowers/plans/gate-reviews/stage-1-gate-review.md",
+      "required_artifacts": [
+        "docs/superpowers/plans/2026-03-12-tax-treaty-agent-execution-decision-memo.md",
+        "docs/superpowers/plans/2026-03-12-tax-treaty-agent-stage-1-evidence-pack-checklist.md",
+        "docs/superpowers/plans/gate-reviews/stage-1-gate-review.md",
+        "docs/superpowers/specs/2026-03-12-tax-treaty-agent-whitepaper-zh .md"
+      ]
+    },
+    "stage_3": {
+      "label": "Stage 3: conservative-output value design",
+      "status": "completed",
+      "gate_review": "docs/superpowers/plans/gate-reviews/stage-3-gate-review.md",
+      "required_artifacts": [
+        "docs/superpowers/plans/2026-03-12-tax-treaty-agent-execution-decision-memo.md",
+        "docs/superpowers/plans/gate-reviews/stage-3-gate-review.md"
+      ]
+    },
+    "stage_3_5": {
+      "label": "Stage 3.5: user calibration checkpoint",
+      "status": "completed",
+      "gate_review": "docs/superpowers/plans/gate-reviews/stage-3-5-gate-review.md",
+      "required_artifacts": [
+        "docs/superpowers/plans/gate-reviews/stage-3-5-gate-review.md",
+        "docs/superpowers/plans/2026-03-12-tax-treaty-agent-stage-3-5-user-calibration-brief.md",
+        "docs/superpowers/plans/templates/2026-03-12-tax-treaty-agent-user-calibration-session-template.md",
+        "docs/superpowers/plans/templates/2026-03-12-tax-treaty-agent-user-calibration-summary-template.md",
+        "docs/superpowers/research/stage-3-5-evidence/2026-03-12-stage-3-5-final-decision.md"
+      ]
+    },
+    "stage_4": {
+      "label": "Stage 4: pseudo-multiturn",
+      "status": "completed",
+      "gate_review": "docs/superpowers/plans/gate-reviews/stage-4-gate-review.md",
+      "required_artifacts": [
+        "docs/superpowers/plans/gate-reviews/stage-4-gate-review.md"
+      ]
+    },
+    "stage_2": {
+      "label": "Stage 2: second country-pair onboarding",
+      "status": "completed",
+      "gate_review": "docs/superpowers/plans/gate-reviews/stage-2-gate-review.md",
+      "required_artifacts": [
+        "docs/superpowers/plans/gate-reviews/stage-2-gate-review.md"
+      ]
+    },
+    "stage_5": {
+      "label": "Stage 5: workflow handoff and integration fit",
+      "status": "completed",
+      "gate_review": "docs/superpowers/plans/gate-reviews/stage-5-gate-review.md",
+      "required_artifacts": [
+        "docs/superpowers/plans/gate-reviews/stage-5-gate-review.md"
+      ]
+    },
+    "stage_6": {
+      "label": "Stage 6: source chain closure",
+      "status": "completed",
+      "gate_review": "docs/superpowers/plans/gate-reviews/stage-6-gate-review.md",
+      "required_artifacts": [
+        "docs/superpowers/plans/gate-reviews/stage-6-gate-review.md"
+      ]
+    }
+  },
+  "promotion_rules": [
+    {
+      "to": "stage_3_5",
+      "requires_gate_pass": [
+        "stage_1",
+        "stage_3"
+      ]
+    },
+    {
+      "to": "stage_4",
+      "requires_gate_pass": [
+        "stage_3_5"
+      ],
+      "extra_conditions": [
+        "user calibration says bounded fact completion is needed"
+      ]
+    },
+    {
+      "to": "stage_2",
+      "requires_gate_pass": [
+        "stage_3_5"
+      ],
+      "extra_conditions": [
+        "if stage_4 is skipped, record why single-turn is sufficient"
+      ]
+    },
+    {
+      "to": "stage_5",
+      "requires_gate_pass": [
+        "stage_2"
+      ]
+    },
+    {
+      "to": "stage_6",
+      "requires_gate_pass": [
+        "stage_5"
+      ]
+    },
+    {
+      "to": "true_multiturn",
+      "requires_gate_pass": [
+        "stage_4"
+      ],
+      "extra_conditions": [
+        "pseudo-multiturn measurably improves triage precision",
+        "user feedback says form-based completion is insufficient",
+        "role-drift protection design has been documented and reviewed"
+      ]
+    }
+  ]
+}

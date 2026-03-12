@@ -1,0 +1,79 @@
+{
+  "registry_id": "cn-sg-official-sources",
+  "jurisdiction_pair": ["CN", "SG"],
+  "last_reviewed_on": "2026-03-13",
+  "sources": [
+    {
+      "source_id": "iras-cn-sg-dta-full-text-pdf",
+      "title": "Agreement between the Government of the Republic of Singapore and the Government of the People's Republic of China for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+      "issuing_authority": "Inland Revenue Authority of Singapore",
+      "jurisdictions": ["CN", "SG"],
+      "source_type": "treaty_text",
+      "official_url": "https://www.iras.gov.sg/media/docs/default-source/uploadedfiles/pdf/ratificationsingaporechinadtafinalwithprotocol.pdf?sfvrsn=9b057a88_2",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "primary_runtime_basis",
+      "notes": "IRAS-hosted full treaty text with protocols; used as the main English runtime basis for the Stage 2 pilot pair."
+    },
+    {
+      "source_id": "iras-cn-sg-third-protocol-newsroom",
+      "title": "Third Protocol to standing DTA between Singapore and the People’s Republic of China takes effect",
+      "issuing_authority": "Inland Revenue Authority of Singapore",
+      "jurisdictions": ["CN", "SG"],
+      "source_type": "metadata_page",
+      "official_url": "https://www.iras.gov.sg/news-events/newsroom/third-protocol-to-standing-dta-between-singapore-and-the-people-s-republic-of-china-takes-effect",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "source_governance_reference",
+      "notes": "Official IRAS newsroom reference confirming protocol history and entry-into-force timing."
+    },
+    {
+      "source_id": "iras-cn-sg-second-protocol-newsroom",
+      "title": "Second Protocol to the Avoidance of Double Taxation Agreement (DTA) between Singapore and China Ratified",
+      "issuing_authority": "Inland Revenue Authority of Singapore",
+      "jurisdictions": ["CN", "SG"],
+      "source_type": "metadata_page",
+      "official_url": "https://www.iras.gov.sg/news-events/newsroom/second-protocol-to-the-avoidance-of-double-taxation-agreement-%28dta%29-between-singapore-and-china-ratified",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "source_governance_reference",
+      "notes": "Official IRAS note covering protocol changes to the standing China-Singapore agreement."
+    },
+    {
+      "source_id": "chinatax-cn-sg-second-protocol-notice",
+      "title": "国家税务总局关于《中华人民共和国政府和新加坡共和国政府关于对所得避免双重征税和防止偷漏税的协定》第二议定书生效执行的通知",
+      "issuing_authority": "State Taxation Administration of the PRC",
+      "jurisdictions": ["CN", "SG"],
+      "source_type": "metadata_page",
+      "official_url": "https://guizhou.chinatax.gov.cn/xwzx/ztzl/ssfwydyl/zcfgjjd/202207/t20220711_75503440.html",
+      "language": "zh",
+      "status": "confirmed",
+      "preferred_use": "source_governance_reference",
+      "notes": "China-side tax-system notice used as a governance cross-check for protocol status and terminology."
+    },
+    {
+      "source_id": "oecd-mli-signatories-and-parties",
+      "title": "Signatories and Parties to the Multilateral Convention to Implement Tax Treaty Related Measures to Prevent Base Erosion and Profit Shifting",
+      "issuing_authority": "Organisation for Economic Co-operation and Development",
+      "jurisdictions": ["CN", "SG"],
+      "source_type": "mli_status_table",
+      "official_url": "https://www.oecd.org/content/dam/oecd/en/topics/policy-sub-issues/beps-mli/signatories-and-parties.pdf",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "mli_context_only",
+      "notes": "OECD status table used in Stage 6 to verify that China and Singapore have both ratified the MLI and to capture their entry-into-force dates."
+    },
+    {
+      "source_id": "oecd-singapore-mli-peer-review-2024",
+      "title": "Singapore - Peer Review Report on the Implementation of the MLI (2024)",
+      "issuing_authority": "Organisation for Economic Co-operation and Development",
+      "jurisdictions": ["CN", "SG"],
+      "source_type": "mli_peer_review",
+      "official_url": "https://www.oecd.org/content/dam/oecd/en/topics/policy-sub-issues/beps-mli/mli-peer-review-singapore.pdf",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "mli_context_only",
+      "notes": "OECD peer-review material used in Stage 6 to confirm that the China-Singapore agreement is a Covered Tax Agreement and that PPT is listed as applicable."
+    }
+  ]
+}

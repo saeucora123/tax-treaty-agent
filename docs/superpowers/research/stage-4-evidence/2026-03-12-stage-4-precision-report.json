@@ -1,0 +1,3300 @@
+{
+  "total_cases": 16,
+  "passed_cases": 16,
+  "failed_cases": 0,
+  "category_summary": {
+    "multi_branch_dividend": {
+      "total": 16,
+      "passed": 16
+    }
+  },
+  "termination_summary": {
+    "terminated_unknown_facts": 2,
+    "terminated_conflicting_user_facts": 3,
+    "terminated_pe_exclusion": 2,
+    "terminated_beneficial_owner_unconfirmed": 2
+  },
+  "case_reports": [
+    {
+      "id": "stage4-awaiting-001",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "5% / 10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": false,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "high",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+          "alternative_rate_candidates": [
+            {
+              "source_reference": "Article 10(2)(a)",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ]
+            }
+          ]
+        },
+        "review_state": {
+          "state_code": "can_be_completed",
+          "state_label_zh": "可补全",
+          "state_summary": "系统已缩小范围；补充少量关键事实后，可进一步明确结果。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "先核实股息分支所需的关键事实，再判断候选税率分支。",
+            "reason": "当前存在多个可信税率分支，系统不会自动替你选择其一。"
+          }
+        ],
+        "fact_completion": {
+          "flow_type": "bounded_form",
+          "session_type": "pseudo_multiturn",
+          "user_declaration_note": "Facts entered here are user-declared and not independently verified.",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "prompt": "Does the Dutch recipient directly hold capital in the Chinese payer?",
+              "input_type": "single_select",
+              "options": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "prompt": "If the holding is direct, is the direct holding at least 25%?",
+              "input_type": "single_select",
+              "options": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            {
+              "fact_key": "pe_effectively_connected",
+              "prompt": "Is the dividend effectively connected with a permanent establishment or fixed base of the Dutch recipient in China?",
+              "input_type": "single_select",
+              "options": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            {
+              "fact_key": "beneficial_owner_confirmed",
+              "prompt": "Has beneficial-owner status been separately confirmed outside this tool?",
+              "input_type": "single_select",
+              "options": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            }
+          ]
+        },
+        "user_declared_facts": null,
+        "fact_completion_status": {
+          "status_code": "awaiting_user_facts",
+          "status_label_zh": "待补事实",
+          "status_summary": "请先补充关键持股事实，系统才能继续缩小股息税率分支。"
+        },
+        "change_summary": null,
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "can_be_completed",
+            "recommended_route": "complete_facts_then_rerun",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5% / 10%",
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "high",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "先核实股息分支所需的关键事实，再判断候选税率分支。",
+                "reason": "当前存在多个可信税率分支，系统不会自动替你选择其一。"
+              }
+            ],
+            "user_declared_facts": []
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Complete the missing facts and rerun the pre-review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5% / 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically."
+            ],
+            "facts_to_verify": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-awaiting-002",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "5% / 10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": false,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "high",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+          "alternative_rate_candidates": [
+            {
+              "source_reference": "Article 10(2)(a)",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ]
+            }
+          ]
+        },
+        "review_state": {
+          "state_code": "can_be_completed",
+          "state_label_zh": "可补全",
+          "state_summary": "系统已缩小范围；补充少量关键事实后，可进一步明确结果。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "先核实股息分支所需的关键事实，再判断候选税率分支。",
+            "reason": "当前存在多个可信税率分支，系统不会自动替你选择其一。"
+          }
+        ],
+        "fact_completion": {
+          "flow_type": "bounded_form",
+          "session_type": "pseudo_multiturn",
+          "user_declaration_note": "Facts entered here are user-declared and not independently verified.",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "prompt": "Does the Dutch recipient directly hold capital in the Chinese payer?",
+              "input_type": "single_select",
+              "options": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "prompt": "If the holding is direct, is the direct holding at least 25%?",
+              "input_type": "single_select",
+              "options": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            {
+              "fact_key": "pe_effectively_connected",
+              "prompt": "Is the dividend effectively connected with a permanent establishment or fixed base of the Dutch recipient in China?",
+              "input_type": "single_select",
+              "options": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            {
+              "fact_key": "beneficial_owner_confirmed",
+              "prompt": "Has beneficial-owner status been separately confirmed outside this tool?",
+              "input_type": "single_select",
+              "options": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            }
+          ]
+        },
+        "user_declared_facts": null,
+        "fact_completion_status": {
+          "status_code": "awaiting_user_facts",
+          "status_label_zh": "待补事实",
+          "status_summary": "请先补充关键持股事实，系统才能继续缩小股息税率分支。"
+        },
+        "change_summary": null,
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "can_be_completed",
+            "recommended_route": "complete_facts_then_rerun",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5% / 10%",
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "high",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "先核实股息分支所需的关键事实，再判断候选税率分支。",
+                "reason": "当前存在多个可信税率分支，系统不会自动替你选择其一。"
+              }
+            ],
+            "user_declared_facts": []
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Complete the missing facts and rerun the pre-review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5% / 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically."
+            ],
+            "facts_to_verify": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-narrowed-001",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, with a treaty rate ceiling of 5%. Manual review is still recommended.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Proceed with standard manual review before relying on the treaty position.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(a)",
+          "source_language": "en",
+          "source_excerpt": "However, such dividends may also be taxed in the State of source, but the tax so charged shall not exceed 5 per cent of the gross amount of the dividends if the beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends.",
+          "rate": "5%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": true,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "normal",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. The current branch view reflects unverified user-declared direct holding facts."
+        },
+        "review_state": {
+          "state_code": "pre_review_complete",
+          "state_label_zh": "预审完成",
+          "state_summary": "系统已完成第一轮预审，请按标准复核流程继续。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "medium",
+            "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+            "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "value": "yes",
+              "label": "Direct holding confirmed"
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "value": "yes",
+              "label": "Direct holding is at least 25%"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "completed_narrowed",
+          "status_label_zh": "已缩减",
+          "status_summary": "系统已根据用户声明事实将股息分支缩减为单一候选税率。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 预审完成",
+          "rate_change": "5% / 10% -> 5%",
+          "trigger_facts": [
+            "Direct holding confirmed: yes",
+            "Direct holding is at least 25%: yes"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "pre_review_complete",
+            "recommended_route": "standard_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5%",
+            "auto_conclusion_allowed": true,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(a)",
+            "source_excerpt": "However, such dividends may also be taxed in the State of source, but the tax so charged shall not exceed 5 per cent of the gross amount of the dividends if the beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "normal",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "medium",
+                "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+                "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "direct_holding_confirmed",
+                "value": "yes",
+                "label": "Direct holding confirmed"
+              },
+              {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "yes",
+                "label": "Direct holding is at least 25%"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Proceed with standard human review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-narrowed-002",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, with a treaty rate ceiling of 10%. Manual review is still recommended.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Proceed with standard manual review before relying on the treaty position.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": true,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "normal",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. The current branch view reflects unverified user-declared direct holding facts."
+        },
+        "review_state": {
+          "state_code": "pre_review_complete",
+          "state_label_zh": "预审完成",
+          "state_summary": "系统已完成第一轮预审，请按标准复核流程继续。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "medium",
+            "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+            "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "value": "yes",
+              "label": "Direct holding confirmed"
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "value": "no",
+              "label": "Direct holding is at least 25%"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "completed_narrowed",
+          "status_label_zh": "已缩减",
+          "status_summary": "系统已根据用户声明事实将股息分支缩减为单一候选税率。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 预审完成",
+          "rate_change": "5% / 10% -> 10%",
+          "trigger_facts": [
+            "Direct holding confirmed: yes",
+            "Direct holding is at least 25%: no"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "pre_review_complete",
+            "recommended_route": "standard_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "10%",
+            "auto_conclusion_allowed": true,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "normal",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "medium",
+                "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+                "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "direct_holding_confirmed",
+                "value": "yes",
+                "label": "Direct holding confirmed"
+              },
+              {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "no",
+                "label": "Direct holding is at least 25%"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Proceed with standard human review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-narrowed-003",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, with a treaty rate ceiling of 10%. Manual review is still recommended.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Proceed with standard manual review before relying on the treaty position.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": true,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "normal",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. The current branch view reflects unverified user-declared direct holding facts."
+        },
+        "review_state": {
+          "state_code": "pre_review_complete",
+          "state_label_zh": "预审完成",
+          "state_summary": "系统已完成第一轮预审，请按标准复核流程继续。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "medium",
+            "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+            "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "value": "no",
+              "label": "Direct holding confirmed"
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "value": "unknown",
+              "label": "Direct holding is at least 25%"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "completed_narrowed",
+          "status_label_zh": "已缩减",
+          "status_summary": "系统已根据用户声明事实将股息分支缩减为单一候选税率。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 预审完成",
+          "rate_change": "5% / 10% -> 10%",
+          "trigger_facts": [
+            "Direct holding confirmed: no",
+            "Direct holding is at least 25%: unknown"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "pre_review_complete",
+            "recommended_route": "standard_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "10%",
+            "auto_conclusion_allowed": true,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "normal",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "medium",
+                "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+                "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "direct_holding_confirmed",
+                "value": "no",
+                "label": "Direct holding confirmed"
+              },
+              {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "unknown",
+                "label": "Direct holding is at least 25%"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Proceed with standard human review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-narrowed-004",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, with a treaty rate ceiling of 10%. Manual review is still recommended.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Proceed with standard manual review before relying on the treaty position.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": true,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "normal",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. The current branch view reflects unverified user-declared direct holding facts."
+        },
+        "review_state": {
+          "state_code": "pre_review_complete",
+          "state_label_zh": "预审完成",
+          "state_summary": "系统已完成第一轮预审，请按标准复核流程继续。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "medium",
+            "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+            "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "value": "no",
+              "label": "Direct holding confirmed"
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "value": "no",
+              "label": "Direct holding is at least 25%"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "completed_narrowed",
+          "status_label_zh": "已缩减",
+          "status_summary": "系统已根据用户声明事实将股息分支缩减为单一候选税率。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 预审完成",
+          "rate_change": "5% / 10% -> 10%",
+          "trigger_facts": [
+            "Direct holding confirmed: no",
+            "Direct holding is at least 25%: no"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "pre_review_complete",
+            "recommended_route": "standard_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "10%",
+            "auto_conclusion_allowed": true,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "normal",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "medium",
+                "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+                "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "direct_holding_confirmed",
+                "value": "no",
+                "label": "Direct holding confirmed"
+              },
+              {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "no",
+                "label": "Direct holding is at least 25%"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Proceed with standard human review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-terminated-001",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "5% / 10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": false,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "high",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+          "alternative_rate_candidates": [
+            {
+              "source_reference": "Article 10(2)(a)",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ]
+            }
+          ]
+        },
+        "review_state": {
+          "state_code": "needs_human_intervention",
+          "state_label_zh": "需要人工介入",
+          "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "先在线下确认直接持股比例和持股方式，再重新发起预审或转交人工复核。",
+            "reason": "当前关键分支事实仍未确认，系统不会继续自动缩减股息税率分支。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "value": "yes",
+              "label": "Direct holding confirmed"
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "value": "unknown",
+              "label": "Direct holding is at least 25%"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "terminated_unknown_facts",
+          "status_label_zh": "停止自动缩减",
+          "status_summary": "关键事实仍未确认，系统结束当前补事实流程并建议先在线下核实。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 需要人工介入",
+          "rate_change": "5% / 10% -> 5% / 10%",
+          "trigger_facts": [
+            "Direct holding confirmed: yes",
+            "Direct holding is at least 25%: unknown"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "needs_human_intervention",
+            "recommended_route": "manual_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5% / 10%",
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "high",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "先在线下确认直接持股比例和持股方式，再重新发起预审或转交人工复核。",
+                "reason": "当前关键分支事实仍未确认，系统不会继续自动缩减股息税率分支。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "direct_holding_confirmed",
+                "value": "yes",
+                "label": "Direct holding confirmed"
+              },
+              {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "unknown",
+                "label": "Direct holding is at least 25%"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Escalate this scenario for manual review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5% / 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-terminated-002",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "5% / 10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": false,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "high",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+          "alternative_rate_candidates": [
+            {
+              "source_reference": "Article 10(2)(a)",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ]
+            }
+          ]
+        },
+        "review_state": {
+          "state_code": "needs_human_intervention",
+          "state_label_zh": "需要人工介入",
+          "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "先在线下确认直接持股比例和持股方式，再重新发起预审或转交人工复核。",
+            "reason": "当前关键分支事实仍未确认，系统不会继续自动缩减股息税率分支。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "value": "unknown",
+              "label": "Direct holding confirmed"
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "value": "unknown",
+              "label": "Direct holding is at least 25%"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "terminated_unknown_facts",
+          "status_label_zh": "停止自动缩减",
+          "status_summary": "关键事实仍未确认，系统结束当前补事实流程并建议先在线下核实。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 需要人工介入",
+          "rate_change": "5% / 10% -> 5% / 10%",
+          "trigger_facts": [
+            "Direct holding confirmed: unknown",
+            "Direct holding is at least 25%: unknown"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "needs_human_intervention",
+            "recommended_route": "manual_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5% / 10%",
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "high",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "先在线下确认直接持股比例和持股方式，再重新发起预审或转交人工复核。",
+                "reason": "当前关键分支事实仍未确认，系统不会继续自动缩减股息税率分支。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "direct_holding_confirmed",
+                "value": "unknown",
+                "label": "Direct holding confirmed"
+              },
+              {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "unknown",
+                "label": "Direct holding is at least 25%"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Escalate this scenario for manual review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5% / 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-terminated-003",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "5% / 10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": false,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "high",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+          "alternative_rate_candidates": [
+            {
+              "source_reference": "Article 10(2)(a)",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ]
+            }
+          ]
+        },
+        "review_state": {
+          "state_code": "needs_human_intervention",
+          "state_label_zh": "需要人工介入",
+          "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "先核对直接持股方式和持股比例的真实情况；当前答案彼此冲突，系统不会继续自动缩减股息税率分支。",
+            "reason": "例如，在未直接持股的情况下不能同时把直接持股门槛判断为已满足；请先在线下核实后再重新预审。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "value": "unknown",
+              "label": "Direct holding confirmed"
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "value": "yes",
+              "label": "Direct holding is at least 25%"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "terminated_conflicting_user_facts",
+          "status_label_zh": "用户声明事实冲突",
+          "status_summary": "已提交的补事实答案彼此冲突，系统结束当前股息分支自动缩减。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 需要人工介入",
+          "rate_change": "5% / 10% -> treaty rate cannot be narrowed due to conflicting facts",
+          "trigger_facts": [
+            "Direct holding confirmed: unknown",
+            "Direct holding is at least 25%: yes"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "needs_human_intervention",
+            "recommended_route": "manual_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5% / 10%",
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "high",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "先核对直接持股方式和持股比例的真实情况；当前答案彼此冲突，系统不会继续自动缩减股息税率分支。",
+                "reason": "例如，在未直接持股的情况下不能同时把直接持股门槛判断为已满足；请先在线下核实后再重新预审。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "direct_holding_confirmed",
+                "value": "unknown",
+                "label": "Direct holding confirmed"
+              },
+              {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "yes",
+                "label": "Direct holding is at least 25%"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Escalate this scenario for manual review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5% / 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-awaiting-003",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "5% / 10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": false,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "high",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+          "alternative_rate_candidates": [
+            {
+              "source_reference": "Article 10(2)(a)",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ]
+            }
+          ]
+        },
+        "review_state": {
+          "state_code": "can_be_completed",
+          "state_label_zh": "可补全",
+          "state_summary": "系统已缩小范围；补充少量关键事实后，可进一步明确结果。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "先核实股息分支所需的关键事实，再判断候选税率分支。",
+            "reason": "当前存在多个可信税率分支，系统不会自动替你选择其一。"
+          }
+        ],
+        "fact_completion": {
+          "flow_type": "bounded_form",
+          "session_type": "pseudo_multiturn",
+          "user_declaration_note": "Facts entered here are user-declared and not independently verified.",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "prompt": "Does the Dutch recipient directly hold capital in the Chinese payer?",
+              "input_type": "single_select",
+              "options": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "prompt": "If the holding is direct, is the direct holding at least 25%?",
+              "input_type": "single_select",
+              "options": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            {
+              "fact_key": "pe_effectively_connected",
+              "prompt": "Is the dividend effectively connected with a permanent establishment or fixed base of the Dutch recipient in China?",
+              "input_type": "single_select",
+              "options": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            {
+              "fact_key": "beneficial_owner_confirmed",
+              "prompt": "Has beneficial-owner status been separately confirmed outside this tool?",
+              "input_type": "single_select",
+              "options": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            }
+          ]
+        },
+        "user_declared_facts": null,
+        "fact_completion_status": {
+          "status_code": "awaiting_user_facts",
+          "status_label_zh": "待补事实",
+          "status_summary": "请先补充关键持股事实，系统才能继续缩小股息税率分支。"
+        },
+        "change_summary": null,
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "can_be_completed",
+            "recommended_route": "complete_facts_then_rerun",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5% / 10%",
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "high",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "先核实股息分支所需的关键事实，再判断候选税率分支。",
+                "reason": "当前存在多个可信税率分支，系统不会自动替你选择其一。"
+              }
+            ],
+            "user_declared_facts": []
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Complete the missing facts and rerun the pre-review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5% / 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically."
+            ],
+            "facts_to_verify": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-terminated-pe-001",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "5% / 10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": false,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "high",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+          "alternative_rate_candidates": [
+            {
+              "source_reference": "Article 10(2)(a)",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ]
+            }
+          ]
+        },
+        "review_state": {
+          "state_code": "needs_human_intervention",
+          "state_label_zh": "需要人工介入",
+          "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "停止依赖当前股息分支自动缩减，并确认荷兰收款方是否在中国存在与该股息实际联系的常设机构或固定基地。",
+            "reason": "如果该排除情形成立，当前场景可能需要转入其他条款并进行人工复核，而不是继续沿用 Article 10 分支结果。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "pe_effectively_connected",
+              "value": "yes",
+              "label": "Dividend effectively connected with a China PE / fixed base"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "terminated_pe_exclusion",
+          "status_label_zh": "转入排除情形复核",
+          "status_summary": "当前场景触发了与中国常设机构或固定基地实际联系的排除提醒，系统结束 Article 10 分支自动缩减。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 需要人工介入",
+          "rate_change": "5% / 10% -> Article 10 branch excluded",
+          "trigger_facts": [
+            "Dividend effectively connected with a China PE / fixed base: yes"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "needs_human_intervention",
+            "recommended_route": "manual_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5% / 10%",
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "high",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "停止依赖当前股息分支自动缩减，并确认荷兰收款方是否在中国存在与该股息实际联系的常设机构或固定基地。",
+                "reason": "如果该排除情形成立，当前场景可能需要转入其他条款并进行人工复核，而不是继续沿用 Article 10 分支结果。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "pe_effectively_connected",
+                "value": "yes",
+                "label": "Dividend effectively connected with a China PE / fixed base"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Escalate this scenario for manual review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5% / 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-terminated-pe-002",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "5% / 10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": false,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "high",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+          "alternative_rate_candidates": [
+            {
+              "source_reference": "Article 10(2)(a)",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ]
+            }
+          ]
+        },
+        "review_state": {
+          "state_code": "needs_human_intervention",
+          "state_label_zh": "需要人工介入",
+          "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "停止依赖当前股息分支自动缩减，并确认荷兰收款方是否在中国存在与该股息实际联系的常设机构或固定基地。",
+            "reason": "如果该排除情形成立，当前场景可能需要转入其他条款并进行人工复核，而不是继续沿用 Article 10 分支结果。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "value": "yes",
+              "label": "Direct holding confirmed"
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "value": "yes",
+              "label": "Direct holding is at least 25%"
+            },
+            {
+              "fact_key": "pe_effectively_connected",
+              "value": "yes",
+              "label": "Dividend effectively connected with a China PE / fixed base"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "terminated_pe_exclusion",
+          "status_label_zh": "转入排除情形复核",
+          "status_summary": "当前场景触发了与中国常设机构或固定基地实际联系的排除提醒，系统结束 Article 10 分支自动缩减。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 需要人工介入",
+          "rate_change": "5% / 10% -> Article 10 branch excluded",
+          "trigger_facts": [
+            "Direct holding confirmed: yes",
+            "Direct holding is at least 25%: yes",
+            "Dividend effectively connected with a China PE / fixed base: yes"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "needs_human_intervention",
+            "recommended_route": "manual_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5% / 10%",
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "high",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "停止依赖当前股息分支自动缩减，并确认荷兰收款方是否在中国存在与该股息实际联系的常设机构或固定基地。",
+                "reason": "如果该排除情形成立，当前场景可能需要转入其他条款并进行人工复核，而不是继续沿用 Article 10 分支结果。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "direct_holding_confirmed",
+                "value": "yes",
+                "label": "Direct holding confirmed"
+              },
+              {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "yes",
+                "label": "Direct holding is at least 25%"
+              },
+              {
+                "fact_key": "pe_effectively_connected",
+                "value": "yes",
+                "label": "Dividend effectively connected with a China PE / fixed base"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Escalate this scenario for manual review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5% / 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-terminated-bo-001",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "5% / 10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": false,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "high",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+          "alternative_rate_candidates": [
+            {
+              "source_reference": "Article 10(2)(a)",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ]
+            }
+          ]
+        },
+        "review_state": {
+          "state_code": "needs_human_intervention",
+          "state_label_zh": "需要人工介入",
+          "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "先单独确认受益所有人身份及其支持材料，在未确认前不要依赖当前协定优惠税率分支。",
+            "reason": "受益所有人是协定优惠适用的前提条件；系统不会仅凭当前输入替你判断这一点是否成立。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "value": "yes",
+              "label": "Direct holding confirmed"
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "value": "yes",
+              "label": "Direct holding is at least 25%"
+            },
+            {
+              "fact_key": "beneficial_owner_confirmed",
+              "value": "no",
+              "label": "Beneficial owner status separately confirmed"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "terminated_beneficial_owner_unconfirmed",
+          "status_label_zh": "受益所有人前提未确认",
+          "status_summary": "协定优惠前提中的受益所有人身份尚未被单独确认，系统结束当前股息分支自动缩减。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 需要人工介入",
+          "rate_change": "5% -> treaty rate cannot be relied on yet",
+          "trigger_facts": [
+            "Direct holding confirmed: yes",
+            "Direct holding is at least 25%: yes",
+            "Beneficial owner status separately confirmed: no"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "needs_human_intervention",
+            "recommended_route": "manual_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5% / 10%",
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "high",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "先单独确认受益所有人身份及其支持材料，在未确认前不要依赖当前协定优惠税率分支。",
+                "reason": "受益所有人是协定优惠适用的前提条件；系统不会仅凭当前输入替你判断这一点是否成立。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "direct_holding_confirmed",
+                "value": "yes",
+                "label": "Direct holding confirmed"
+              },
+              {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "yes",
+                "label": "Direct holding is at least 25%"
+              },
+              {
+                "fact_key": "beneficial_owner_confirmed",
+                "value": "no",
+                "label": "Beneficial owner status separately confirmed"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Escalate this scenario for manual review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5% / 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-terminated-bo-002",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "5% / 10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": false,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "high",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+          "alternative_rate_candidates": [
+            {
+              "source_reference": "Article 10(2)(a)",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ]
+            }
+          ]
+        },
+        "review_state": {
+          "state_code": "needs_human_intervention",
+          "state_label_zh": "需要人工介入",
+          "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "先单独确认受益所有人身份及其支持材料，在未确认前不要依赖当前协定优惠税率分支。",
+            "reason": "受益所有人是协定优惠适用的前提条件；系统不会仅凭当前输入替你判断这一点是否成立。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "value": "no",
+              "label": "Direct holding confirmed"
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "value": "unknown",
+              "label": "Direct holding is at least 25%"
+            },
+            {
+              "fact_key": "beneficial_owner_confirmed",
+              "value": "no",
+              "label": "Beneficial owner status separately confirmed"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "terminated_beneficial_owner_unconfirmed",
+          "status_label_zh": "受益所有人前提未确认",
+          "status_summary": "协定优惠前提中的受益所有人身份尚未被单独确认，系统结束当前股息分支自动缩减。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 需要人工介入",
+          "rate_change": "10% -> treaty rate cannot be relied on yet",
+          "trigger_facts": [
+            "Direct holding confirmed: no",
+            "Direct holding is at least 25%: unknown",
+            "Beneficial owner status separately confirmed: no"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "needs_human_intervention",
+            "recommended_route": "manual_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5% / 10%",
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "high",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "先单独确认受益所有人身份及其支持材料，在未确认前不要依赖当前协定优惠税率分支。",
+                "reason": "受益所有人是协定优惠适用的前提条件；系统不会仅凭当前输入替你判断这一点是否成立。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "direct_holding_confirmed",
+                "value": "no",
+                "label": "Direct holding confirmed"
+              },
+              {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "unknown",
+                "label": "Direct holding is at least 25%"
+              },
+              {
+                "fact_key": "beneficial_owner_confirmed",
+                "value": "no",
+                "label": "Beneficial owner status separately confirmed"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Escalate this scenario for manual review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5% / 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-terminated-conflict-001",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "5% / 10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": false,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "high",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+          "alternative_rate_candidates": [
+            {
+              "source_reference": "Article 10(2)(a)",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ]
+            }
+          ]
+        },
+        "review_state": {
+          "state_code": "needs_human_intervention",
+          "state_label_zh": "需要人工介入",
+          "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "先核对直接持股方式和持股比例的真实情况；当前答案彼此冲突，系统不会继续自动缩减股息税率分支。",
+            "reason": "例如，在未直接持股的情况下不能同时把直接持股门槛判断为已满足；请先在线下核实后再重新预审。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "value": "no",
+              "label": "Direct holding confirmed"
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "value": "yes",
+              "label": "Direct holding is at least 25%"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "terminated_conflicting_user_facts",
+          "status_label_zh": "用户声明事实冲突",
+          "status_summary": "已提交的补事实答案彼此冲突，系统结束当前股息分支自动缩减。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 需要人工介入",
+          "rate_change": "5% / 10% -> treaty rate cannot be narrowed due to conflicting facts",
+          "trigger_facts": [
+            "Direct holding confirmed: no",
+            "Direct holding is at least 25%: yes"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "needs_human_intervention",
+            "recommended_route": "manual_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5% / 10%",
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "high",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "先核对直接持股方式和持股比例的真实情况；当前答案彼此冲突，系统不会继续自动缩减股息税率分支。",
+                "reason": "例如，在未直接持股的情况下不能同时把直接持股门槛判断为已满足；请先在线下核实后再重新预审。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "direct_holding_confirmed",
+                "value": "no",
+                "label": "Direct holding confirmed"
+              },
+              {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "yes",
+                "label": "Direct holding is at least 25%"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Escalate this scenario for manual review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5% / 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage4-terminated-conflict-002",
+      "category": "multi_branch_dividend",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "rate": true,
+        "fact_completion_status_code": true,
+        "fact_completion_present": true,
+        "change_summary_present": true,
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rate": "5% / 10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": false,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies when the reduced-rate branch is not established."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "high",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+          "alternative_rate_candidates": [
+            {
+              "source_reference": "Article 10(2)(a)",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ]
+            }
+          ]
+        },
+        "review_state": {
+          "state_code": "needs_human_intervention",
+          "state_label_zh": "需要人工介入",
+          "state_summary": "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "先核对直接持股方式和持股比例的真实情况；当前答案彼此冲突，系统不会继续自动缩减股息税率分支。",
+            "reason": "例如，在未直接持股的情况下不能同时把直接持股门槛判断为已满足；请先在线下核实后再重新预审。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "value": "unknown",
+              "label": "Direct holding confirmed"
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "value": "yes",
+              "label": "Direct holding is at least 25%"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "terminated_conflicting_user_facts",
+          "status_label_zh": "用户声明事实冲突",
+          "status_summary": "已提交的补事实答案彼此冲突，系统结束当前股息分支自动缩减。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 需要人工介入",
+          "rate_change": "5% / 10% -> treaty rate cannot be narrowed due to conflicting facts",
+          "trigger_facts": [
+            "Direct holding confirmed: unknown",
+            "Direct holding is at least 25%: yes"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "needs_human_intervention",
+            "recommended_route": "manual_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5% / 10%",
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(b)",
+            "source_excerpt": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "high",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "先核对直接持股方式和持股比例的真实情况；当前答案彼此冲突，系统不会继续自动缩减股息税率分支。",
+                "reason": "例如，在未直接持股的情况下不能同时把直接持股门槛判断为已满足；请先在线下核实后再重新预审。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "direct_holding_confirmed",
+                "value": "unknown",
+                "label": "Direct holding confirmed"
+              },
+              {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "yes",
+                "label": "Direct holding is at least 25%"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Escalate this scenario for manual review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5% / 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    }
+  ],
+  "metrics": {
+    "awaiting_user_facts_cases": {
+      "numerator": 3,
+      "denominator": 16,
+      "value": 0.1875,
+      "definition": "Cases that correctly remain in the bounded fact-completion state."
+    },
+    "completed_narrowed_cases": {
+      "numerator": 4,
+      "denominator": 16,
+      "value": 0.25,
+      "definition": "Cases that narrow the dividend branch into a single treaty-rate candidate."
+    },
+    "terminated_cases": {
+      "numerator": 9,
+      "denominator": 16,
+      "value": 0.5625,
+      "definition": "Cases that end in a bounded guided stop instead of continuing pseudo-multiturn narrowing."
+    },
+    "g4_1_case_threshold": {
+      "threshold": 10,
+      "actual": 16,
+      "met": true
+    }
+  },
+  "suite_scope_note": "This Stage 4 evaluation is deterministic and replays bounded pseudo-multiturn dividend scenarios without enabling live LLM parsing.",
+  "known_limitations": [
+    "The current Stage 4 pack is still concentrated in the CN-NL dividends lane.",
+    "This report measures bounded pseudo-multiturn behavior, not true multi-turn interaction."
+  ]
+}

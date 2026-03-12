@@ -1,0 +1,163 @@
+{
+  "treaty": {
+    "treaty_id": "cn-sg-stage3-pressure-test",
+    "jurisdictions": [
+      "CN",
+      "SG"
+    ],
+    "title": "China-Singapore Tax Treaty (Stage 3 pressure-test sample)",
+    "version": "hand-encoded-stage3",
+    "source_type": "manual_pressure_test_sample",
+    "notes": [
+      "This file is not a production treaty dataset.",
+      "It exists only to pressure-test Stage 3 schema and output-contract assumptions."
+    ]
+  },
+  "articles": [
+    {
+      "article_number": "10",
+      "article_title": "Dividends",
+      "income_type": "dividends",
+      "notes": [
+        "Includes a general branch and a reduced branch for >=25% direct holding."
+      ],
+      "paragraphs": [
+        {
+          "paragraph_id": "art10-p2-general",
+          "paragraph_label": "Article 10(2)(b)",
+          "source_reference": "CN-SG Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "General dividend branch sample.",
+          "rules": [
+            {
+              "rule_id": "cn-sg-art10-general",
+              "rule_type": "source_tax_limit",
+              "rate": "12%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "conditions": [
+                "General dividend branch when the reduced-rate ownership condition is not established."
+              ],
+              "human_review_required": true,
+              "review_reason": "General dividend branch."
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art10-p2-reduced",
+          "paragraph_label": "Article 10(2)(a)",
+          "source_reference": "CN-SG Article 10(2)(a)",
+          "source_language": "en",
+          "source_excerpt": "Reduced dividend branch sample.",
+          "rules": [
+            {
+              "rule_id": "cn-sg-art10-reduced",
+              "rule_type": "source_tax_limit",
+              "rate": "7%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "conditions": [
+                "Beneficial owner is a company or partnership directly holding at least 25% of the capital of the paying company."
+              ],
+              "human_review_required": true,
+              "review_reason": "Reduced dividend branch."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "11",
+      "article_title": "Interest",
+      "income_type": "interest",
+      "notes": [
+        "Includes general and bank-specific branches for Stage 3 pressure testing."
+      ],
+      "paragraphs": [
+        {
+          "paragraph_id": "art11-p2-general",
+          "paragraph_label": "Article 11(2)",
+          "source_reference": "CN-SG Article 11(2)",
+          "source_language": "en",
+          "source_excerpt": "General interest branch sample.",
+          "rules": [
+            {
+              "rule_id": "cn-sg-art11-general",
+              "rule_type": "source_tax_limit",
+              "rate": "10%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "conditions": [
+                "General interest branch."
+              ],
+              "human_review_required": true,
+              "review_reason": "General interest branch."
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art11-p3-bank",
+          "paragraph_label": "Article 11(3)",
+          "source_reference": "CN-SG Article 11(3)",
+          "source_language": "en",
+          "source_excerpt": "Bank / financial institution branch sample.",
+          "rules": [
+            {
+              "rule_id": "cn-sg-art11-bank",
+              "rule_type": "source_tax_limit",
+              "rate": "7%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "conditions": [
+                "Beneficial owner is a bank or financial institution carrying on a bona fide banking or financing business."
+              ],
+              "human_review_required": true,
+              "review_reason": "Preferential bank / financial institution branch."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "12",
+      "article_title": "Royalties",
+      "income_type": "royalties",
+      "notes": [
+        "Single-rate royalty branch for Stage 3 compatibility checking."
+      ],
+      "paragraphs": [
+        {
+          "paragraph_id": "art12-p2",
+          "paragraph_label": "Article 12(2)",
+          "source_reference": "CN-SG Article 12(2)",
+          "source_language": "en",
+          "source_excerpt": "Royalty cap sample.",
+          "rules": [
+            {
+              "rule_id": "cn-sg-art12-general",
+              "rule_type": "source_tax_limit",
+              "rate": "10%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "conditions": [
+                "General royalty branch."
+              ],
+              "human_review_required": true,
+              "review_reason": "General royalty branch."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

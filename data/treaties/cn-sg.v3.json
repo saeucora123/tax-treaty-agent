@@ -1,0 +1,202 @@
+{
+  "treaty": {
+    "treaty_id": "cn-sg",
+    "jurisdictions": ["CN", "SG"],
+    "title": "China-Singapore Tax Treaty",
+    "version": "v3",
+    "source_type": "manual_structured_from_official_text",
+    "source_documents": [
+      {
+        "document_id": "cn-sg-main-treaty",
+        "title": "China-Singapore Tax Treaty",
+        "document_type": "treaty_text"
+      }
+    ],
+    "notes": [
+      "Stage 6 source-chain closure version for the second treaty pair.",
+      "CN-SG rates and excerpts are now verified against the IRAS official treaty text rather than Stage 2 placeholder text."
+    ],
+    "source_trace": {
+      "treaty_full_name": "Agreement between the Government of the Republic of Singapore and the Government of the People's Republic of China for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+      "version_note": "2007 agreement as reflected in the IRAS official treaty text, with the Second Protocol effective from 1 January 2010 and the Third Protocol effective from 1 January 2013 incorporated into the operative Articles 10 to 12.",
+      "source_document_title": "Agreement between the Government of the Republic of Singapore and the Government of the People's Republic of China for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+      "language_version": "en",
+      "official_source_ids": [
+        "iras-cn-sg-dta-full-text-pdf",
+        "iras-cn-sg-second-protocol-newsroom",
+        "iras-cn-sg-third-protocol-newsroom"
+      ],
+      "working_papers": {
+        "dividends": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-sg-dividends-working-paper.md",
+        "interest": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-sg-interest-working-paper.md",
+        "royalties": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-sg-royalties-working-paper.md"
+      },
+      "protocol_note": "IRAS states that the Second Protocol signed on 24 August 2009 entered into force on 11 December 2009 and took effect from 1 January 2010, while the Third Protocol entered into force on 24 July 2012 and took effect from 1 January 2013."
+    },
+    "mli_context": {
+      "covered_tax_agreement": true,
+      "ppt_applies": true,
+      "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and Singapore deposited on 21 December 2018 with entry into force on 1 April 2019. OECD peer-review materials record the China-Singapore agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+      "human_review_note": "Confirm during manual review whether one of the principal purposes of the arrangement was to obtain treaty benefits.",
+      "official_source_ids": [
+        "oecd-mli-signatories-and-parties",
+        "oecd-singapore-mli-peer-review-2024"
+      ]
+    }
+  },
+  "articles": [
+    {
+      "article_number": "10",
+      "article_title": "Dividends",
+      "article_label": "Article 10",
+      "income_type": "dividends",
+      "summary": "Defines treaty treatment for dividends between China and Singapore.",
+      "notes": [
+        "The Stage 6 verified version uses the IRAS consolidated treaty text rather than the legacy dividend rates preserved elsewhere in the PDF annexes.",
+        "Beneficial ownership and treaty anti-abuse rules still require manual confirmation."
+      ],
+      "paragraphs": [
+        {
+          "paragraph_id": "art10-p2b",
+          "paragraph_label": "Article 10(2)(b)",
+          "source_reference": "CN-SG Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "10 per cent of the gross amount of the dividends in all other cases.",
+          "rules": [
+            {
+              "rule_id": "cn-sg-art10-general",
+              "rule_type": "source_tax_limit",
+              "rate": "10%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "conditions": [
+                "Applies in all other cases where the reduced-rate branch in Article 10(2)(a) is not established."
+              ],
+              "human_review_required": true,
+              "review_reason": "Dividend branch remains fact-sensitive and still requires beneficial-owner and anti-abuse review."
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art10-p2a",
+          "paragraph_label": "Article 10(2)(a)",
+          "source_reference": "CN-SG Article 10(2)(a)",
+          "source_language": "en",
+          "source_excerpt": "5 per cent of the gross amount of the dividends if the beneficial owner is a company (other than a partnership) which holds directly at least 25 per cent of the capital of the company paying the dividends;",
+          "rules": [
+            {
+              "rule_id": "cn-sg-art10-reduced",
+              "rule_type": "source_tax_limit",
+              "rate": "5%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "conditions": [
+                "The beneficial owner is a company (other than a partnership) which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ],
+              "human_review_required": true,
+              "review_reason": "Reduced dividend branch still requires manual confirmation of direct holding, beneficial ownership, and anti-abuse limits."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "11",
+      "article_title": "Interest",
+      "article_label": "Article 11",
+      "income_type": "interest",
+      "summary": "Defines treaty treatment for interest between China and Singapore.",
+      "notes": [
+        "The interest rate branches are verified against the current Article 11 text, not the Stage 2 placeholder mapping.",
+        "The government and central-institution exemption lane remains outside the automated narrowing flow."
+      ],
+      "paragraphs": [
+        {
+          "paragraph_id": "art11-p2b",
+          "paragraph_label": "Article 11(2)(b)",
+          "source_reference": "CN-SG Article 11(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "10 per cent of the gross amount of the interest in all other cases.",
+          "rules": [
+            {
+              "rule_id": "cn-sg-art11-general",
+              "rule_type": "source_tax_limit",
+              "rate": "10%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "conditions": [
+                "Applies in all other cases where the bank or financial-institution branch is not established."
+              ],
+              "human_review_required": true,
+              "review_reason": "General interest branch remains fact-sensitive and should be confirmed manually."
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art11-p2a",
+          "paragraph_label": "Article 11(2)(a)",
+          "source_reference": "CN-SG Article 11(2)(a)",
+          "source_language": "en",
+          "source_excerpt": "7 per cent of the gross amount of the interest if it is received by any bank or financial institution;",
+          "rules": [
+            {
+              "rule_id": "cn-sg-art11-bank",
+              "rule_type": "source_tax_limit",
+              "rate": "7%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "conditions": [
+                "The interest is received by any bank or financial institution."
+              ],
+              "human_review_required": true,
+              "review_reason": "Preferential interest branch requires manual confirmation of the recipient's institutional status."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "12",
+      "article_title": "Royalties",
+      "article_label": "Article 12",
+      "income_type": "royalties",
+      "summary": "Defines treaty treatment for royalties between China and Singapore.",
+      "notes": [
+        "Stage 6 uses the real Article 12 cap excerpt from the IRAS treaty text."
+      ],
+      "paragraphs": [
+        {
+          "paragraph_id": "art12-p2",
+          "paragraph_label": "Article 12(2)",
+          "source_reference": "CN-SG Article 12(2)",
+          "source_language": "en",
+          "source_excerpt": "However, such royalties may also be taxed in the Contracting State in which they arise and according to the laws of that State, but if the beneficial owner of the royalties is a resident of the other Contracting State, the tax so charged shall not exceed 10 per cent of the gross amount of the royalties.",
+          "rules": [
+            {
+              "rule_id": "cn-sg-art12-general",
+              "rule_type": "source_tax_limit",
+              "rate": "10%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "conditions": [
+                "The beneficial owner of the royalties is a resident of the other Contracting State."
+              ],
+              "human_review_required": true,
+              "review_reason": "Royalty branch still requires manual confirmation of beneficial ownership and characterization."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

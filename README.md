@@ -40,9 +40,12 @@ The current version can help a user:
 
 - determine whether a scenario is inside the supported treaty boundary
 - locate the likely treaty article and likely rate ceiling
-- surface source anchors and extraction-quality signals
+- surface treaty-version notes, paragraph-level source anchors, real treaty excerpts, and extraction-quality signals
 - separate routine review from priority review and no-auto-conclusion states
 - explain what facts are still missing before a stronger answer is possible
+- produce a deterministic workflow handoff package for downstream human or system review
+- validate that workflow handoff package through a replayable Stage 5 evidence pack
+- validate source-chain closure through Stage 6 working papers, replay cases, and fact-based `MLI / PPT` prompts
 
 ## System Architecture
 
@@ -109,7 +112,8 @@ In short: the system tries to be useful without pretending to be authoritative b
 
 Supported today:
 
-- country pair: `China <-> Netherlands`
+- stable pilot pairs: `China <-> Netherlands`, `China <-> Singapore`
+- `llm_generated` side lane: `China <-> Netherlands` only
 - transaction types: `dividends`, `interest`, `royalties`
 - interaction mode: single-turn natural language input
 - output mode: structured analysis
@@ -118,13 +122,18 @@ Structured output includes:
 
 - treaty article
 - source anchor
+- treaty version note
 - source quality
 - treaty excerpt
+- fact-based `MLI / PPT` prompt
 - treaty rate
 - flow direction
 - conditions
 - notes
 - human review guidance
+- workflow handoff package:
+  - `machine_handoff`
+  - `human_review_brief`
 
 Conservative refusal behavior includes:
 
@@ -139,6 +148,8 @@ Supported:
 - `中国居民企业向荷兰支付特许权使用费`
 - `中国公司向荷兰公司支付股息`
 - `荷兰公司向中国母公司支付股息`
+- `中国居民企业向新加坡公司支付特许权使用费`
+- `新加坡公司向中国公司支付利息`
 - `中国企业向荷兰银行支付贷款利息`
 
 Rejected by design:
@@ -157,6 +168,7 @@ This project is trying to prove:
 - the treaty data model is real
 - the review guidance is real
 - the refusal behavior is real
+- a second treaty pair can be onboarded without rewriting the public runtime contract
 
 That is more valuable than pretending to cover many countries or many tax topics with weak trust controls.
 
@@ -226,10 +238,10 @@ One of the hardest problems in treaty systems is not the UI. It is the source la
 - whether it is the main treaty text or an MLI / metadata context text
 - which repo artifacts derive from which official sources
 
-The repo now includes a formal China-Netherlands source-governance package:
+The repo now includes formal source-governance packages for the current pilot pairs:
 
-- official source registry
-- source usage map
+- China-Netherlands registry and usage map
+- China-Singapore registry and usage map
 - source-aware ingest validation
 
 This means the project no longer treats “treaty text” as one vague blob. It can increasingly say which governed official source a given ingest path or artifact derives from.
@@ -254,11 +266,11 @@ That intermediate layer now also preserves basic parser metadata such as source 
 Already working:
 
 - runtime: constrained LLM input understanding with conservative refusal behavior
-- runtime: stable curated dataset as default, plus an explicit `llm_generated` side lane
+- runtime: stable curated datasets for `CN-NL` and `CN-SG`, plus an explicit `llm_generated` side lane for `CN-NL`
 - runtime: branch ambiguity escalates to `no auto conclusion` instead of silent overconfidence
 - data layer: article / paragraph / rule treaty schema with source anchors and provenance
 - Phase 2: constrained offline LLM extraction from clean treaty text into generated structured datasets
-- source governance: official China-Netherlands registry plus source-aware ingest validation
+- source governance: official pilot-pair registries plus source-aware ingest validation
 - frontend: one-screen demo that exposes structured review results instead of chatty free-form output
 
 Current public identity:
@@ -339,10 +351,16 @@ Run the API against the LLM-generated dataset without changing the default demo 
 '@ | curl.exe -X POST http://127.0.0.1:8000/analyze -H "Content-Type: application/json" --data-binary @-
 ```
 
-Rebuild generated treaty dataset:
+Rebuild a generated treaty dataset from a parser-like source payload:
 
 ```powershell
 .\.venv\Scripts\python scripts/build_cn_nl_dataset.py --output data/treaties/cn-nl.v3.generated.json
+```
+
+Build the Stage 2 second-pair fixture through the same generic builder entry:
+
+```powershell
+.\.venv\Scripts\python scripts/build_cn_nl_dataset.py --source data/source_documents/cn-sg-main-treaty.json --output data/treaties/cn-sg.v3.generated.json
 ```
 
 ## Roadmap
@@ -372,6 +390,8 @@ Real document-to-structured-data generation:
 ## Key Docs
 
 - `docs/superpowers/specs/2026-03-11-tax-treaty-agent-design.md`
+- `docs/superpowers/specs/2026-03-12-tax-treaty-agent-whitepaper.md`
+- `docs/superpowers/specs/2026-03-12-tax-treaty-agent-whitepaper-zh.md`
 - `docs/superpowers/specs/2026-03-11-tax-treaty-agent-alignment-roadmap-design.md`
 - `docs/superpowers/specs/2026-03-11-tax-treaty-agent-import-stub-design.md`
 - `docs/superpowers/plans/2026-03-11-tax-treaty-agent-implementation-plan.md`

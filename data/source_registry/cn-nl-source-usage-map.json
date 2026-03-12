@@ -1,7 +1,7 @@
 {
   "map_id": "cn-nl-source-usage-map",
   "registry_id": "cn-nl-official-sources",
-  "last_reviewed_on": "2026-03-12",
+  "last_reviewed_on": "2026-03-13",
   "artifacts": [
     {
       "artifact_path": "data/raw_documents/cn-nl-article11-12.clean.txt",
@@ -69,10 +69,26 @@
       "derived_from_source_ids": [
         "sat-cn-nl-2013-zh-pdf",
         "sat-cn-nl-2013-en-pdf",
-        "nl-2013-consolidated-text"
+        "nl-2013-consolidated-text",
+        "oecd-mli-signatories-and-parties",
+        "sat-cn-nl-mli-en-pdf",
+        "oecd-netherlands-mli-peer-review-2024"
       ],
       "governance_status": "curated_subset",
-      "coverage_note": "Stable curated runtime dataset for the public demo. Treat as article-level curated subset grounded in official treaty texts, not yet as a fully source-governed complete treaty reproduction."
+      "coverage_note": "Stage 6 aligned stable runtime dataset with paragraph-level excerpts, working-paper lineage, and fact-based MLI/PPT context across dividends, interest, and royalties."
+    },
+    {
+      "artifact_path": "data/source_documents/cn-nl-main-treaty.json",
+      "artifact_role": "stage6_alignment_source_payload",
+      "derived_from_source_ids": [
+        "sat-cn-nl-2013-en-pdf",
+        "nl-2013-consolidated-text",
+        "oecd-mli-signatories-and-parties",
+        "sat-cn-nl-mli-en-pdf",
+        "oecd-netherlands-mli-peer-review-2024"
+      ],
+      "governance_status": "hand_aligned_source_fixture",
+      "coverage_note": "Stage 6 alignment source fixture used to keep CN-NL source quality at the same treaty-version, paragraph-reference, and MLI-context level as CN-SG."
     }
   ]
 }

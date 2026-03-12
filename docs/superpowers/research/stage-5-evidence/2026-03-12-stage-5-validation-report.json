@@ -1,0 +1,897 @@
+{
+  "total_cases": 6,
+  "passed_cases": 6,
+  "failed_cases": 0,
+  "category_summary": {
+    "supported_clear": {
+      "total": 1,
+      "passed": 1
+    },
+    "supported_ambiguous": {
+      "total": 1,
+      "passed": 1
+    },
+    "stage4_bounded": {
+      "total": 1,
+      "passed": 1
+    },
+    "unsupported": {
+      "total": 1,
+      "passed": 1
+    },
+    "incomplete": {
+      "total": 1,
+      "passed": 1
+    },
+    "unavailable_data_source": {
+      "total": 1,
+      "passed": 1
+    }
+  },
+  "case_reports": [
+    {
+      "id": "stage5-supported-clear-001",
+      "category": "supported_clear",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "handoff_present": true,
+        "review_state_echo": true,
+        "recommended_route": true,
+        "record_kind": true,
+        "article_number": true,
+        "rate_display": true,
+        "human_disposition": true,
+        "user_declared_facts_present": true
+      },
+      "expected": {
+        "supported": true,
+        "review_state_code": "pre_review_complete",
+        "recommended_route": "standard_review",
+        "record_kind": "supported",
+        "article_number": "12",
+        "rate_display": "10%",
+        "human_disposition": "Proceed with standard human review.",
+        "user_declared_facts_present": false
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "royalties"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 12 Royalties appears relevant, with a treaty rate ceiling of 10%. Manual review is still recommended.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Proceed with standard manual review before relying on the treaty position.",
+          "article_number": "12",
+          "article_title": "Royalties",
+          "source_reference": "Article 12(2)",
+          "source_language": "en",
+          "source_excerpt": "However, such royalties may also be taxed in the Contracting State in which they arise, and according to the laws of that State, but if the beneficial owner of the royalties is a resident of the other Contracting State, the tax so charged shall not exceed 10 per cent of the gross amount of the royalties.",
+          "rate": "10%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": true,
+          "key_missing_facts": [
+            "Whether the payment is truly for qualifying intellectual property use.",
+            "Whether the recipient is the beneficial owner of the royalty income.",
+            "Whether the contract and payment flow support treaty characterization."
+          ],
+          "review_checklist": [
+            "Confirm the payment is actually for the use of, or right to use, qualifying intellectual property.",
+            "Confirm the recipient is the beneficial owner of the royalty income.",
+            "Check the underlying contract, invoice, and payment flow for factual consistency."
+          ],
+          "conditions": [
+            "The beneficial owner of the royalties is a resident of the other Contracting State."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-royalties-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "normal",
+          "review_reason": "Final eligibility depends on facts outside the current review scope."
+        },
+        "review_state": {
+          "state_code": "pre_review_complete",
+          "state_label_zh": "预审完成",
+          "state_summary": "系统已完成第一轮预审，请按标准复核流程继续。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 12 - Royalties",
+          "payment_direction": "CN -> NL",
+          "income_type": "royalties"
+        },
+        "next_actions": [
+          {
+            "priority": "medium",
+            "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+            "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。"
+          }
+        ],
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "pre_review_complete",
+            "recommended_route": "standard_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "royalties",
+            "article_number": "12",
+            "article_title": "Royalties",
+            "rate_display": "10%",
+            "auto_conclusion_allowed": true,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 12(2)",
+            "source_excerpt": "However, such royalties may also be taxed in the Contracting State in which they arise, and according to the laws of that State, but if the beneficial owner of the royalties is a resident of the other Contracting State, the tax so charged shall not exceed 10 per cent of the gross amount of the royalties.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "normal",
+            "blocking_facts": [
+              "Whether the payment is truly for qualifying intellectual property use.",
+              "Whether the recipient is the beneficial owner of the royalty income.",
+              "Whether the contract and payment flow support treaty characterization."
+            ],
+            "next_actions": [
+              {
+                "priority": "medium",
+                "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+                "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。"
+              }
+            ],
+            "user_declared_facts": []
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL royalties falls inside current treaty scope.",
+            "disposition": "Proceed with standard human review.",
+            "summary_lines": [
+              "Article 12 Royalties is the current treaty lane.",
+              "Current rate display: 10%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically."
+            ],
+            "facts_to_verify": [
+              "Whether the payment is truly for qualifying intellectual property use.",
+              "Whether the recipient is the beneficial owner of the royalty income.",
+              "Whether the contract and payment flow support treaty characterization."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage5-supported-ambiguous-001",
+      "category": "supported_ambiguous",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "handoff_present": true,
+        "review_state_echo": true,
+        "recommended_route": true,
+        "record_kind": true,
+        "article_number": true,
+        "rate_display": true,
+        "human_disposition": true,
+        "user_declared_facts_present": true
+      },
+      "expected": {
+        "supported": true,
+        "review_state_code": "can_be_completed",
+        "recommended_route": "complete_facts_then_rerun",
+        "record_kind": "supported",
+        "article_number": "10",
+        "rate_display": "5% / 10%",
+        "human_disposition": "Complete the missing facts and rerun the pre-review.",
+        "user_declared_facts_present": false
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "SG",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-sg",
+          "treaty_title": "China-Singapore Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "CN-SG Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "10 per cent of the gross amount of the dividends in all other cases.",
+          "rate": "5% / 10%",
+          "extraction_confidence": 0.99,
+          "auto_conclusion_allowed": false,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "Applies in all other cases where the reduced-rate branch in Article 10(2)(a) is not established."
+          ],
+          "notes": [
+            "The Stage 6 verified version uses the IRAS consolidated treaty text rather than the legacy dividend rates preserved elsewhere in the PDF annexes.",
+            "Beneficial ownership and treaty anti-abuse rules still require manual confirmation."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Agreement between the Government of the Republic of Singapore and the Government of the People's Republic of China for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2007 agreement as reflected in the IRAS official treaty text, with the Second Protocol effective from 1 January 2010 and the Third Protocol effective from 1 January 2013 incorporated into the operative Articles 10 to 12.",
+            "source_document_title": "Agreement between the Government of the Republic of Singapore and the Government of the People's Republic of China for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "iras-cn-sg-dta-full-text-pdf",
+              "iras-cn-sg-second-protocol-newsroom",
+              "iras-cn-sg-third-protocol-newsroom"
+            ],
+            "protocol_note": "IRAS states that the Second Protocol signed on 24 August 2009 entered into force on 11 December 2009 and took effect from 1 January 2010, while the Third Protocol entered into force on 24 July 2012 and took effect from 1 January 2013.",
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-sg-dividends-working-paper.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and Singapore deposited on 21 December 2018 with entry into force on 1 April 2019. OECD peer-review materials record the China-Singapore agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether one of the principal purposes of the arrangement was to obtain treaty benefits.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "oecd-singapore-mli-peer-review-2024"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "high",
+          "review_reason": "Dividend branch remains fact-sensitive and still requires beneficial-owner and anti-abuse review. Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+          "alternative_rate_candidates": [
+            {
+              "source_reference": "CN-SG Article 10(2)(a)",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company (other than a partnership) which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ]
+            }
+          ]
+        },
+        "review_state": {
+          "state_code": "can_be_completed",
+          "state_label_zh": "可补全",
+          "state_summary": "系统已缩小范围；补充少量关键事实后，可进一步明确结果。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-新加坡税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> SG",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "先核实股息分支所需的关键事实，再判断候选税率分支。",
+            "reason": "当前存在多个可信税率分支，系统不会自动替你选择其一。"
+          }
+        ],
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "can_be_completed",
+            "recommended_route": "complete_facts_then_rerun",
+            "applicable_treaty": "中国-新加坡税收协定",
+            "payment_direction": "CN -> SG",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5% / 10%",
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "CN-SG Article 10(2)(b)",
+            "source_excerpt": "10 per cent of the gross amount of the dividends in all other cases.",
+            "treaty_version": "2007 agreement as reflected in the IRAS official treaty text, with the Second Protocol effective from 1 January 2010 and the Third Protocol effective from 1 January 2013 incorporated into the operative Articles 10 to 12.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and Singapore deposited on 21 December 2018 with entry into force on 1 April 2019. OECD peer-review materials record the China-Singapore agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "high",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "先核实股息分支所需的关键事实，再判断候选税率分支。",
+                "reason": "当前存在多个可信税率分支，系统不会自动替你选择其一。"
+              }
+            ],
+            "user_declared_facts": []
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> SG dividends falls inside current treaty scope.",
+            "disposition": "Complete the missing facts and rerun the pre-review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5% / 10%.",
+              "2007 agreement as reflected in the IRAS official treaty text, with the Second Protocol effective from 1 January 2010 and the Third Protocol effective from 1 January 2013 incorporated into the operative Articles 10 to 12.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and Singapore deposited on 21 December 2018 with entry into force on 1 April 2019. OECD peer-review materials record the China-Singapore agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically."
+            ],
+            "facts_to_verify": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage5-stage4-bounded-001",
+      "category": "stage4_bounded",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "handoff_present": true,
+        "review_state_echo": true,
+        "recommended_route": true,
+        "record_kind": true,
+        "article_number": true,
+        "rate_display": true,
+        "human_disposition": true,
+        "user_declared_facts_present": true
+      },
+      "expected": {
+        "supported": true,
+        "review_state_code": "pre_review_complete",
+        "recommended_route": "standard_review",
+        "record_kind": "supported",
+        "article_number": "10",
+        "rate_display": "5%",
+        "human_disposition": "Proceed with standard human review.",
+        "user_declared_facts_present": true
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": true,
+        "normalized_input": {
+          "payer_country": "CN",
+          "payee_country": "NL",
+          "transaction_type": "dividends"
+        },
+        "result": {
+          "treaty_id": "cn-nl",
+          "treaty_title": "China-Netherlands Tax Treaty",
+          "summary": "Preliminary view: Article 10 Dividends appears relevant, with a treaty rate ceiling of 5%. Manual review is still recommended.",
+          "boundary_note": "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          "immediate_action": "Proceed with standard manual review before relying on the treaty position.",
+          "article_number": "10",
+          "article_title": "Dividends",
+          "source_reference": "Article 10(2)(a)",
+          "source_language": "en",
+          "source_excerpt": "However, such dividends may also be taxed in the State of source, but the tax so charged shall not exceed 5 per cent of the gross amount of the dividends if the beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends.",
+          "rate": "5%",
+          "extraction_confidence": 0.98,
+          "auto_conclusion_allowed": true,
+          "key_missing_facts": [
+            "Whether the payment is legally a dividend rather than another type of return.",
+            "Whether the recipient is the beneficial owner of the dividend income.",
+            "Whether shareholding facts support relying on the treaty position."
+          ],
+          "review_checklist": [
+            "Confirm the payment is legally characterized as a dividend rather than another return.",
+            "Confirm the recipient is the beneficial owner of the dividend income.",
+            "Check shareholding facts and supporting corporate records before relying on the treaty rate."
+          ],
+          "conditions": [
+            "The beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends."
+          ],
+          "notes": [
+            "Beneficial ownership and factual qualification may matter.",
+            "Article 10 contains multiple dividend-rate branches that depend on shareholding facts."
+          ],
+          "source_trace": {
+            "treaty_full_name": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "version_note": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "source_document_title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+            "language_version": "en",
+            "official_source_ids": [
+              "sat-cn-nl-2013-en-pdf",
+              "nl-2013-consolidated-text"
+            ],
+            "protocol_note": null,
+            "working_paper_ref": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-nl-dividends-alignment-check.md"
+          },
+          "mli_context": {
+            "covered_tax_agreement": true,
+            "ppt_applies": true,
+            "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+            "official_source_ids": [
+              "oecd-mli-signatories-and-parties",
+              "sat-cn-nl-mli-en-pdf"
+            ]
+          },
+          "human_review_required": true,
+          "review_priority": "normal",
+          "review_reason": "Final eligibility depends on facts outside the current review scope. The current branch view reflects unverified user-declared direct holding facts."
+        },
+        "review_state": {
+          "state_code": "pre_review_complete",
+          "state_label_zh": "预审完成",
+          "state_summary": "系统已完成第一轮预审，请按标准复核流程继续。"
+        },
+        "confirmed_scope": {
+          "applicable_treaty": "中国-荷兰税收协定",
+          "applicable_article": "Article 10 - Dividends",
+          "payment_direction": "CN -> NL",
+          "income_type": "dividends"
+        },
+        "next_actions": [
+          {
+            "priority": "medium",
+            "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+            "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。"
+          }
+        ],
+        "fact_completion": null,
+        "user_declared_facts": {
+          "declaration_label": "User-declared facts (unverified)",
+          "facts": [
+            {
+              "fact_key": "direct_holding_confirmed",
+              "value": "yes",
+              "label": "Direct holding confirmed"
+            },
+            {
+              "fact_key": "direct_holding_threshold_met",
+              "value": "yes",
+              "label": "Direct holding is at least 25%"
+            }
+          ]
+        },
+        "fact_completion_status": {
+          "status_code": "completed_narrowed",
+          "status_label_zh": "已缩减",
+          "status_summary": "系统已根据用户声明事实将股息分支缩减为单一候选税率。"
+        },
+        "change_summary": {
+          "summary_label": "Result Change Summary",
+          "state_change": "可补全 -> 预审完成",
+          "rate_change": "5% / 10% -> 5%",
+          "trigger_facts": [
+            "Direct holding confirmed: yes",
+            "Direct holding is at least 25%: yes"
+          ]
+        },
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "supported",
+            "review_state_code": "pre_review_complete",
+            "recommended_route": "standard_review",
+            "applicable_treaty": "中国-荷兰税收协定",
+            "payment_direction": "CN -> NL",
+            "income_type": "dividends",
+            "article_number": "10",
+            "article_title": "Dividends",
+            "rate_display": "5%",
+            "auto_conclusion_allowed": true,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": "Article 10(2)(a)",
+            "source_excerpt": "However, such dividends may also be taxed in the State of source, but the tax so charged shall not exceed 5 per cent of the gross amount of the dividends if the beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends.",
+            "treaty_version": "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+            "mli_summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+            "review_priority": "normal",
+            "blocking_facts": [
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "next_actions": [
+              {
+                "priority": "medium",
+                "action": "按标准人工复核流程确认条款适用条件与受益所有人事实。",
+                "reason": "当前结果属于第一轮预审完成，不等于最终税务结论。"
+              }
+            ],
+            "user_declared_facts": [
+              {
+                "fact_key": "direct_holding_confirmed",
+                "value": "yes",
+                "label": "Direct holding confirmed"
+              },
+              {
+                "fact_key": "direct_holding_threshold_met",
+                "value": "yes",
+                "label": "Direct holding is at least 25%"
+              }
+            ]
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "CN -> NL dividends falls inside current treaty scope.",
+            "disposition": "Proceed with standard human review.",
+            "summary_lines": [
+              "Article 10 Dividends is the current treaty lane.",
+              "Current rate display: 5%.",
+              "2013 agreement reflected in the official English treaty text used for the stable runtime dataset.",
+              "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and the Netherlands deposited on 29 March 2019 with entry into force on 1 July 2019. The SAT synthesised text and OECD peer-review materials treat the China-Netherlands agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+              "User-declared facts remain unverified and should be checked during review."
+            ],
+            "facts_to_verify": [
+              "Verify the user-declared facts before relying on the narrowed treaty result.",
+              "Whether the payment is legally a dividend rather than another type of return.",
+              "Whether the recipient is the beneficial owner of the dividend income.",
+              "Whether shareholding facts support relying on the treaty position."
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage5-unsupported-001",
+      "category": "unsupported",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "handoff_present": true,
+        "review_state_echo": true,
+        "recommended_route": true,
+        "record_kind": true,
+        "article_number": true,
+        "rate_display": true,
+        "human_disposition": true,
+        "user_declared_facts_present": true
+      },
+      "expected": {
+        "supported": false,
+        "review_state_code": "out_of_scope",
+        "recommended_route": "out_of_scope_rewrite",
+        "record_kind": "unsupported",
+        "article_number": null,
+        "rate_display": null,
+        "human_disposition": "Rewrite the scenario inside the supported pilot scope.",
+        "user_declared_facts_present": false
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": false,
+        "reason": "unsupported_country_pair",
+        "message": "Current pilot scope supports only China-Netherlands, China-Singapore treaty scenarios.",
+        "immediate_action": "Rewrite the scenario into the supported pilot treaty pair list before running another review.",
+        "missing_fields": [],
+        "suggested_format": "Try a sentence like: 中国居民企业向新加坡公司支付特许权使用费",
+        "suggested_examples": [
+          "中国居民企业向荷兰公司支付股息",
+          "中国居民企业向荷兰银行支付利息",
+          "中国居民企业向荷兰公司支付特许权使用费",
+          "中国居民企业向新加坡公司支付股息",
+          "中国居民企业向新加坡银行支付利息",
+          "中国居民企业向新加坡公司支付特许权使用费"
+        ],
+        "review_state": {
+          "state_code": "out_of_scope",
+          "state_label_zh": "不在支持范围",
+          "state_summary": "当前查询超出本产品的国家对或收入类型支持范围。"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "改写为当前试点国家对列表内、且属于股息、利息或特许权使用费的查询后再重试。",
+            "reason": "当前场景属于产品边界之外；目前稳定数据源只支持 China-Netherlands, China-Singapore 两个试点国家对。"
+          }
+        ],
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "unsupported",
+            "review_state_code": "out_of_scope",
+            "recommended_route": "out_of_scope_rewrite",
+            "applicable_treaty": null,
+            "payment_direction": null,
+            "income_type": null,
+            "article_number": null,
+            "article_title": null,
+            "rate_display": null,
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": null,
+            "source_excerpt": null,
+            "treaty_version": null,
+            "mli_summary": null,
+            "review_priority": "high",
+            "blocking_facts": [],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "改写为当前试点国家对列表内、且属于股息、利息或特许权使用费的查询后再重试。",
+                "reason": "当前场景属于产品边界之外；目前稳定数据源只支持 China-Netherlands, China-Singapore 两个试点国家对。"
+              }
+            ],
+            "user_declared_facts": []
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "Current scenario is outside the supported pilot treaty scope.",
+            "disposition": "Rewrite the scenario inside the supported pilot scope.",
+            "summary_lines": [
+              "Current pilot scope supports only China-Netherlands, China-Singapore treaty scenarios.",
+              "Rewrite the scenario into the supported pilot treaty pair list before running another review."
+            ],
+            "facts_to_verify": [],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage5-incomplete-001",
+      "category": "incomplete",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "handoff_present": true,
+        "review_state_echo": true,
+        "recommended_route": true,
+        "record_kind": true,
+        "article_number": true,
+        "rate_display": true,
+        "human_disposition": true,
+        "user_declared_facts_present": true
+      },
+      "expected": {
+        "supported": false,
+        "review_state_code": "can_be_completed",
+        "recommended_route": "complete_facts_then_rerun",
+        "record_kind": "incomplete",
+        "article_number": null,
+        "rate_display": null,
+        "human_disposition": "Complete the missing facts and rerun the pre-review.",
+        "user_declared_facts_present": false
+      },
+      "actual": {
+        "data_source_used": "stable",
+        "supported": false,
+        "reason": "incomplete_scenario",
+        "message": "Please provide a clearer scenario with both payer and payee country context.",
+        "immediate_action": "Add the missing scenario facts before running the treaty review again.",
+        "missing_fields": [
+          "payer_country"
+        ],
+        "suggested_format": "Try a sentence like: 中国居民企业向荷兰公司支付股息",
+        "suggested_examples": [
+          "中国居民企业向荷兰公司支付股息",
+          "中国居民企业向荷兰银行支付利息"
+        ],
+        "review_state": {
+          "state_code": "can_be_completed",
+          "state_label_zh": "可补全",
+          "state_summary": "系统仍在当前预审范围内，但需要补充缺失事实后才能继续缩小结果。"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "补充付款方国家或付款方主体信息后重新提交查询。",
+            "reason": "当前缺少足够的付款方事实，系统无法确认交易方向。"
+          }
+        ],
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "incomplete",
+            "review_state_code": "can_be_completed",
+            "recommended_route": "complete_facts_then_rerun",
+            "applicable_treaty": null,
+            "payment_direction": null,
+            "income_type": null,
+            "article_number": null,
+            "article_title": null,
+            "rate_display": null,
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "stable",
+            "source_reference": null,
+            "source_excerpt": null,
+            "treaty_version": null,
+            "mli_summary": null,
+            "review_priority": "normal",
+            "blocking_facts": [
+              "payer_country"
+            ],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "补充付款方国家或付款方主体信息后重新提交查询。",
+                "reason": "当前缺少足够的付款方事实，系统无法确认交易方向。"
+              }
+            ],
+            "user_declared_facts": []
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "Current scenario needs additional facts before treaty pre-review can continue.",
+            "disposition": "Complete the missing facts and rerun the pre-review.",
+            "summary_lines": [
+              "Please provide a clearer scenario with both payer and payee country context.",
+              "Add the missing scenario facts before running the treaty review again."
+            ],
+            "facts_to_verify": [
+              "payer_country"
+            ],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    },
+    {
+      "id": "stage5-unavailable-001",
+      "category": "unavailable_data_source",
+      "passed": true,
+      "checks": {
+        "supported": true,
+        "review_state_code": true,
+        "handoff_present": true,
+        "review_state_echo": true,
+        "recommended_route": true,
+        "record_kind": true,
+        "article_number": true,
+        "rate_display": true,
+        "human_disposition": true,
+        "user_declared_facts_present": true
+      },
+      "expected": {
+        "supported": false,
+        "review_state_code": "needs_human_intervention",
+        "recommended_route": "manual_review",
+        "record_kind": "unsupported",
+        "article_number": null,
+        "rate_display": null,
+        "human_disposition": "Escalate this scenario for manual review.",
+        "user_declared_facts_present": false
+      },
+      "actual": {
+        "data_source_used": "llm_generated",
+        "supported": false,
+        "reason": "unavailable_data_source",
+        "message": "The requested treaty dataset is not currently available.",
+        "immediate_action": "Retry with the stable curated dataset or regenerate the requested treaty dataset before reviewing this scenario.",
+        "missing_fields": [],
+        "suggested_format": "Try again with the stable dataset or regenerate the LLM-generated treaty dataset before reviewing this scenario.",
+        "suggested_examples": [
+          "Use the default stable dataset for a normal review run.",
+          "Regenerate the LLM-derived treaty dataset, then retry the same scenario."
+        ],
+        "review_state": {
+          "state_code": "needs_human_intervention",
+          "state_label_zh": "需要人工介入",
+          "state_summary": "当前结果无法在现有自动化边界内继续推进，应转入人工处理。"
+        },
+        "next_actions": [
+          {
+            "priority": "high",
+            "action": "切回稳定数据源，或在人工确认数据已生成后再重试。",
+            "reason": "当前请求的数据集不可用，系统不会伪造协定结论。"
+          }
+        ],
+        "handoff_package": {
+          "machine_handoff": {
+            "schema_version": "stage5.v1",
+            "record_kind": "unsupported",
+            "review_state_code": "needs_human_intervention",
+            "recommended_route": "manual_review",
+            "applicable_treaty": null,
+            "payment_direction": null,
+            "income_type": null,
+            "article_number": null,
+            "article_title": null,
+            "rate_display": null,
+            "auto_conclusion_allowed": false,
+            "human_review_required": true,
+            "data_source_used": "llm_generated",
+            "source_reference": null,
+            "source_excerpt": null,
+            "treaty_version": null,
+            "mli_summary": null,
+            "review_priority": "high",
+            "blocking_facts": [],
+            "next_actions": [
+              {
+                "priority": "high",
+                "action": "切回稳定数据源，或在人工确认数据已生成后再重试。",
+                "reason": "当前请求的数据集不可用，系统不会伪造协定结论。"
+              }
+            ],
+            "user_declared_facts": []
+          },
+          "human_review_brief": {
+            "brief_title": "Treaty Pre-Review Brief",
+            "headline": "Current scenario cannot continue because the requested dataset is unavailable.",
+            "disposition": "Escalate this scenario for manual review.",
+            "summary_lines": [
+              "The requested treaty dataset is not currently available.",
+              "Retry with the stable curated dataset or regenerate the requested treaty dataset before reviewing this scenario."
+            ],
+            "facts_to_verify": [],
+            "handoff_note": "This is a bounded pre-review output, not a final tax opinion."
+          }
+        }
+      }
+    }
+  ],
+  "metrics": {
+    "handoff_coverage": {
+      "numerator": 6,
+      "denominator": 6,
+      "value": 1.0,
+      "definition": "Cases where the response includes a handoff_package."
+    },
+    "route_match_rate": {
+      "numerator": 6,
+      "denominator": 6,
+      "value": 1.0,
+      "definition": "Cases where recommended_route matches the expected route and echoes the response review_state."
+    },
+    "null_field_behavior": {
+      "numerator": 3,
+      "denominator": 3,
+      "value": 1.0,
+      "definition": "Cases requiring null treaty/article fields that return explicit null values instead of fabricated data."
+    },
+    "user_declared_fact_preservation": {
+      "numerator": 1,
+      "denominator": 1,
+      "value": 1.0,
+      "definition": "Cases that preserve user-declared facts inside machine_handoff when such facts exist."
+    }
+  },
+  "suite_scope_note": "This Stage 5 evaluation replays the deterministic handoff contract across supported, incomplete, unsupported, unavailable-data-source, and bounded Stage 4 outputs without changing the public request shape.",
+  "known_limitations": [
+    "The current pack validates the response-level handoff contract, not external transport or workflow orchestration.",
+    "Frontend renderability is still validated through the existing UI test suite rather than this JSON report alone."
+  ]
+}
