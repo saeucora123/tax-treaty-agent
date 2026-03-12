@@ -1,0 +1,78 @@
+{
+  "map_id": "cn-nl-source-usage-map",
+  "registry_id": "cn-nl-official-sources",
+  "last_reviewed_on": "2026-03-12",
+  "artifacts": [
+    {
+      "artifact_path": "data/raw_documents/cn-nl-article11-12.clean.txt",
+      "artifact_role": "clean_text_sample",
+      "derived_from_source_ids": [
+        "sat-cn-nl-2013-en-pdf",
+        "nl-2013-consolidated-text"
+      ],
+      "governance_status": "verified_excerpt",
+      "coverage_note": "Hand-cleaned English excerpt used to prove the constrained Phase 2 extraction path for Article 11 and Article 12."
+    },
+    {
+      "artifact_path": "data/raw_documents/cn-nl-article10-dividends-branch.clean.txt",
+      "artifact_role": "clean_text_sample",
+      "derived_from_source_ids": [
+        "sat-cn-nl-2013-en-pdf",
+        "nl-2013-consolidated-text"
+      ],
+      "governance_status": "verified_excerpt",
+      "coverage_note": "Hand-cleaned English excerpt of Article 10 branch text used to test 5% / 10% dividend branching in Phase 2."
+    },
+    {
+      "artifact_path": "data/source_documents/cn-nl.llm-extracted.parsed.json",
+      "artifact_role": "phase2_parsed_source_payload",
+      "derived_from_source_ids": [
+        "sat-cn-nl-2013-en-pdf",
+        "nl-2013-consolidated-text"
+      ],
+      "governance_status": "llm_generated_demo_artifact",
+      "coverage_note": "Constrained DeepSeek extraction output for the Article 11/12 clean text sample."
+    },
+    {
+      "artifact_path": "data/treaties/cn-nl.v3.generated.from-llm.json",
+      "artifact_role": "phase2_generated_dataset",
+      "derived_from_source_ids": [
+        "sat-cn-nl-2013-en-pdf",
+        "nl-2013-consolidated-text"
+      ],
+      "governance_status": "llm_generated_demo_artifact",
+      "coverage_note": "Generated dataset from the constrained offline LLM extraction lane for Article 11/12."
+    },
+    {
+      "artifact_path": "data/source_documents/cn-nl.article10.dividends-branch.llm.parsed.json",
+      "artifact_role": "phase2_parsed_source_payload",
+      "derived_from_source_ids": [
+        "sat-cn-nl-2013-en-pdf",
+        "nl-2013-consolidated-text"
+      ],
+      "governance_status": "llm_generated_demo_artifact",
+      "coverage_note": "Constrained DeepSeek extraction output for the Article 10 dividend branch sample."
+    },
+    {
+      "artifact_path": "data/treaties/cn-nl.v3.generated.article10-branch.from-llm.json",
+      "artifact_role": "phase2_generated_dataset",
+      "derived_from_source_ids": [
+        "sat-cn-nl-2013-en-pdf",
+        "nl-2013-consolidated-text"
+      ],
+      "governance_status": "llm_generated_demo_artifact",
+      "coverage_note": "Generated dataset proving that dividend branch ambiguity can flow through the `llm_generated` runtime lane."
+    },
+    {
+      "artifact_path": "data/treaties/cn-nl.v3.json",
+      "artifact_role": "stable_curated_runtime_dataset",
+      "derived_from_source_ids": [
+        "sat-cn-nl-2013-zh-pdf",
+        "sat-cn-nl-2013-en-pdf",
+        "nl-2013-consolidated-text"
+      ],
+      "governance_status": "curated_subset",
+      "coverage_note": "Stable curated runtime dataset for the public demo. Treat as article-level curated subset grounded in official treaty texts, not yet as a fully source-governed complete treaty reproduction."
+    }
+  ]
+}

@@ -60,6 +60,11 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_REPORT_OUTPUT_PATH,
         help="Output path for the ingest report JSON.",
     )
+    parser.add_argument(
+        "--source-id",
+        type=str,
+        help="Optional official source id for governance traceability.",
+    )
     return parser.parse_args()
 
 
@@ -93,7 +98,7 @@ def build_attention_items(dataset: dict) -> list[dict]:
     return attention_items
 
 
-def build_ingest_report(source_payload: dict, dataset: dict) -> dict:
+def build_ingest_report(source_payload: dict, dataset: dict, source_id: str | None = None) -> dict:
     article_count = len(source_payload["parsed_articles"])
     paragraph_count = 0
     rule_count = 0
@@ -119,7 +124,7 @@ def build_ingest_report(source_payload: dict, dataset: dict) -> dict:
                 1 for segment in source_segments if segment.get("text_quality") == "warning"
             )
 
-    return {
+    report = {
         "document_id": source_payload["document"]["document_id"],
         "status": "warning" if attention_items else "ok",
         "article_count": article_count,
@@ -131,6 +136,9 @@ def build_ingest_report(source_payload: dict, dataset: dict) -> dict:
         "attention_item_count": len(attention_items),
         "attention_items": attention_items,
     }
+    if source_id is not None:
+        report["source_id"] = source_id
+    return report
 
 
 def write_report(report: dict, output_path: Path) -> None:
@@ -149,13 +157,21 @@ def extract_document_id(lines: list[str]) -> str | None:
     return None
 
 
-def build_error_report(document_id: str | None, error_stage: str, error_message: str) -> dict:
-    return {
+def build_error_report(
+    document_id: str | None,
+    error_stage: str,
+    error_message: str,
+    source_id: str | None = None,
+) -> dict:
+    report = {
         "status": "error",
         "document_id": document_id,
         "error_stage": error_stage,
         "error_message": error_message,
     }
+    if source_id is not None:
+        report["source_id"] = source_id
+    return report
 
 
 def main() -> int:
@@ -171,6 +187,7 @@ def main() -> int:
                 document_id=None,
                 error_stage="io",
                 error_message=str(error),
+                source_id=args.source_id,
             ),
             args.report_output,
         )
@@ -182,6 +199,7 @@ def main() -> int:
                 document_id=extract_document_id(lines),
                 error_stage="parse",
                 error_message=str(error),
+                source_id=args.source_id,
             ),
             args.report_output,
         )
@@ -196,6 +214,7 @@ def main() -> int:
                 document_id=source_payload.get("document", {}).get("document_id"),
                 error_stage="validation",
                 error_message=str(error),
+                source_id=args.source_id,
             ),
             args.report_output,
         )
@@ -203,7 +222,7 @@ def main() -> int:
         return 1
 
     dataset = build_dataset(source_payload)
-    report = build_ingest_report(source_payload, dataset)
+    report = build_ingest_report(source_payload, dataset, source_id=args.source_id)
     write_payload(source_payload, args.parsed_output)
     write_dataset(dataset, args.dataset_output)
     write_report(report, args.report_output)

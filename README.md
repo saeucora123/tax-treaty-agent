@@ -1,68 +1,109 @@
 # Tax Treaty Agent
 
-A bounded tax treaty review tool that helps users run a first-pass, source-aware analysis of cross-border payment scenarios using structured treaty data and explicit review guidance.
+A bounded, source-aware international tax treaty pre-review system that uses AI in tightly controlled places while keeping treaty facts inside structured data and conservative runtime guardrails.
 
 ![Tax Treaty Agent demo](docs/superpowers/assets/tax-treaty-agent-demo.png)
 
-## What This Is
+## What This Project Is
 
-`Tax Treaty Agent` is a cross-border payment treaty pre-review tool prototype.
+`Tax Treaty Agent` is a bounded international tax treaty pre-review tool.
 
-It is designed to answer a narrow but real question:
+It is built for a narrow but real workflow:
 
-- for a given cross-border payment scenario, which treaty article is likely relevant
-- what is the likely rate ceiling
-- what conditions and caveats matter
-- when should a human reviewer step in
+- a user describes a cross-border payment scenario
+- the system identifies the likely treaty lane
+- the system returns a structured first-pass review
+- the system refuses to sound certain when key facts are missing
 
-The project is intentionally built as a bounded professional tool, not a generic tax chatbot and not a final legal or tax opinion engine.
+This project is intentionally **not**:
+
+- a generic tax chatbot
+- a final legal or tax opinion engine
+- a free-form LLM that invents treaty outcomes from memory
 
 ## Why This Project Exists
 
-Many AI tax demos look impressive on the surface but rely on free-form model output, vague scope, and weak trust boundaries.
+Many AI tax demos look polished but rely on free-form model output, vague scope, and weak trust boundaries.
 
-This project takes a different approach:
+This project takes the opposite path:
 
 - narrow scope over fake breadth
-- treaty-backed output over free-form guesswork
-- explicit refusal behavior over overconfident hallucination
-- productized workflow over prompt-only demos
+- structured treaty facts over model memory
+- explicit refusal behavior over confident guessing
+- product workflow over prompt-only demo behavior
 
-The current MVP is built to show how a complex business problem can be turned into a credible AI tool without pretending the system is more reliable than it is.
+The goal is to show how a high-risk business problem can be turned into a credible AI system **without pretending the model is allowed to decide legal facts on its own**.
 
-## What It Does
+## What It Does Today
 
-The current version helps users:
+The current version can help a user:
 
-- identify whether a scenario falls within the supported treaty scope
-- locate the likely treaty article and rate ceiling
-- see source-aware review signals
-- understand when human review should be prioritized
+- determine whether a scenario is inside the supported treaty boundary
+- locate the likely treaty article and likely rate ceiling
+- surface source anchors and extraction-quality signals
+- separate routine review from priority review and no-auto-conclusion states
+- explain what facts are still missing before a stronger answer is possible
 
-## Why Not A Chatbot
+## System Architecture
 
-This project is deliberately not positioned as an open-ended conversational tax assistant.
+The project is easiest to understand as a two-layer system:
 
-Reasons:
+```mermaid
+flowchart TB
+    subgraph A["Layer 1: Offline Data Grounding"]
+        S1["Official Treaty Sources"]
+        S2["Source Registry / Governance"]
+        S3["Clean Treaty Text or Governed Excerpt"]
+        S4["Constrained LLM Extraction"]
+        S5["Generated Structured Treaty Dataset"]
+        S1 --> S2 --> S3 --> S4 --> S5
+    end
 
-- tax treaty outcomes should not be invented from model memory
-- supported and unsupported boundaries should be explicit
-- high-risk ambiguity should lead to review guidance, not fake certainty
-- a tool feels more credible when its scope is clear
+    subgraph B["Layer 2: Conservative Runtime Engine"]
+        R1["User Scenario"]
+        R2["Constrained LLM Input Understanding"]
+        R3["Structured Treaty Lookup"]
+        R4["Conservative Runtime Guard"]
+        R5["Structured Review Result"]
+        R1 --> R2 --> R3 --> R4 --> R5
+    end
 
-The goal is first-pass pre-review, not broad legal reasoning across unlimited tax questions.
+    S5 --> R3
+```
+
+This is the core idea of the project:
+
+- AI may help interpret inputs and extract structured document data
+- treaty facts still live in structured datasets
+- runtime guardrails decide when the system must slow down, escalate, or refuse
+
+## Why This Is Not A Chatbot
+
+This repo does use LLMs, but only inside narrow, reviewable roles.
+
+At runtime:
+
+- the model may help interpret a natural-language scenario
+- the model does **not** decide treaty rates from memory
+
+Offline:
+
+- the model may help extract article / paragraph / rule structure from treaty text
+- the model does **not** become the final legal source of truth by itself
+
+That distinction is the point of the project.
 
 ## How Trust Is Handled
 
-The trust model is simple and intentional:
+The trust model is intentionally strict:
 
-- treaty facts come from structured treaty data, not free-form model recall
-- results include source anchors so the output is traceable
-- source quality metadata is preserved through the data pipeline
-- low-confidence extraction triggers stronger review priority
-- unsupported or incomplete cases are refused conservatively
+- treaty facts come from structured treaty data, not runtime model recall
+- source anchors and provenance survive into the user-facing result
+- source governance is explicit instead of hand-waved
+- low-confidence or branch-ambiguous cases escalate conservatively
+- unsupported or incomplete scenarios are refused instead of guessed
 
-In other words, the system tries to be useful without pretending to be authoritative beyond its boundary.
+In short: the system tries to be useful without pretending to be authoritative beyond its boundary.
 
 ## Current Scope
 
@@ -119,38 +160,79 @@ This project is trying to prove:
 
 That is more valuable than pretending to cover many countries or many tax topics with weak trust controls.
 
-## System Shape
+## Strongest Current Proof Point
 
-```mermaid
-flowchart LR
-    A["User Scenario"] --> B["Frontend Demo"]
-    B --> C["FastAPI /analyze"]
-    C --> D["Scenario Parsing"]
-    D --> E["Scope Check"]
-    E --> F["Structured Treaty Data"]
-    F --> G["Structured Response"]
-    G --> H["Result Cards / Refusal State"]
-```
+The current strongest Phase 2 proof is the `Article 10` dividend branch case.
 
-Design intent:
+That proof matters because it demonstrates a hard situation:
 
-- frontend provides a clear demo surface
-- backend controls parsing and guardrails
-- treaty facts stay in structured data
-- unsupported cases fail conservatively
-- the product behaves like a bounded pre-review tool, not an open-ended advisor
+- offline constrained LLM extraction can produce a structured dataset from treaty text
+- the generated dataset can contain multiple credible rate branches such as `5%` and `10%`
+- runtime can consume that generated dataset through the explicit `llm_generated` lane
+- if the user has not supplied the ownership facts needed to choose a branch, runtime does **not** silently pick one
+- instead, it escalates to `no auto conclusion` and surfaces `alternative_rate_candidates`
 
-## Why This Is An AI Project
+That is much closer to a real bounded professional tool than a smooth-looking answer demo.
 
-The project does not treat AI as permission to guess.
+## Proof Case Walkthrough
 
-Instead, it treats AI as one layer inside a controlled system:
+Here is the shortest useful example of why this architecture matters.
 
-- AI-related parsing and extraction can help interpret inputs and documents
-- structured treaty data holds the legal facts
-- confidence and review signals control how cautious the product should be
+### Step 1: Start from treaty text
 
-That combination is the point: not just "AI that answers," but AI inside a system with boundaries.
+The project takes a governed Article 10 dividend excerpt in which the treaty text contains two possible source-state rate branches:
+
+- `5%`
+- `10%`
+
+### Step 2: Run constrained offline extraction
+
+The offline extraction lane turns that text into a structured dataset with:
+
+- one article
+- one paragraph
+- multiple rate-bearing candidate rules
+- source anchors and extraction metadata
+
+### Step 3: Feed the generated dataset into the same runtime engine
+
+The runtime can explicitly switch from the stable curated dataset to the `llm_generated` dataset without changing the product contract.
+
+### Step 4: Refuse false certainty
+
+If the user input is only:
+
+`中国公司向荷兰公司支付股息`
+
+then the runtime still does **not** know whether the ownership threshold for the reduced branch is satisfied.
+
+So the system does **not** silently pick `5%` or `10%`.
+
+Instead, it:
+
+- enters `no auto conclusion`
+- surfaces `alternative_rate_candidates`
+- shows multiple possible treaty rates
+- keeps the final branch choice for human review
+
+That is the kind of bounded AI behavior this repo is trying to prove.
+
+## Source Governance
+
+One of the hardest problems in treaty systems is not the UI. It is the source layer:
+
+- where the treaty text came from
+- whether it is official
+- whether it is the main treaty text or an MLI / metadata context text
+- which repo artifacts derive from which official sources
+
+The repo now includes a formal China-Netherlands source-governance package:
+
+- official source registry
+- source usage map
+- source-aware ingest validation
+
+This means the project no longer treats “treaty text” as one vague blob. It can increasingly say which governed official source a given ingest path or artifact derives from.
 
 ## Repository Structure
 
@@ -171,14 +253,13 @@ That intermediate layer now also preserves basic parser metadata such as source 
 
 Already working:
 
-- backend MVP with direction-aware parsing
-- structured treaty-backed outputs
-- source anchors and source quality signals
-- first `source_documents + import stub` path into a generated v3 dataset
-- parser-like source fixtures flowing through `parsed_articles -> paragraphs -> extracted_rules`
-- low-confidence extractions escalating to stronger review priority
-- conservative refusal behavior
-- one-screen frontend demo for public presentation
+- runtime: constrained LLM input understanding with conservative refusal behavior
+- runtime: stable curated dataset as default, plus an explicit `llm_generated` side lane
+- runtime: branch ambiguity escalates to `no auto conclusion` instead of silent overconfidence
+- data layer: article / paragraph / rule treaty schema with source anchors and provenance
+- Phase 2: constrained offline LLM extraction from clean treaty text into generated structured datasets
+- source governance: official China-Netherlands registry plus source-aware ingest validation
+- frontend: one-screen demo that exposes structured review results instead of chatty free-form output
 
 Current public identity:
 
@@ -266,31 +347,27 @@ Rebuild generated treaty dataset:
 
 ## Roadmap
 
-### Phase A
+### Phase 1
 
-Turn the repo into a polished, GitHub-strong version of the current product:
+Constrained runtime input understanding:
 
-- stronger README and project story
-- clearer trust communication
-- better examples, screenshots, and demo polish
-- tighter consistency across docs, UI, and behavior
+- LLM helps read natural-language scenarios
+- runtime still routes into structured treaty lookup
+- bad or unsupported inputs fail conservatively
 
-### Phase B
+### Phase 2
 
-Evolve the system into a real-document-driven demo:
+Real document-to-structured-data generation:
 
-- real document acquisition path
-- stronger extraction workflow
-- richer validation and fallback behavior
-- continued source traceability
+- clean treaty text enters the offline extraction lane
+- constrained LLM extraction produces parser-like source payloads
+- generated datasets can feed the same conservative runtime engine
 
-### Phase C
+### Later, only if needed
 
-Only after that, evaluate whether a narrow trial-tool path makes sense:
-
-- stronger maintenance assumptions
-- stronger review workflows
-- clearer real-world usage boundaries
+- dynamic review guidance
+- additional country pairs
+- broader source ingestion surface
 
 ## Key Docs
 

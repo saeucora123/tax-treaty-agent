@@ -1,6 +1,6 @@
 # Project Memory
 
-Last updated: 2026-03-11
+Last updated: 2026-03-12
 
 ## Identity
 
@@ -165,6 +165,17 @@ Current B-stage direction:
 - Phase 2 quality normalization should not rely on one exact model label: rate-bearing rule families such as `rate_limitation`, `source_tax_limit`, and `withholding_tax_cap` should be treated as the same semantic lane so conditions and review reasons remain usable when the model varies its taxonomy
 - when one treaty article contains multiple distinct rate-bearing branches, the conservative runtime should not silently pick one and sound certain; it should surface alternative rate candidates and escalate to a no-auto-conclusion state until additional facts disambiguate the branch
 - that branch-ambiguity rule should apply even when the model puts multiple rate candidates inside the same paragraph/rule cluster, not only when different paragraphs carry different rates
+- a real Article 10 dividend branch sample is now part of the repo’s strongest Phase 2 proof: constrained DeepSeek extraction can produce a generated dataset with `5% / 10%` candidates, local repair logic can preserve distinct enumerated branch rates/conditions when the model partially collapses them, and the runtime can then refuse automatic conclusion and surface `alternative_rate_candidates` through the `llm_generated` lane without evaluating the ownership threshold itself
+- branch-ambiguity UX should avoid anchoring the user on one selected rate: when multiple credible treaty rates remain, prefer a combined possible-rate display and filter out clearly low-confidence alternative candidates before escalating the runtime result
+- runtime rule selection should not ignore direction once direction-specific treaty branches exist; when rules are marked with directional semantics, selection and alternative-rate collection should respect the current payer -> payee flow instead of only transaction type
+- constrained runtime LLM parsing now also needs a deterministic second gate: if the scenario lacks minimal country/tax evidence or conflicts with simple rule-based evidence, the system should downgrade to `incomplete` instead of trusting a merely well-formed model parse
+- explicit `llm_generated` runtime switching is now part of the API contract, so missing generated datasets should fail conservatively with a controlled unavailable-data-source response rather than throwing file errors
+- UI wording should stay conservative even when the backend is already conservative: high-priority manual-review cases should not be framed as plain `SUPPORTED`, and branch-driven HOLD states should describe branch ambiguity instead of pretending the problem is always low confidence
+- the current repo is no longer source-opaque: China-Netherlands now has a dedicated official-source registry plus artifact usage map, so future sessions should distinguish among official treaty anchors, MLI context texts, curated runtime subsets, and LLM-generated demo artifacts instead of speaking about “the treaty text” as one undifferentiated blob
+- source governance is now lightly wired into the ingest layer itself: source-catalog entries must declare an official `source_id` that exists in the China-Netherlands source registry, which is the current narrow way to tie ingest jobs back to governed treaty sources without building a downloader platform
+- per-source ingest reports should also retain `source_id`, not only the batch summary; otherwise source identity disappears once someone opens a single report file outside the catalog context
+- within one extracted paragraph, primary-candidate selection should be semantic rather than positional: rate-bearing rules outrank leading narrative `taxation_right` rules, and narrative rules should not inherit paragraph-level rate backfills intended for cap-bearing branches
+- runtime LLM guardrails should not be narrower than the repo's own accepted country aliases; if normalization accepts labels like `PRC`, `Holland`, or `Dutch`, the minimum-evidence footprint check should recognize them too instead of downgrading otherwise supported scenarios
 
 Important rule:
 

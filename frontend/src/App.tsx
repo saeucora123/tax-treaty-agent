@@ -39,6 +39,11 @@ type AnalyzeResponse =
         human_review_required: boolean;
         review_priority: "none" | "normal" | "high";
         review_reason: string;
+        alternative_rate_candidates?: {
+          source_reference: string;
+          rate: string;
+          conditions: string[];
+        }[];
       };
     };
 
@@ -123,6 +128,9 @@ export default function App() {
   }
 
   function formatReviewStatus(result: Extract<AnalyzeResponse, { supported: true }>["result"]) {
+    if (!result.auto_conclusion_allowed && result.alternative_rate_candidates && result.alternative_rate_candidates.length > 0) {
+      return "[ HOLD ] Multiple treaty branches require manual selection";
+    }
     if (!result.auto_conclusion_allowed) {
       return "[ HOLD ] Confidence too low for automatic conclusion";
     }
@@ -136,14 +144,29 @@ export default function App() {
   }
 
   function getSupportedRecordTitle(result: Extract<AnalyzeResponse, { supported: true }>["result"]) {
-    return result.auto_conclusion_allowed ? "TREATY MATCH" : "PROVISIONAL REVIEW ONLY";
+    if (!result.auto_conclusion_allowed && result.alternative_rate_candidates && result.alternative_rate_candidates.length > 0) {
+      return "MANUAL BRANCH REVIEW REQUIRED";
+    }
+    if (!result.auto_conclusion_allowed) {
+      return "PROVISIONAL REVIEW ONLY";
+    }
+    if (result.review_priority === "high") {
+      return "PRIORITY REVIEW REQUIRED";
+    }
+    return "TREATY MATCH";
   }
 
   function getSupportedRecordStamp(result: Extract<AnalyzeResponse, { supported: true }>["result"]) {
+    if (result.review_priority === "high" && result.auto_conclusion_allowed) {
+      return "REVIEW";
+    }
     return result.auto_conclusion_allowed ? "SUPPORTED" : "HOLD";
   }
 
   function getRateLabel(result: Extract<AnalyzeResponse, { supported: true }>["result"]) {
+    if (result.alternative_rate_candidates && result.alternative_rate_candidates.length > 0) {
+      return "Possible Treaty Rates";
+    }
     return result.auto_conclusion_allowed ? "Treaty Rate Ceiling" : "Indicative Treaty Rate";
   }
 
@@ -338,6 +361,28 @@ export default function App() {
                   <div className="row-label">{getRateLabel(result.result)}</div>
                   <div className="row-value rate-value">{result.result.rate}</div>
                 </div>
+
+                {result.result.alternative_rate_candidates &&
+                  result.result.alternative_rate_candidates.length > 0 && (
+                    <div className="record-row">
+                      <div className="row-label">Alternative Rate Candidates</div>
+                      <div className="row-value">
+                        <ul className="formal-list">
+                          {result.result.alternative_rate_candidates.map((candidate, idx) => (
+                            <li key={idx}>
+                              {candidate.rate} · {candidate.source_reference}
+                              {candidate.conditions.length > 0 && (
+                                <>
+                                  {" "}
+                                  — {candidate.conditions.join(" ")}
+                                </>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
 
                 <div className="record-row">
                   <div className="row-label">Conditions</div>

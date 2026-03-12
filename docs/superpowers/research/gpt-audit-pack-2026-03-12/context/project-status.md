@@ -76,11 +76,6 @@ The repo now also has a live implementation base:
 - the conservative runtime now also treats multi-rate treaty branches as a real ambiguity signal: if one article carries multiple distinct rate-bearing rules, the result escalates to `no auto conclusion` and can expose `alternative_rate_candidates` instead of quietly choosing one branch
 - that ambiguity handling is now broader: the runtime also catches same-paragraph multi-rate candidates, so future LLM extractions do not need perfectly separated paragraphs to keep the review engine conservative
 - Phase 2 now has a real dividend-branch proof point too: a clean Article 10 sample with `5% / 10%` dividend branches can go through constrained DeepSeek extraction, be repaired into distinct branch rates/conditions when the model collapses them, and then drive the existing `no auto conclusion` runtime guard through the explicit `llm_generated` data-source path
-- the multi-branch guard is now also less misleading and less noisy: runtime ignores low-confidence alternative-rate noise, and when a real branch ambiguity remains it no longer shows a single anchored rate but a combined possible-rate display instead
-- the repo now also has a first formal China-Netherlands source-governance package: `data/source_registry/cn-nl-official-sources.json` records official China-side and Netherlands-side treaty/MLI/meta sources, while `data/source_registry/cn-nl-source-usage-map.json` ties current clean-text samples, generated datasets, and the stable runtime dataset back to those source ids
-- that source-governance layer now also touches the ingest path: `ingest_source_catalog_stub.py` rejects catalog entries whose `source_id` is missing from the official China-Netherlands registry, so source catalog runs can no longer float free from governed source identity
-- source-governed identity now also survives per-source report inspection: raw-text and PDF ingest reports can carry `source_id`, and source-catalog runs pass it through so a single report file still knows which official source record it claims to derive from
-- README now leads with the two-layer architecture (`Offline Data Grounding` -> `Conservative Runtime Engine`), explicitly frames the strongest current proof point as the Article 10 dividend branch case, and surfaces source governance as a first-class part of the product story instead of burying it in implementation details
 
 ## Recent Decisions
 
@@ -138,9 +133,6 @@ The repo now also has a live implementation base:
 - the PDF path is now slightly less toy-like because it no longer assumes perfectly clean extracted text on every page
 - the PDF path is also less toy-like because it no longer assumes the official document body will already contain Codex-friendly metadata fields
 - the ingest layer is also less toy-like because sources no longer need to be run one by one by hand to approximate a maintained document pipeline
-- the post-Article-10 audit pass has now also tightened two runtime guardrails: direction-specific rule branches must match the actual payer -> payee flow, and LLM input parses must survive a minimal deterministic evidence cross-check before they are allowed to drive a supported treaty result
-- the post-Article-10 audit pass also tightened outward-facing behavior: missing `llm_generated` datasets now degrade into a controlled unavailable-data-source response, and the UI no longer frames branch-driven HOLD cases or high-priority review cases with the same certainty as ordinary supported matches
-- the follow-up audit pass tightened three remaining Phase 2 weak spots too: same-paragraph rule normalization now promotes rate-bearing rules over leading narrative ones, accepted country aliases like `PRC` / `Holland` / `Dutch` no longer get killed by the runtime evidence guardrail, and PDF parse-failure reports now preserve `source_id` lineage instead of dropping governed source identity on error
 
 ## Active Direction
 
@@ -158,7 +150,6 @@ Current priority correction:
 - future sessions should anchor decisions to the original motivation: this repo exists to help the user build toward an `AI + international tax` direction through a real bounded product, not just a polished showcase
 - control expansion actively: after a meaningful checkpoint, prefer the next real pipeline advance over adjacent nice-to-have refinements
 - the current active slice is Phase 2: improve offline treaty extraction quality while keeping the runtime conservative, auditable, and defaulted to stable curated data
-- the biggest remaining credibility gap is no longer “where are the sources?” in the abstract; it is now whether the project wants to stop near the Phase 2 line and explain the two-layer architecture clearly, or take one more narrow source-aware ingest step by letting ingest entries declare official `source_id` lineage
 
 The concrete execution checklist for the current stage now lives in:
 
@@ -168,7 +159,7 @@ The concrete execution checklist for the current stage now lives in:
 
 1. Phase 1 is now effectively locked: supported natural-language routing works, the runtime path is auditable, and clearly bad inputs refuse conservatively without widening model authority.
 2. Current mainline is still Phase 2, but the project has now crossed the highest-value technical proof point: the repo can demonstrate both a simple royalties extraction path and a harder dividend branch path (`5% / 10%`) through the full `LLM extraction -> generated dataset -> conservative runtime` loop.
-3. The next valuable slice is no longer “make the branch sample work” — that now works, and the most important post-sample conservative guardrails are now in place too. The recent source-governance package plus catalog `source_id` validation means the repo has also taken one narrow step toward governed source ingestion. The next highest-value follow-up is to decide whether to stop Phase 2 and start tightening the public architecture story, or to take exactly one more narrow source-aware ingest slice only if it materially strengthens the proof.
+3. The next valuable slice is no longer “make the branch sample work” — that now works. The highest-value follow-up is to decide whether to stop Phase 2 and start tightening the public architecture story, or to take exactly one more narrow extraction-quality slice only if it materially strengthens the proof.
 4. The controlled `stable` vs `llm_generated` runtime switch now gives the repo a safe way to prove the full offline-to-online loop without handing the default demo path to uncertain AI data.
 5. Avoid turning this milestone into new pipeline sprawl. At this point, extra wrappers, extra ingest formats, or broad scope expansion are lower value than documenting the now-real closed loop clearly.
 6. Treat the current post-Article-10 state as “very near the Phase 2 stop line” for a high-value GitHub/resume project.

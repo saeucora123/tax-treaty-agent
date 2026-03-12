@@ -94,6 +94,11 @@ def parse_args() -> argparse.Namespace:
         type=str,
         help="Optional document type to inject when the PDF text does not carry metadata lines.",
     )
+    parser.add_argument(
+        "--source-id",
+        type=str,
+        help="Optional official source id for governance traceability.",
+    )
     return parser.parse_args()
 
 
@@ -158,25 +163,37 @@ def main() -> int:
     try:
         metadata = resolve_metadata(args)
     except (OSError, ValueError, json.JSONDecodeError) as error:
-        write_report(build_error_report(None, "metadata", str(error)), args.report_output)
+        write_report(
+            build_error_report(None, "metadata", str(error), source_id=args.source_id),
+            args.report_output,
+        )
         print(str(error), file=sys.stderr)
         return 1
 
     try:
         extracted_text = extract_pdf_text(args.input)
     except OSError as error:
-        write_report(build_error_report(None, "io", str(error)), args.report_output)
+        write_report(
+            build_error_report(None, "io", str(error), source_id=args.source_id),
+            args.report_output,
+        )
         print(str(error), file=sys.stderr)
         return 1
     except ValueError as error:
-        write_report(build_error_report(None, "pdf_extract", str(error)), args.report_output)
+        write_report(
+            build_error_report(None, "pdf_extract", str(error), source_id=args.source_id),
+            args.report_output,
+        )
         print(str(error), file=sys.stderr)
         return 1
 
     try:
         raw_text = inject_document_metadata(extracted_text, metadata)
     except ValueError as error:
-        write_report(build_error_report(None, "metadata", str(error)), args.report_output)
+        write_report(
+            build_error_report(None, "metadata", str(error), source_id=args.source_id),
+            args.report_output,
+        )
         print(str(error), file=sys.stderr)
         return 1
 
@@ -191,6 +208,7 @@ def main() -> int:
                 extract_document_id(lines),
                 "parse",
                 str(error),
+                source_id=args.source_id,
             ),
             args.report_output,
         )
@@ -205,6 +223,7 @@ def main() -> int:
                 source_payload.get("document", {}).get("document_id"),
                 "validation",
                 str(error),
+                source_id=args.source_id,
             ),
             args.report_output,
         )
@@ -212,7 +231,7 @@ def main() -> int:
         return 1
 
     dataset = build_dataset(source_payload)
-    report = build_ingest_report(source_payload, dataset)
+    report = build_ingest_report(source_payload, dataset, source_id=args.source_id)
     write_payload(source_payload, args.parsed_output)
     write_dataset(dataset, args.dataset_output)
     write_report(report, args.report_output)

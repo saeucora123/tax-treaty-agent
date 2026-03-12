@@ -72,31 +72,6 @@ TRANSACTION_LABELS_ZH = {
     "interest": "利息",
     "royalties": "特许权使用费",
 }
-COUNTRY_FOOTPRINTS = {
-    "CN": [
-        "中国",
-        "中国居民企业",
-        "中国公司",
-        "China",
-        "Chinese",
-        "PRC",
-        "People's Republic of China",
-        "Peoples Republic of China",
-        "北京",
-        "Beijing",
-    ],
-    "NL": [
-        "荷兰",
-        "荷兰公司",
-        "Netherlands",
-        "The Netherlands",
-        "Holland",
-        "Dutch",
-        "阿姆斯特丹",
-        "Amsterdam",
-    ],
-    "US": ["美国", "美国公司", "United States", "USA", "Washington", "华盛顿"],
-}
 BOUNDARY_NOTE = (
     "This is a first-pass treaty pre-review based on limited scenario facts. "
     "Final eligibility still depends on additional facts, documents, and analysis "
@@ -134,16 +109,10 @@ def analyze_scenario(scenario: str, data_source: str = "stable") -> dict:
             response["input_interpretation"] = input_interpretation
         return response
 
-    try:
-        match = find_treaty_entry(
-            normalized["transaction_type"],
-            payer_country=normalized["payer_country"],
-            payee_country=normalized["payee_country"],
-            data_source=resolved_data_source,
-        )
-    except FileNotFoundError:
-        return build_data_source_unavailable_response(resolved_data_source)
-
+    match = find_treaty_entry(
+        normalized["transaction_type"],
+        data_source=resolved_data_source,
+    )
     if match is None:
         response = {
             "data_source_used": resolved_data_source,
@@ -181,13 +150,10 @@ def normalize_data_source(data_source: str) -> str:
 def normalize_input(scenario: str) -> dict:
     llm_normalized = try_llm_normalize_input(scenario)
     if llm_normalized is not None:
-        return apply_llm_guardrails(
-            scenario,
-            {
-                **llm_normalized,
-                "parser_source": llm_normalized.get("parser_source", "llm"),
-            },
-        )
+        return {
+            **llm_normalized,
+            "parser_source": llm_normalized.get("parser_source", "llm"),
+        }
 
     payer_country, payee_country = detect_flow_countries(scenario)
 
@@ -242,108 +208,6 @@ def try_llm_normalize_input(scenario: str) -> dict | None:
         "parser_source": "llm",
         "reason": reason,
     }
-
-
-def apply_llm_guardrails(scenario: str, normalized: dict) -> dict:
-    if normalized.get("reason") != "ok":
-        return normalized
-
-    deterministic_payer, deterministic_payee = detect_flow_countries(scenario)
-    deterministic_transaction_type, _ = detect_transaction_type(scenario)
-
-    if (
-        deterministic_payer is not None
-        and deterministic_payee is not None
-        and (
-            normalized["payer_country"] != deterministic_payer
-            or normalized["payee_country"] != deterministic_payee
-        )
-    ):
-        return build_llm_rejection_payload(
-            normalized,
-            payer_country=None,
-            payee_country=None,
-            transaction_type="unknown",
-        )
-
-    if (
-        deterministic_transaction_type != "unknown"
-        and normalized["transaction_type"] != deterministic_transaction_type
-    ):
-        return build_llm_rejection_payload(
-            normalized,
-            transaction_type="unknown",
-        )
-
-    if not has_minimum_llm_evidence(scenario, normalized):
-        return build_llm_rejection_payload(
-            normalized,
-            payer_country=None,
-            payee_country=None,
-            transaction_type="unknown",
-        )
-
-    return normalized
-
-
-def build_llm_rejection_payload(
-    normalized: dict,
-    *,
-    payer_country: str | None | object = ...,
-    payee_country: str | None | object = ...,
-    transaction_type: str | object = ...,
-) -> dict:
-    adjusted = dict(normalized)
-    if payer_country is not ...:
-        adjusted["payer_country"] = payer_country
-    if payee_country is not ...:
-        adjusted["payee_country"] = payee_country
-    if transaction_type is not ...:
-        adjusted["transaction_type"] = transaction_type
-
-    if adjusted["payer_country"] is None or adjusted["payee_country"] is None:
-        adjusted["country_pair"] = None
-    else:
-        adjusted["country_pair"] = (
-            adjusted["payer_country"],
-            adjusted["payee_country"],
-        )
-    adjusted["reason"] = "incomplete_scenario"
-    return adjusted
-
-
-def has_minimum_llm_evidence(scenario: str, normalized: dict) -> bool:
-    if not scenario_has_country_footprint(scenario, normalized.get("payer_country")):
-        return False
-    if not scenario_has_country_footprint(scenario, normalized.get("payee_country")):
-        return False
-
-    transaction_type = normalized.get("transaction_type")
-    matched_label = normalized.get("matched_transaction_label")
-    return scenario_has_tax_signal(scenario, transaction_type, matched_label)
-
-
-def scenario_has_country_footprint(scenario: str, country_code: str | None) -> bool:
-    if country_code is None:
-        return False
-    for keyword in COUNTRY_FOOTPRINTS.get(country_code, []):
-        if keyword in scenario:
-            return True
-    return False
-
-
-def scenario_has_tax_signal(
-    scenario: str,
-    transaction_type: str | None,
-    matched_label: str | None,
-) -> bool:
-    if matched_label and matched_label in scenario:
-        return True
-    if transaction_type in TRANSACTION_KEYWORDS:
-        for keyword in TRANSACTION_KEYWORDS[transaction_type]:
-            if keyword in scenario:
-                return True
-    return False
 
 
 def build_input_interpretation(normalized: dict) -> dict | None:
@@ -446,28 +310,16 @@ def detect_transaction_type(scenario: str) -> tuple[str, str | None]:
     return "unknown", None
 
 
-def find_treaty_entry(
-    transaction_type: str,
-    *,
-    payer_country: str,
-    payee_country: str,
-    data_source: str = "stable",
-) -> dict | None:
+def find_treaty_entry(transaction_type: str, data_source: str = "stable") -> dict | None:
     with resolve_data_path(data_source).open("r", encoding="utf-8") as file:
         payload = json.load(file)
-    treaty_jurisdictions = payload["treaty"].get("jurisdictions", [])
 
     for article in payload["articles"]:
         if article["income_type"] == transaction_type:
             selected_paragraph = None
             selected_rule = None
             for paragraph in article["paragraphs"]:
-                base_rule = select_rate_rule(
-                    paragraph["rules"],
-                    payer_country=payer_country,
-                    payee_country=payee_country,
-                    treaty_jurisdictions=treaty_jurisdictions,
-                )
+                base_rule = select_rate_rule(paragraph["rules"])
                 if base_rule is None:
                     continue
                 if selected_rule is None or rule_preference_key(base_rule) > rule_preference_key(selected_rule):
@@ -484,17 +336,10 @@ def find_treaty_entry(
                 article["paragraphs"],
                 selected_rule=selected_rule,
                 selected_source_reference=selected_paragraph["source_reference"],
-                payer_country=payer_country,
-                payee_country=payee_country,
-                treaty_jurisdictions=treaty_jurisdictions,
             )
-            display_rate = selected_rule["rate"]
             if alternative_rate_candidates:
                 review_priority = "high"
                 auto_conclusion_allowed = False
-                display_rate = format_possible_rates(
-                    selected_rule["rate"], alternative_rate_candidates
-                )
                 review_reason = (
                     f"{review_reason} Multiple treaty rate branches were found in this article, "
                     "and the current scenario does not provide enough facts to choose one automatically."
@@ -503,10 +348,9 @@ def find_treaty_entry(
                 "summary": build_summary(
                     article_number=article["article_number"],
                     article_title=article["article_title"],
-                    rate=display_rate,
+                    rate=selected_rule["rate"],
                     review_priority=review_priority,
                     auto_conclusion_allowed=auto_conclusion_allowed,
-                    has_rate_ambiguity=bool(alternative_rate_candidates),
                 ),
                 "boundary_note": BOUNDARY_NOTE,
                 "immediate_action": build_immediate_action(
@@ -518,7 +362,7 @@ def find_treaty_entry(
                 "source_reference": selected_paragraph["source_reference"],
                 "source_language": selected_paragraph["source_language"],
                 "source_excerpt": selected_paragraph["source_excerpt"],
-                "rate": display_rate,
+                "rate": selected_rule["rate"],
                 "extraction_confidence": selected_rule["extraction_confidence"],
                 "auto_conclusion_allowed": auto_conclusion_allowed,
                 "key_missing_facts": KEY_MISSING_FACTS[article["income_type"]],
@@ -542,69 +386,16 @@ def resolve_data_path(data_source: str) -> Path:
     return DATA_PATH
 
 
-def select_rate_rule(
-    rules: list[dict],
-    *,
-    payer_country: str,
-    payee_country: str,
-    treaty_jurisdictions: list[str],
-) -> dict | None:
+def select_rate_rule(rules: list[dict]) -> dict | None:
     for rule in rules:
-        if (
-            rule.get("is_primary_candidate") is True
-            and rule_matches_direction(
-                rule,
-                payer_country=payer_country,
-                payee_country=payee_country,
-                treaty_jurisdictions=treaty_jurisdictions,
-            )
-        ):
+        if rule.get("is_primary_candidate") is True:
             return rule
 
     for rule in rules:
-        if rule_matches_direction(
-            rule,
-            payer_country=payer_country,
-            payee_country=payee_country,
-            treaty_jurisdictions=treaty_jurisdictions,
-        ):
+        if rule["direction"] == "bidirectional":
             return rule
 
     return None
-
-
-def rule_matches_direction(
-    rule: dict,
-    *,
-    payer_country: str,
-    payee_country: str,
-    treaty_jurisdictions: list[str],
-) -> bool:
-    direction = rule.get("direction", "bidirectional")
-    if direction == "bidirectional":
-        return True
-
-    if len(treaty_jurisdictions) >= 2:
-        first_jurisdiction, second_jurisdiction = treaty_jurisdictions[:2]
-        if direction == "payer_to_payee":
-            return (
-                payer_country == first_jurisdiction
-                and payee_country == second_jurisdiction
-            )
-        if direction == "payee_to_payer":
-            return (
-                payer_country == second_jurisdiction
-                and payee_country == first_jurisdiction
-            )
-
-    if "_to_" in str(direction):
-        from_code, to_code = str(direction).split("_to_", 1)
-        return (
-            payer_country == from_code.upper()
-            and payee_country == to_code.upper()
-        )
-
-    return False
 
 
 def rule_preference_key(rule: dict) -> tuple[int, float]:
@@ -617,9 +408,6 @@ def collect_alternative_rate_candidates(
     *,
     selected_rule: dict,
     selected_source_reference: str,
-    payer_country: str,
-    payee_country: str,
-    treaty_jurisdictions: list[str],
 ) -> list[dict]:
     candidates: list[dict] = []
     seen: set[tuple[str, str, str]] = set()
@@ -628,17 +416,8 @@ def collect_alternative_rate_candidates(
 
     for paragraph in paragraphs:
         for rule in paragraph["rules"]:
-            if not rule_matches_direction(
-                rule,
-                payer_country=payer_country,
-                payee_country=payee_country,
-                treaty_jurisdictions=treaty_jurisdictions,
-            ):
-                continue
             candidate_rate = rule.get("rate")
             if candidate_rate in {"", "N/A", None}:
-                continue
-            if float(rule.get("extraction_confidence", 0)) < AUTO_CONCLUSION_CONFIDENCE_THRESHOLD:
                 continue
             if rule.get("rule_id") == selected_rule_id:
                 continue
@@ -704,15 +483,8 @@ def build_summary(
     rate: str,
     review_priority: str,
     auto_conclusion_allowed: bool,
-    has_rate_ambiguity: bool = False,
 ) -> str:
     base = f"Preliminary view: Article {article_number} {article_title} appears relevant"
-
-    if has_rate_ambiguity:
-        return (
-            f"{base}, but multiple treaty rate branches ({rate}) are possible and this version "
-            "should not issue an automatic conclusion."
-        )
 
     if not auto_conclusion_allowed:
         return (
@@ -745,32 +517,7 @@ def build_immediate_action(review_priority: str, auto_conclusion_allowed: bool) 
     return "Proceed with standard manual review before relying on the treaty position."
 
 
-def format_possible_rates(selected_rate: str, alternative_rate_candidates: list[dict]) -> str:
-    rates = [selected_rate] + [candidate["rate"] for candidate in alternative_rate_candidates]
-    unique_rates = list(dict.fromkeys(rate for rate in rates if rate))
-    sortable_rates: list[tuple[int, str]] = []
-    unsortable_rates: list[str] = []
-
-    for rate in unique_rates:
-        if rate.endswith("%"):
-            try:
-                sortable_rates.append((int(rate.rstrip("%")), rate))
-                continue
-            except ValueError:
-                pass
-        unsortable_rates.append(rate)
-
-    ordered = [rate for _, rate in sorted(sortable_rates)] + unsortable_rates
-    return " / ".join(ordered)
-
-
 def build_unsupported_action(reason: str) -> str:
-    if reason == "unavailable_data_source":
-        return (
-            "Retry with the stable curated dataset or regenerate the requested "
-            "treaty dataset before reviewing this scenario."
-        )
-
     if reason == "unsupported_country_pair":
         return "Rewrite the scenario into the supported China-Netherlands scope before running another review."
 
@@ -778,25 +525,6 @@ def build_unsupported_action(reason: str) -> str:
         return "Restate the payment using a supported income type before relying on treaty review output."
 
     return "Add the missing scenario facts before running the treaty review again."
-
-
-def build_data_source_unavailable_response(data_source: str) -> dict:
-    return {
-        "data_source_used": data_source,
-        "supported": False,
-        "reason": "unavailable_data_source",
-        "message": "The requested treaty dataset is not currently available.",
-        "immediate_action": build_unsupported_action("unavailable_data_source"),
-        "missing_fields": [],
-        "suggested_format": (
-            "Try again with the stable dataset or regenerate the LLM-generated "
-            "treaty dataset before reviewing this scenario."
-        ),
-        "suggested_examples": [
-            "Use the default stable dataset for a normal review run.",
-            "Regenerate the LLM-derived treaty dataset, then retry the same scenario.",
-        ],
-    }
 
 
 def build_input_guidance(reason: str, normalized: dict) -> dict:

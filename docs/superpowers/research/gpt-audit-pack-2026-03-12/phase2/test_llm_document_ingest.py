@@ -296,7 +296,7 @@ def test_generated_dividend_branch_dataset_triggers_no_auto_conclusion_guard(
     assert response.json()["data_source_used"] == "llm_generated"
     assert response.json()["result"]["auto_conclusion_allowed"] is False
     assert response.json()["result"]["review_priority"] == "high"
-    assert response.json()["result"]["rate"] == "5% / 10%"
+    assert response.json()["result"]["rate"] == "10%"
     assert response.json()["result"]["alternative_rate_candidates"] == [
         {
             "source_reference": "Article 10(2)",

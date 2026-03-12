@@ -146,16 +146,23 @@ def normalize_paragraph(
     rules = paragraph.get("rules", [])
     inferred_rate = infer_rate_from_text(paragraph_text)
     inferred_branches = infer_enumerated_rate_branches(paragraph_text)
-    branch_hints = assign_branch_hints_to_rules(rules, inferred_branches)
     normalized_rules: list[dict[str, Any]] = []
+    primary_assigned = False
+    rate_rule_index = 0
     for index, rule in enumerate(rules, start=1):
+        is_primary = False
+        if not primary_assigned:
+            is_primary = True
+            primary_assigned = True
         rule_type = normalize_optional_text(rule.get("rule_type")) or "treaty_scope_note"
-        branch_hint = branch_hints[index - 1]
+        branch_hint = None
+        if is_rate_limit_rule_type(rule_type) and rate_rule_index < len(inferred_branches):
+            branch_hint = inferred_branches[rate_rule_index]
+            rate_rule_index += 1
         normalized_rate = normalize_rate(
             rule.get("rate"),
-            rule_type=rule_type,
-            inferred_rate=inferred_rate,
-            inferred_branch_rate=branch_hint["rate"] if branch_hint else None,
+            inferred_rate,
+            branch_hint["rate"] if branch_hint else None,
         )
         normalized_rules.append(
             {
@@ -164,7 +171,7 @@ def normalize_paragraph(
                 "rate": normalized_rate,
                 "direction": normalize_direction(rule.get("direction")),
                 "candidate_rank": index,
-                "is_primary_candidate": False,
+                "is_primary_candidate": is_primary,
                 "extraction_confidence": normalize_confidence(rule.get("extraction_confidence")),
                 "derived_from_segments": [segment_id],
                 "conditions": normalize_conditions(
@@ -183,9 +190,6 @@ def normalize_paragraph(
                 ),
             }
         )
-
-    primary_rule_index = choose_primary_rule_index(normalized_rules)
-    normalized_rules[primary_rule_index]["is_primary_candidate"] = True
 
     return {
         "paragraph_id": paragraph_id,
@@ -260,8 +264,6 @@ def infer_rate_from_text(paragraph_text: str) -> str | None:
 
 def normalize_rate(
     raw_value: Any,
-    *,
-    rule_type: str,
     inferred_rate: str | None,
     inferred_branch_rate: str | None = None,
 ) -> str:
@@ -273,8 +275,6 @@ def normalize_rate(
             and (inferred_branch_rate is None or normalized == inferred_branch_rate)
         ):
             return normalized
-    if not is_rate_limit_rule_type(rule_type):
-        return "N/A"
     return inferred_branch_rate or inferred_rate or "N/A"
 
 
@@ -373,107 +373,3 @@ def normalize_branch_condition_text(condition_tail: str) -> str:
     if not normalized.endswith("."):
         normalized += "."
     return normalized
-
-
-def assign_branch_hints_to_rules(
-    rules: list[dict[str, Any]],
-    inferred_branches: list[dict[str, str]],
-) -> list[dict[str, str] | None]:
-    if not inferred_branches:
-        return [None] * len(rules)
-
-    assignments: list[dict[str, str] | None] = [None] * len(rules)
-    used_branch_indexes: set[int] = set()
-
-    for rule_index, rule in enumerate(rules):
-        if not is_rate_limit_rule_type(normalize_optional_text(rule.get("rule_type")) or ""):
-            continue
-
-        best_branch_index = None
-        best_score = 0
-        for branch_index, branch in enumerate(inferred_branches):
-            if branch_index in used_branch_indexes:
-                continue
-            score = branch_match_score(rule, branch)
-            if score > best_score:
-                best_score = score
-                best_branch_index = branch_index
-
-        if best_branch_index is not None and best_score > 0:
-            assignments[rule_index] = inferred_branches[best_branch_index]
-            used_branch_indexes.add(best_branch_index)
-
-    for rule_index, rule in enumerate(rules):
-        if assignments[rule_index] is not None:
-            continue
-        if not is_rate_limit_rule_type(normalize_optional_text(rule.get("rule_type")) or ""):
-            continue
-        for branch_index, branch in enumerate(inferred_branches):
-            if branch_index in used_branch_indexes:
-                continue
-            assignments[rule_index] = branch
-            used_branch_indexes.add(branch_index)
-            break
-
-    return assignments
-
-
-def choose_primary_rule_index(rules: list[dict[str, Any]]) -> int:
-    for index, rule in enumerate(rules):
-        if is_rate_limit_rule_type(normalize_optional_text(rule.get("rule_type")) or ""):
-            return index
-    return 0
-
-
-def branch_match_score(rule: dict[str, Any], branch: dict[str, str]) -> int:
-    score = 0
-    raw_rate = normalize_optional_text(rule.get("rate"))
-    if raw_rate and raw_rate.upper() != "N/A" and raw_rate == branch["rate"]:
-        score += 100
-
-    existing_text = " ".join(
-        normalize_string_list(rule.get("conditions"))
-        + [normalize_optional_text(rule.get("review_reason"))]
-    ).lower()
-    if existing_text and branch.get("condition"):
-        branch_condition = branch["condition"].lower().rstrip(".")
-        if branch_condition and branch_condition in existing_text:
-            score += 50
-        else:
-            score += lexical_overlap_score(existing_text, branch_condition)
-
-    return score
-
-
-def lexical_overlap_score(left: str, right: str) -> int:
-    left_tokens = meaningful_tokens(left)
-    right_tokens = meaningful_tokens(right)
-    if not left_tokens or not right_tokens:
-        return 0
-    return len(left_tokens & right_tokens)
-
-
-def meaningful_tokens(text: str) -> set[str]:
-    stopwords = {
-        "the",
-        "and",
-        "of",
-        "a",
-        "an",
-        "is",
-        "are",
-        "to",
-        "if",
-        "in",
-        "all",
-        "other",
-        "cases",
-        "case",
-        "rate",
-        "branch",
-    }
-    return {
-        token
-        for token in re.findall(r"[a-z0-9]+", text.lower())
-        if len(token) > 2 and token not in stopwords
-    }

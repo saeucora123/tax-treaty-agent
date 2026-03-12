@@ -82,6 +82,7 @@ def run_pdf_ingest(
     title: str | None = None,
     jurisdictions: str | None = None,
     document_type: str | None = None,
+    source_id: str | None = None,
 ) -> subprocess.CompletedProcess[str]:
     command = [
         sys.executable,
@@ -107,6 +108,8 @@ def run_pdf_ingest(
         command.extend(["--jurisdictions", jurisdictions])
     if document_type is not None:
         command.extend(["--document-type", document_type])
+    if source_id is not None:
+        command.extend(["--source-id", source_id])
     return subprocess.run(
         command,
         cwd=REPO_ROOT,
@@ -773,7 +776,7 @@ def test_source_catalog_ingest_runs_mixed_sources_and_writes_batch_summary(tmp_p
             {
                 "sources": [
                     {
-                        "source_id": "raw-interest",
+                        "source_id": "sat-cn-nl-2013-en-pdf",
                         "source_type": "raw_text",
                         "input_path": str(raw_input_path),
                         "parsed_output_path": str(raw_parsed_output_path),
@@ -781,7 +784,7 @@ def test_source_catalog_ingest_runs_mixed_sources_and_writes_batch_summary(tmp_p
                         "report_output_path": str(raw_report_output_path),
                     },
                     {
-                        "source_id": "pdf-royalties",
+                        "source_id": "nl-2013-consolidated-text",
                         "source_type": "pdf_text",
                         "input_path": str(pdf_input_path),
                         "raw_text_output_path": str(pdf_raw_text_output_path),
@@ -815,19 +818,23 @@ def test_source_catalog_ingest_runs_mixed_sources_and_writes_batch_summary(tmp_p
         "failure_count": 0,
         "results": [
             {
-                "source_id": "raw-interest",
+                "source_id": "sat-cn-nl-2013-en-pdf",
                 "source_type": "raw_text",
                 "status": "ok",
                 "report_output_path": str(raw_report_output_path),
             },
             {
-                "source_id": "pdf-royalties",
+                "source_id": "nl-2013-consolidated-text",
                 "source_type": "pdf_text",
                 "status": "ok",
                 "report_output_path": str(pdf_report_output_path),
             },
         ],
     }
+    raw_report_payload = json.loads(raw_report_output_path.read_text(encoding="utf-8"))
+    pdf_report_payload = json.loads(pdf_report_output_path.read_text(encoding="utf-8"))
+    assert raw_report_payload["source_id"] == "sat-cn-nl-2013-en-pdf"
+    assert pdf_report_payload["source_id"] == "nl-2013-consolidated-text"
     assert "Completed source catalog ingest: 2 ok, 0 failed" in result.stdout
 
 
@@ -873,7 +880,7 @@ def test_source_catalog_ingest_records_failures_without_stopping_batch(tmp_path:
             {
                 "sources": [
                     {
-                        "source_id": "raw-ok",
+                        "source_id": "sat-cn-nl-2013-en-pdf",
                         "source_type": "raw_text",
                         "input_path": str(raw_input_path),
                         "parsed_output_path": str(raw_parsed_output_path),
@@ -881,7 +888,7 @@ def test_source_catalog_ingest_records_failures_without_stopping_batch(tmp_path:
                         "report_output_path": str(raw_report_output_path),
                     },
                     {
-                        "source_id": "pdf-bad",
+                        "source_id": "nl-2013-consolidated-text",
                         "source_type": "pdf_text",
                         "input_path": str(bad_pdf_input_path),
                         "raw_text_output_path": str(bad_pdf_raw_text_output_path),
@@ -910,13 +917,13 @@ def test_source_catalog_ingest_records_failures_without_stopping_batch(tmp_path:
         "failure_count": 1,
         "results": [
             {
-                "source_id": "raw-ok",
+                "source_id": "sat-cn-nl-2013-en-pdf",
                 "source_type": "raw_text",
                 "status": "ok",
                 "report_output_path": str(raw_report_output_path),
             },
             {
-                "source_id": "pdf-bad",
+                "source_id": "nl-2013-consolidated-text",
                 "source_type": "pdf_text",
                 "status": "error",
                 "report_output_path": str(bad_pdf_report_output_path),
@@ -926,6 +933,99 @@ def test_source_catalog_ingest_records_failures_without_stopping_batch(tmp_path:
     assert "Completed source catalog ingest: 1 ok, 1 failed" in result.stdout
     bad_report_payload = json.loads(bad_pdf_report_output_path.read_text(encoding="utf-8"))
     assert bad_report_payload["status"] == "error"
+    assert bad_report_payload["source_id"] == "nl-2013-consolidated-text"
+    ok_report_payload = json.loads(raw_report_output_path.read_text(encoding="utf-8"))
+    assert ok_report_payload["source_id"] == "sat-cn-nl-2013-en-pdf"
+
+
+def test_pdf_ingest_parse_failure_report_preserves_source_id(tmp_path: Path):
+    pdf_input_path = tmp_path / "bad-parse.pdf"
+    extracted_text_output_path = tmp_path / "bad-parse.extracted.txt"
+    parsed_output_path = tmp_path / "bad-parse.parsed.json"
+    dataset_output_path = tmp_path / "bad-parse.dataset.json"
+    report_output_path = tmp_path / "bad-parse.report.json"
+
+    pdf_input_path.write_bytes(
+        build_simple_pdf(
+            [
+                "This is not parseable treaty text.",
+                "It has no article heading or parser tags.",
+            ]
+        )
+    )
+
+    result = run_pdf_ingest(
+        pdf_input_path=pdf_input_path,
+        extracted_text_output_path=extracted_text_output_path,
+        parsed_output_path=parsed_output_path,
+        dataset_output_path=dataset_output_path,
+        report_output_path=report_output_path,
+        document_id="cn-nl-bad-parse-pdf",
+        title="China-Netherlands Bad Parse PDF",
+        jurisdictions="CN,NL",
+        document_type="treaty_text",
+        source_id="nl-2013-consolidated-text",
+    )
+
+    assert result.returncode == 1
+    report_payload = json.loads(report_output_path.read_text(encoding="utf-8"))
+    assert report_payload["status"] == "error"
+    assert report_payload["error_stage"] == "parse"
+    assert report_payload["document_id"] == "cn-nl-bad-parse-pdf"
+    assert report_payload["source_id"] == "nl-2013-consolidated-text"
+
+
+def test_source_catalog_ingest_rejects_unknown_official_source_id(tmp_path: Path):
+    raw_input_path = tmp_path / "catalog-interest.stub.txt"
+    raw_parsed_output_path = tmp_path / "catalog-interest.parsed.json"
+    raw_dataset_output_path = tmp_path / "catalog-interest.dataset.json"
+    raw_report_output_path = tmp_path / "catalog-interest.report.json"
+    summary_output_path = tmp_path / "catalog.summary.json"
+    catalog_path = tmp_path / "catalog.json"
+
+    raw_input_path.write_text(
+        "\n".join(
+            [
+                "DOCUMENT_ID: cn-nl-catalog-interest-raw-stub",
+                "TITLE: China-Netherlands Tax Treaty Catalog Interest Stub",
+                "DOCUMENT_TYPE: treaty_text",
+                "JURISDICTIONS: CN,NL",
+                "",
+                "Article 11 Interest",
+                "1. Interest arising in one of the States and paid to a resident of the other State may be taxed in that other State.",
+                "2. However, such interest may also be taxed in the first-mentioned State, but the tax shall not exceed 10 per cent of the gross amount of the interest.",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    catalog_path.write_text(
+        json.dumps(
+            {
+                "sources": [
+                    {
+                        "source_id": "unknown-official-source",
+                        "source_type": "raw_text",
+                        "input_path": str(raw_input_path),
+                        "parsed_output_path": str(raw_parsed_output_path),
+                        "dataset_output_path": str(raw_dataset_output_path),
+                        "report_output_path": str(raw_report_output_path),
+                    }
+                ]
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = run_catalog_ingest(catalog_path=catalog_path, summary_output_path=summary_output_path)
+
+    assert result.returncode == 1
+    assert not raw_dataset_output_path.exists()
+    assert not summary_output_path.exists()
+    assert "Unknown source_id in catalog: unknown-official-source" in result.stderr
 
 
 def test_raw_text_stub_tolerates_blank_lines_and_missing_optional_notes(tmp_path: Path):

@@ -137,100 +137,6 @@ def test_returns_structured_result_for_supported_reverse_direction_case():
     assert response.json()["result"]["article_title"] == "Dividends"
 
 
-def test_analysis_respects_direction_specific_rule_branches(tmp_path: Path, monkeypatch):
-    payload = {
-        "treaty": {
-            "treaty_id": "cn-nl",
-            "jurisdictions": ["CN", "NL"],
-            "title": "China-Netherlands Tax Treaty",
-            "version": "v3-generated",
-            "source_type": "import_stub_from_source_documents",
-            "source_documents": [],
-            "notes": [],
-        },
-        "articles": [
-            {
-                "article_number": "12",
-                "article_title": "Royalties",
-                "article_label": "Article 12",
-                "income_type": "royalties",
-                "summary": "Treaty treatment for royalties.",
-                "notes": [],
-                "paragraphs": [
-                    {
-                        "paragraph_id": "art12-p1",
-                        "paragraph_label": "Article 12(1)",
-                        "source_reference": "Article 12(1)",
-                        "source_language": "en",
-                        "source_excerpt": "Forward branch.",
-                        "source_segments": [],
-                        "provenance_summary": {},
-                        "rules": [
-                            {
-                                "rule_id": "cn-nl-art12-p1-forward",
-                                "rule_type": "rate_limitation",
-                                "rate": "5%",
-                                "direction": "payer_to_payee",
-                                "candidate_rank": 1,
-                                "is_primary_candidate": True,
-                                "extraction_confidence": 0.98,
-                                "derived_from_segments": [],
-                                "conditions": ["Only when payer is CN and payee is NL."],
-                                "human_review_required": True,
-                                "review_reason": "Forward branch.",
-                            }
-                        ],
-                    },
-                    {
-                        "paragraph_id": "art12-p2",
-                        "paragraph_label": "Article 12(2)",
-                        "source_reference": "Article 12(2)",
-                        "source_language": "en",
-                        "source_excerpt": "Reverse branch.",
-                        "source_segments": [],
-                        "provenance_summary": {},
-                        "rules": [
-                            {
-                                "rule_id": "cn-nl-art12-p2-reverse",
-                                "rule_type": "rate_limitation",
-                                "rate": "15%",
-                                "direction": "payee_to_payer",
-                                "candidate_rank": 1,
-                                "is_primary_candidate": True,
-                                "extraction_confidence": 0.98,
-                                "derived_from_segments": [],
-                                "conditions": ["Only when payer is NL and payee is CN."],
-                                "human_review_required": True,
-                                "review_reason": "Reverse branch.",
-                            }
-                        ],
-                    },
-                ],
-            }
-        ],
-    }
-
-    temp_data_path = tmp_path / "cn-nl.directional-royalties.json"
-    temp_data_path.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
-    monkeypatch.setattr(service, "DATA_PATH", temp_data_path)
-
-    response = client.post(
-        "/analyze",
-        json={"scenario": "荷兰公司向中国公司支付特许权使用费"},
-    )
-
-    assert response.status_code == 200
-    assert response.json()["supported"] is True
-    assert response.json()["result"]["source_reference"] == "Article 12(2)"
-    assert response.json()["result"]["rate"] == "15%"
-    assert response.json()["result"]["conditions"] == [
-        "Only when payer is NL and payee is CN."
-    ]
-
-
 def test_treats_common_royalty_like_labels_as_supported_royalties_case():
     response = client.post(
         "/analyze",
@@ -707,36 +613,6 @@ def test_llm_input_parser_rejects_non_tax_smalltalk_as_incomplete(monkeypatch):
     }
 
 
-def test_llm_input_parser_is_cross_checked_before_supported_result(monkeypatch):
-    monkeypatch.setattr(
-        service,
-        "parse_scenario_to_json",
-        lambda scenario: {
-            "payer_country": "CN",
-            "payee_country": "NL",
-            "transaction_type": "royalties",
-            "matched_transaction_label": "royalties",
-            "needs_clarification": False,
-        },
-    )
-
-    response = client.post(
-        "/analyze",
-        json={"scenario": "今天天气不错，顺便聊聊欧洲"},
-    )
-
-    assert response.status_code == 200
-    assert response.json()["supported"] is False
-    assert response.json()["reason"] == "incomplete_scenario"
-    assert response.json()["input_interpretation"] == {
-        "parser_source": "llm",
-        "payer_country": None,
-        "payee_country": None,
-        "transaction_type": "unknown",
-        "matched_transaction_label": "royalties",
-    }
-
-
 def test_llm_input_parser_normalizes_country_names_from_model_output(monkeypatch):
     monkeypatch.setattr(
         service,
@@ -762,42 +638,6 @@ def test_llm_input_parser_normalizes_country_names_from_model_output(monkeypatch
         "matched_transaction_label": "software license",
         "parser_source": "llm",
         "reason": "ok",
-    }
-
-
-def test_llm_input_parser_accepts_supported_country_aliases_when_evidence_is_present(
-    monkeypatch,
-):
-    monkeypatch.setattr(
-        service,
-        "parse_scenario_to_json",
-        lambda scenario: {
-            "payer_country": "PRC",
-            "payee_country": "Dutch",
-            "transaction_type": "royalties",
-            "matched_transaction_label": "royalties",
-            "needs_clarification": False,
-        },
-    )
-
-    response = client.post(
-        "/analyze",
-        json={"scenario": "PRC company pays Dutch company royalties"},
-    )
-
-    assert response.status_code == 200
-    assert response.json()["supported"] is True
-    assert response.json()["normalized_input"] == {
-        "payer_country": "CN",
-        "payee_country": "NL",
-        "transaction_type": "royalties",
-    }
-    assert response.json()["input_interpretation"] == {
-        "parser_source": "llm",
-        "payer_country": "CN",
-        "payee_country": "NL",
-        "transaction_type": "royalties",
-        "matched_transaction_label": "royalties",
     }
 
 
@@ -858,36 +698,6 @@ def test_analyze_rejects_unknown_data_source():
     )
 
     assert response.status_code == 422
-
-
-def test_analyze_returns_controlled_failure_when_llm_generated_dataset_is_missing(
-    tmp_path: Path, monkeypatch
-):
-    missing_path = tmp_path / "missing-llm-dataset.json"
-    monkeypatch.setattr(service, "LLM_GENERATED_DATA_PATH", missing_path)
-
-    response = client.post(
-        "/analyze",
-        json={
-            "scenario": "中国居民企业向荷兰支付特许权使用费",
-            "data_source": "llm_generated",
-        },
-    )
-
-    assert response.status_code == 200
-    assert response.json() == {
-        "data_source_used": "llm_generated",
-        "supported": False,
-        "reason": "unavailable_data_source",
-        "message": "The requested treaty dataset is not currently available.",
-        "immediate_action": "Retry with the stable curated dataset or regenerate the requested treaty dataset before reviewing this scenario.",
-        "missing_fields": [],
-        "suggested_format": "Try again with the stable dataset or regenerate the LLM-generated treaty dataset before reviewing this scenario.",
-        "suggested_examples": [
-            "Use the default stable dataset for a normal review run.",
-            "Regenerate the LLM-derived treaty dataset, then retry the same scenario.",
-        ],
-    }
 
 
 def test_analysis_escalates_when_multiple_rate_branches_exist_under_one_article(
@@ -986,11 +796,7 @@ def test_analysis_escalates_when_multiple_rate_branches_exist_under_one_article(
     assert response.json()["supported"] is True
     assert response.json()["result"]["review_priority"] == "high"
     assert response.json()["result"]["auto_conclusion_allowed"] is False
-    assert response.json()["result"]["rate"] == "5% / 10%"
-    assert response.json()["result"]["summary"] == (
-        "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches "
-        "(5% / 10%) are possible and this version should not issue an automatic conclusion."
-    )
+    assert response.json()["result"]["rate"] == "10%"
     assert response.json()["result"]["alternative_rate_candidates"] == [
         {
             "source_reference": "Article 10(2)",
@@ -1088,11 +894,6 @@ def test_analysis_escalates_when_one_paragraph_contains_multiple_rate_rules(
     assert response.json()["supported"] is True
     assert response.json()["result"]["review_priority"] == "high"
     assert response.json()["result"]["auto_conclusion_allowed"] is False
-    assert response.json()["result"]["rate"] == "5% / 10%"
-    assert response.json()["result"]["summary"] == (
-        "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches "
-        "(5% / 10%) are possible and this version should not issue an automatic conclusion."
-    )
     assert response.json()["result"]["alternative_rate_candidates"] == [
         {
             "source_reference": "Article 10(2)",

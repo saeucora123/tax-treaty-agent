@@ -1,0 +1,189 @@
+{
+  "registry_id": "cn-nl-official-sources",
+  "jurisdiction_pair": [
+    "CN",
+    "NL"
+  ],
+  "last_reviewed_on": "2026-03-12",
+  "sources": [
+    {
+      "source_id": "sat-tax-treaty-index",
+      "title": "国家税务总局 税收条约栏目索引",
+      "issuing_authority": "State Taxation Administration of the PRC",
+      "jurisdictions": [
+        "CN"
+      ],
+      "source_type": "metadata_page",
+      "official_url": "https://www.chinatax.gov.cn/chinatax/n810341/n810770/index.html",
+      "language": "zh",
+      "status": "confirmed",
+      "preferred_use": "source_governance_reference",
+      "notes": "China-side index page confirming the Netherlands treaty landing page and the MLI synthesized-text area."
+    },
+    {
+      "source_id": "sat-cn-nl-treaty-landing-page",
+      "title": "国家税务总局 荷兰税收条约专题页",
+      "issuing_authority": "State Taxation Administration of the PRC",
+      "jurisdictions": [
+        "CN",
+        "NL"
+      ],
+      "source_type": "metadata_page",
+      "official_url": "https://www.chinatax.gov.cn/chinatax/n810341/n810770/c1152939/content.html",
+      "language": "zh",
+      "status": "confirmed",
+      "preferred_use": "source_governance_reference",
+      "notes": "China-side landing page linking the Chinese/English treaty PDFs and the MLI synthesized texts for the Netherlands."
+    },
+    {
+      "source_id": "sat-cn-nl-2013-zh-pdf",
+      "title": "中华人民共和国政府和荷兰王国政府关于对所得避免双重征税和防止偷漏税的协定",
+      "issuing_authority": "State Taxation Administration of the PRC",
+      "jurisdictions": [
+        "CN",
+        "NL"
+      ],
+      "source_type": "treaty_text",
+      "official_url": "https://www.chinatax.gov.cn/n810341/n810770/c810795/5026980/files/%E4%B8%AD%E5%8D%8E%E4%BA%BA%E6%B0%91%E5%85%B1%E5%92%8C%E5%9B%BD%E6%94%BF%E5%BA%9C%E5%92%8C%E8%8D%B7%E5%85%B0%E7%8E%8B%E5%9B%BD%E6%94%BF%E5%BA%9C%E5%85%B3%E4%BA%8E%E5%AF%B9%E6%89%80%E5%BE%97%E9%81%BF%E5%85%8D%E5%8F%8C%E9%87%8D%E5%BE%81%E7%A8%8E%E5%92%8C%E9%98%B2%E6%AD%A2%E5%81%B7%E6%BC%8F%E7%A8%8E%E7%9A%84%E5%8D%8F%E5%AE%9A%EF%BC%88%E4%B8%AD%E6%96%87%EF%BC%89.pdf",
+      "language": "zh",
+      "status": "confirmed",
+      "preferred_use": "primary_runtime_basis",
+      "notes": "Chinese official treaty PDF linked from the SAT Netherlands treaty page. Use as one authoritative text anchor for curated treaty excerpts."
+    },
+    {
+      "source_id": "sat-cn-nl-2013-en-pdf",
+      "title": "Convention between the Government of the People's Republic of China and the Government of the Kingdom of the Netherlands for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+      "issuing_authority": "State Taxation Administration of the PRC",
+      "jurisdictions": [
+        "CN",
+        "NL"
+      ],
+      "source_type": "treaty_text",
+      "official_url": "https://www.chinatax.gov.cn/n810341/n810770/c810795/5026980/files/China-Netherlands.pdf",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "primary_runtime_basis",
+      "notes": "English official treaty PDF linked from the SAT Netherlands treaty page. Current clean-text extraction samples are closest to this English text."
+    },
+    {
+      "source_id": "sat-cn-nl-mli-zh-pdf",
+      "title": "荷兰中荷协定和MLI整合文本（中文）",
+      "issuing_authority": "State Taxation Administration of the PRC",
+      "jurisdictions": [
+        "CN",
+        "NL"
+      ],
+      "source_type": "mli_synthesized_text",
+      "official_url": "https://www.chinatax.gov.cn/n810341/n810770/c810795/5026985/files/%E8%8D%B7%E5%85%B0%E4%B8%AD%E8%8D%B7%E5%8D%8F%E5%AE%9A%E5%92%8CMLI%E6%95%B4%E5%90%88%E6%96%87%E6%9C%AC%EF%BC%88%E4%B8%AD%E6%96%87%EF%BC%89.pdf",
+      "language": "zh",
+      "status": "confirmed",
+      "preferred_use": "mli_context_only",
+      "notes": "Chinese MLI synthesized text linked from the SAT Netherlands treaty page. Use for governance review and future treaty-maintenance checks, not as the current sole runtime basis."
+    },
+    {
+      "source_id": "sat-cn-nl-mli-en-pdf",
+      "title": "Synthesised text of the MLI and the China-Netherlands tax treaty",
+      "issuing_authority": "State Taxation Administration of the PRC",
+      "jurisdictions": [
+        "CN",
+        "NL"
+      ],
+      "source_type": "mli_synthesized_text",
+      "official_url": "https://www.chinatax.gov.cn/n810341/n810770/c810795/5026985/files/Synthesised%20text%20of%20the%20MLI%20and%20the%20China-Netherlands%20DTA.pdf",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "mli_context_only",
+      "notes": "English MLI synthesized text linked from the SAT Netherlands treaty page. Keep as future source-governance context, not as proof that every current runtime excerpt is already MLI-normalized."
+    },
+    {
+      "source_id": "sat-cn-nl-entry-into-force-announcement",
+      "title": "中荷税收协定2014年2月1日起生效执行",
+      "issuing_authority": "State Taxation Administration of the PRC (regional publication mirror)",
+      "jurisdictions": [
+        "CN",
+        "NL"
+      ],
+      "source_type": "metadata_page",
+      "official_url": "https://www.chinatax.gov.cn/chinatax/n810341/n810760/c1153042/content.html",
+      "language": "zh",
+      "status": "confirmed",
+      "preferred_use": "source_governance_reference",
+      "notes": "China-side official tax-system announcement confirming entry-into-force timing for the 2013 agreement."
+    },
+    {
+      "source_id": "nl-1987-treaty-metadata",
+      "title": "Agreement between the Kingdom of the Netherlands and the People's Republic of China for the avoidance of double taxation and the prevention of fiscal evasion with respect to taxes on income (1987 metadata entry)",
+      "issuing_authority": "Kingdom of the Netherlands Treaty Database",
+      "jurisdictions": [
+        "CN",
+        "NL"
+      ],
+      "source_type": "metadata_page",
+      "official_url": "https://treatydatabase.overheid.nl/en/Treaty/Details/001095",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "historical_reference",
+      "notes": "Dutch official treaty-database metadata for the earlier 1987 agreement. Keep as historical governance context, not as the current runtime basis."
+    },
+    {
+      "source_id": "nl-2013-treaty-metadata",
+      "title": "Convention between the Kingdom of the Netherlands and the People’s Republic of China for the avoidance of double taxation and the prevention of fiscal evasion with respect to taxes on income (2013 metadata entry)",
+      "issuing_authority": "Kingdom of the Netherlands Treaty Database",
+      "jurisdictions": [
+        "CN",
+        "NL"
+      ],
+      "source_type": "metadata_page",
+      "official_url": "https://treatydatabase.overheid.nl/en/Treaty/Details/009069",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "source_governance_reference",
+      "notes": "Dutch official metadata page for the current agreement. Useful for governance notes and outbound references in the repo."
+    },
+    {
+      "source_id": "nl-2013-consolidated-text",
+      "title": "Convention between the Kingdom of the Netherlands and the People’s Republic of China for the avoidance of double taxation and the prevention of fiscal evasion with respect to taxes on income - consolidated text",
+      "issuing_authority": "Kingdom of the Netherlands Treaty Database",
+      "jurisdictions": [
+        "CN",
+        "NL"
+      ],
+      "source_type": "treaty_text",
+      "official_url": "https://wetten.overheid.nl/BWBV0005702/2015-12-30",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "primary_runtime_basis",
+      "notes": "Dutch official consolidated treaty text with article-level anchors. Treat as the cleanest public text basis for current English article excerpts."
+    },
+    {
+      "source_id": "nl-2013-signing-gazette",
+      "title": "Tractatenblad 2013, 104",
+      "issuing_authority": "Kingdom of the Netherlands Treaty Database",
+      "jurisdictions": [
+        "CN",
+        "NL"
+      ],
+      "source_type": "official_gazette",
+      "official_url": "https://treatydatabase.overheid.nl/en/Treaty/Download/009069?format=pdf",
+      "language": "nl",
+      "status": "confirmed",
+      "preferred_use": "historical_reference",
+      "notes": "Dutch official gazette publication referenced from the 2013 treaty metadata page."
+    },
+    {
+      "source_id": "nl-2014-entry-into-force-gazette",
+      "title": "Tractatenblad 2014, 13",
+      "issuing_authority": "Kingdom of the Netherlands Treaty Database",
+      "jurisdictions": [
+        "CN",
+        "NL"
+      ],
+      "source_type": "official_gazette",
+      "official_url": "https://treatydatabase.overheid.nl/en/Treaty/Download/009069?format=pdf&part=1",
+      "language": "nl",
+      "status": "confirmed",
+      "preferred_use": "historical_reference",
+      "notes": "Dutch official gazette publication for entry into force, referenced from the 2013 treaty metadata page."
+    }
+  ]
+}

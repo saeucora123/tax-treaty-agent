@@ -12,6 +12,7 @@ RAW_INGEST_SCRIPT_PATH = REPO_ROOT / "scripts" / "ingest_cn_nl_raw_text_stub.py"
 PDF_INGEST_SCRIPT_PATH = REPO_ROOT / "scripts" / "ingest_cn_nl_pdf_stub.py"
 DEFAULT_CATALOG_PATH = REPO_ROOT / "data" / "source_documents" / "source-catalog.stub.json"
 DEFAULT_SUMMARY_OUTPUT_PATH = REPO_ROOT / "data" / "treaties" / "source-catalog.summary.json"
+SOURCE_REGISTRY_PATH = REPO_ROOT / "data" / "source_registry" / "cn-nl-official-sources.json"
 
 
 def parse_args() -> argparse.Namespace:
@@ -38,6 +39,21 @@ def load_catalog(catalog_path: Path) -> dict:
         return json.load(file)
 
 
+def load_known_source_ids(registry_path: Path = SOURCE_REGISTRY_PATH) -> set[str]:
+    with registry_path.open("r", encoding="utf-8") as file:
+        registry = json.load(file)
+    return {source["source_id"] for source in registry["sources"]}
+
+
+def validate_source_entries(source_entries: list[dict], known_source_ids: set[str]) -> None:
+    for entry in source_entries:
+        source_id = entry.get("source_id")
+        if not source_id:
+            raise ValueError("Catalog entry is missing source_id")
+        if source_id not in known_source_ids:
+            raise ValueError(f"Unknown source_id in catalog: {source_id}")
+
+
 def run_source_entry(entry: dict) -> subprocess.CompletedProcess[str]:
     source_type = entry["source_type"]
     if source_type == "raw_text":
@@ -52,6 +68,8 @@ def run_source_entry(entry: dict) -> subprocess.CompletedProcess[str]:
             entry["dataset_output_path"],
             "--report-output",
             entry["report_output_path"],
+            "--source-id",
+            entry["source_id"],
         ]
     elif source_type == "pdf_text":
         command = [
@@ -67,6 +85,8 @@ def run_source_entry(entry: dict) -> subprocess.CompletedProcess[str]:
             entry["dataset_output_path"],
             "--report-output",
             entry["report_output_path"],
+            "--source-id",
+            entry["source_id"],
         ]
         if "document_id" in entry:
             command.extend(["--document-id", entry["document_id"]])
@@ -116,6 +136,8 @@ def main() -> int:
     try:
         catalog = load_catalog(args.catalog)
         source_entries = catalog["sources"]
+        known_source_ids = load_known_source_ids()
+        validate_source_entries(source_entries, known_source_ids)
     except (OSError, ValueError, KeyError, json.JSONDecodeError) as error:
         print(str(error), file=sys.stderr)
         return 1

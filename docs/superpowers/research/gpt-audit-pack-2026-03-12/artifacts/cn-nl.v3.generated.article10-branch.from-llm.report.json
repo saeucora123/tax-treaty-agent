@@ -1,0 +1,9 @@
+{
+  "status": "ok",
+  "document_id": "cn-nl-article10-llm",
+  "article_count": 1,
+  "paragraph_count": 2,
+  "rule_count": 3,
+  "llm_provider": "deepseek",
+  "llm_model": "deepseek-chat"
+}

@@ -178,6 +178,8 @@ test("shows a stronger review warning for medium-confidence treaty extraction", 
     screen.getByText(/escalate this case for priority manual review before using the treaty result/i),
   ).toBeInTheDocument();
   expect(await screen.findByText(/\[ priority review \]/i)).toBeInTheDocument();
+  expect(screen.getByText(/priority review required/i)).toBeInTheDocument();
+  expect(screen.getByText(/^review$/i)).toBeInTheDocument();
   expect(screen.getByText(/88% extraction confidence/i)).toBeInTheDocument();
   expect(screen.getByText(/prioritize manual verification/i)).toBeInTheDocument();
 });
@@ -252,6 +254,74 @@ test("holds automatic treaty conclusion when source confidence is very low", asy
 });
 
 
+test("describes branch-ambiguity hold states without pretending the issue is low confidence", async () => {
+  const user = userEvent.setup();
+
+  globalThis.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      supported: true,
+      normalized_input: {
+        payer_country: "CN",
+        payee_country: "NL",
+        transaction_type: "dividends",
+      },
+      result: {
+        summary:
+          "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+        boundary_note:
+          "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+        immediate_action:
+          "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+        article_number: "10",
+        article_title: "Dividends",
+        source_reference: "Article 10(2)",
+        source_language: "en",
+        source_excerpt:
+          "However, such dividends may also be taxed in the State of source, but the tax so charged shall not exceed: (a) 5 per cent ... (b) 10 per cent in all other cases.",
+        rate: "5% / 10%",
+        extraction_confidence: 0.9,
+        auto_conclusion_allowed: false,
+        key_missing_facts: [
+          "Whether the payment is legally a dividend rather than another type of return.",
+          "Whether the recipient is the beneficial owner of the dividend income.",
+          "Whether shareholding facts support relying on the treaty position.",
+        ],
+        review_checklist: [
+          "Confirm the payment is legally characterized as a dividend rather than another return.",
+          "Confirm the recipient is the beneficial owner of the dividend income.",
+          "Check shareholding facts and supporting corporate records before relying on the treaty rate.",
+        ],
+        conditions: [
+          "If the beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends.",
+        ],
+        notes: [],
+        human_review_required: true,
+        review_priority: "high",
+        review_reason:
+          "Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+        alternative_rate_candidates: [
+          {
+            source_reference: "Article 10(2)",
+            rate: "10%",
+            conditions: ["In all other cases."],
+          },
+        ],
+      },
+    }),
+  }) as typeof fetch;
+
+  render(<App />);
+
+  await user.type(screen.getByLabelText(/cross-border scenario/i), "中国公司向荷兰公司支付股息");
+  await user.click(screen.getByRole("button", { name: /run review/i }));
+
+  expect(await screen.findByText(/manual branch review required/i)).toBeInTheDocument();
+  expect(screen.getByText(/\[ hold \] multiple treaty branches require manual selection/i)).toBeInTheDocument();
+  expect(screen.queryByText(/\[ hold \] confidence too low for automatic conclusion/i)).not.toBeInTheDocument();
+});
+
+
 test("shows missing-input guidance for unsupported or incomplete scenarios", async () => {
   const user = userEvent.setup();
 
@@ -288,6 +358,76 @@ test("shows missing-input guidance for unsupported or incomplete scenarios", asy
   expect(screen.getByText(/payer country/i)).toBeInTheDocument();
   expect(screen.getByText(/try a sentence like/i)).toBeInTheDocument();
   expect(screen.getByText("荷兰公司向中国公司支付利息")).toBeInTheDocument();
+});
+
+
+test("shows multiple possible rates instead of a single anchored treaty rate when branch facts are missing", async () => {
+  const user = userEvent.setup();
+
+  globalThis.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      supported: true,
+      normalized_input: {
+        payer_country: "CN",
+        payee_country: "NL",
+        transaction_type: "dividends",
+      },
+      result: {
+        summary:
+          "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+        boundary_note:
+          "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+        immediate_action:
+          "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+        article_number: "10",
+        article_title: "Dividends",
+        source_reference: "Article 10(2)",
+        source_language: "en",
+        source_excerpt:
+          "However, such dividends may also be taxed in the State of source, but the tax so charged shall not exceed: (a) 5 per cent ... (b) 10 per cent in all other cases.",
+        rate: "5% / 10%",
+        extraction_confidence: 0.9,
+        auto_conclusion_allowed: false,
+        key_missing_facts: [
+          "Whether the payment is legally a dividend rather than another type of return.",
+          "Whether the recipient is the beneficial owner of the dividend income.",
+          "Whether shareholding facts support relying on the treaty position.",
+        ],
+        review_checklist: [
+          "Confirm the payment is legally characterized as a dividend rather than another return.",
+          "Confirm the recipient is the beneficial owner of the dividend income.",
+          "Check shareholding facts and supporting corporate records before relying on the treaty rate.",
+        ],
+        conditions: [
+          "If the beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends.",
+        ],
+        notes: [],
+        human_review_required: true,
+        review_priority: "high",
+        review_reason:
+          "Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+        alternative_rate_candidates: [
+          {
+            source_reference: "Article 10(2)",
+            rate: "10%",
+            conditions: ["In all other cases."],
+          },
+        ],
+      },
+    }),
+  }) as typeof fetch;
+
+  render(<App />);
+
+  await user.type(screen.getByLabelText(/cross-border scenario/i), "中国公司向荷兰公司支付股息");
+  await user.click(screen.getByRole("button", { name: /run review/i }));
+
+  expect(await screen.findByText(/multiple treaty rate branches \(5% \/ 10%\) are possible/i)).toBeInTheDocument();
+  expect(screen.getByText(/possible treaty rates/i)).toBeInTheDocument();
+  expect(screen.getByText("5% / 10%")).toBeInTheDocument();
+  expect(screen.getByText(/alternative rate candidates/i)).toBeInTheDocument();
+  expect(screen.getByText(/10% · Article 10\(2\)/i)).toBeInTheDocument();
 });
 
 
