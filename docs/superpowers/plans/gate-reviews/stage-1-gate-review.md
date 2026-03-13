@@ -4,7 +4,7 @@ Gate: `stage_1`
 Stage label: `Stage 1: credibility evidence pack`
 Gate result: `PASS`
 Review date: `2026-03-12`
-Decision owner: `Codex + project execution control`
+Decision owner: `project owner + execution control`
 
 ## Current Progress Snapshot
 

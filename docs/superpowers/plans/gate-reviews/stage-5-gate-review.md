@@ -4,7 +4,7 @@ Gate: `stage_5`
 Stage label: `Stage 5: workflow handoff and integration fit`
 Gate result: `PASS`
 Review date: `2026-03-12`
-Decision owner: `Codex + user-approved execution route`
+Decision owner: `project owner + user-approved execution route`
 
 ## Current Progress Snapshot
 

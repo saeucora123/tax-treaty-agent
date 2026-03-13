@@ -298,7 +298,7 @@ This schema is intentionally simple but expandable.
 - reject over-claiming
 - decide what is publishable
 
-### Codex / AI
+### AI-Assisted Delivery
 
 - scaffold files
 - draft modules
@@ -311,9 +311,9 @@ This schema is intentionally simple but expandable.
 
 For each meaningful feature:
 
-1. Codex drafts structure
+1. AI-assisted draft prepares structure
 2. human reviews scope and truthfulness
-3. Codex revises
+3. implementation pass revises
 4. run the smallest real verification path
 
 ## 7. What To Build First

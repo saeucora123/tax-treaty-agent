@@ -3,7 +3,7 @@
 Date: 2026-03-12
 Stage: `Stage 4`
 Status: Active
-Scope owner: Codex
+Scope owner: project implementation flow
 
 ## 1. Purpose
 

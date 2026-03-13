@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
-CONTROL_PATH = ROOT / ".codex" / "execution-control.json"
+CONTROL_PATH = ROOT / "docs" / "superpowers" / "execution" / "execution-control.json"
 GATE_RESULT_RE = re.compile(r"^Gate result:\s*`?(PASS|FAIL|PENDING)`?\s*$", re.IGNORECASE)
 
 

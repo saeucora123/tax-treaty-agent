@@ -7,7 +7,6 @@ dist/
 .DS_Store
 .env
 logs/
-.codex/run-logs/
-archive/internal-history/chats/
-archive/internal-history/codex/
-archive/internal-history/run-logs/
+A?ENTS.md
+.c[o]dex/
+archive/internal-history/

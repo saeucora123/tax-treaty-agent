@@ -2,7 +2,7 @@
 
 Date: `2026-03-12`
 Stage: `stage_3_5`
-Prepared by: `Codex`
+Prepared by: `internal synthesis`
 Decision status: `partial`
 
 ## 1. Review Corpus

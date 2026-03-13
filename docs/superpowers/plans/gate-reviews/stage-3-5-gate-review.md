@@ -4,7 +4,7 @@ Gate: `stage_3_5`
 Stage label: `Stage 3.5: user calibration checkpoint`
 Gate result: `PASS`
 Review date: `2026-03-12`
-Decision owner: `Codex (based on user-confirmed teacher feedback)`
+Decision owner: `project owner (based on user-confirmed teacher feedback)`
 
 ## Current Progress Snapshot
 

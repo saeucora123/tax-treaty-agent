@@ -13,7 +13,7 @@ If you are opening this repo for the first time, start here:
 3. Inspect `data/` for governed treaty datasets and source registries.
 4. Inspect `docs/superpowers/plans/gate-reviews/` and `docs/superpowers/research/` for the staged evidence pack.
 
-Internal chat exports, private Codex working notes, and local run logs are intentionally archived outside the public reading path.
+Internal chat exports, private internal notes, and local run logs are intentionally archived outside the public reading path.
 
 ## What This Project Is
 
@@ -266,7 +266,7 @@ data/      Seed treaty data
   source_documents/  source-aligned import fixtures
 scripts/   dataset builders and future ingestion helpers
 docs/      Design docs, plans, assets
-.codex/    Project memory and status
+  superpowers/execution/  execution-control artifacts
 ```
 
 `data/source_documents/` now uses a parser-like intermediate format instead of a flat answer list, so the import path is closer to a future real treaty parser.
@@ -407,5 +407,5 @@ Real document-to-structured-data generation:
 - `docs/superpowers/specs/2026-03-11-tax-treaty-agent-import-stub-design.md`
 - `docs/superpowers/plans/2026-03-11-tax-treaty-agent-implementation-plan.md`
 - `docs/superpowers/plans/2026-03-11-tax-treaty-agent-phase-a-checklist.md`
-- `.codex/project-memory.md`
-- `.codex/project-status.md`
+- `docs/superpowers/execution/execution-control.json`
+- `docs/superpowers/execution/execution-progress.json`

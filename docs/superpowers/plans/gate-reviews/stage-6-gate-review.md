@@ -4,7 +4,7 @@ Gate: `stage_6`
 Stage label: `Stage 6: source chain closure`
 Gate result: `PASS`
 Review date: `2026-03-13`
-Decision owner: `Codex + user-approved execution route`
+Decision owner: `project owner + user-approved execution route`
 
 ## Current Progress Snapshot
 

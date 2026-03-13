@@ -1,7 +1,7 @@
 # Stage 3 CN-SG Pressure Test Report
 
 Date: 2026-03-12
-Reviewer: Codex
+Reviewer: internal review pass
 Result: `PARTIAL`
 Stage: `stage_3`
 Purpose: determine whether the current Stage 3 state contract and bounded conservative-output design are secretly overfit to `CN-NL`.

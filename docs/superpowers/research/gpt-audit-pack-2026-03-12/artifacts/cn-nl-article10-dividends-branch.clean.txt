@@ -1,5 +1,0 @@
-Article 10 Dividends
-1. Dividends paid by a company which is a resident of one of the States to a resident of the other State may be taxed in that other State.
-2. However, such dividends may also be taxed in the State of which the company paying the dividends is a resident, and according to the laws of that State, but if the recipient is the beneficial owner of the dividends the tax so charged shall not exceed:
-(a) 5 per cent of the gross amount of the dividends if the beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends;
-(b) 10 per cent of the gross amount of the dividends in all other cases.

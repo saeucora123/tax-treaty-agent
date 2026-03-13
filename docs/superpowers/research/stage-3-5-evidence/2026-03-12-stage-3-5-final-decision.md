@@ -3,7 +3,7 @@
 Date: `2026-03-12`
 Stage: `stage_3_5`
 Result: `PASS`
-Decision owner: `Codex (based on user-confirmed teacher feedback)`
+Decision owner: `project owner (based on user-confirmed teacher feedback)`
 
 ## 1. Decision
 
@@ -79,4 +79,3 @@ Minimum expected Stage 4 improvement:
 - `docs/superpowers/research/stage-3-5-evidence/review/4.md`
 - `docs/superpowers/research/stage-3-5-evidence/2026-03-12-stage-3-5-teacher-review-synthesis.md`
 - `docs/superpowers/research/stage-3-5-evidence/2026-03-12-stage-4-construction-targets-for-teachers.md`
-

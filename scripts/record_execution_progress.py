@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
-CONTROL_PATH = ROOT / ".codex" / "execution-control.json"
+CONTROL_PATH = ROOT / "docs" / "superpowers" / "execution" / "execution-control.json"
 
 
 def load_json(path: Path) -> dict:

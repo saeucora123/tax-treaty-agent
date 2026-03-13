@@ -4,7 +4,7 @@ Gate: `stage_3`
 Stage label: `Stage 3: conservative-output value design`
 Gate result: `PASS`
 Review date: `2026-03-12`
-Decision owner: `Codex`
+Decision owner: `project execution control`
 
 ## Current Progress Snapshot
 
