@@ -34,11 +34,16 @@ Current recommended product shape:
 At the start of substantive work in this repo, read:
 
 - `AGENTS.md`
-- `.codex/project-memory.md`
-- `.codex/project-status.md`
+- `.codex/execution-control.json`
+- `.codex/execution-progress.json`
 - `docs/superpowers/plans/2026-03-12-tax-treaty-agent-execution-decision-memo.md`
 - `docs/superpowers/specs/2026-03-11-tax-treaty-agent-design.md`
 - `docs/superpowers/plans/2026-03-11-tax-treaty-agent-implementation-plan.md` when it exists
+
+If a local private archive exists for this repo, also read:
+
+- `archive/internal-history/codex/project-memory.md`
+- `archive/internal-history/codex/project-status.md`
 
 ## Working Surface
 

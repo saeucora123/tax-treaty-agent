@@ -4,6 +4,17 @@ A bounded, source-aware international tax treaty pre-review system that uses AI 
 
 ![Tax Treaty Agent demo](docs/superpowers/assets/tax-treaty-agent-demo.png)
 
+## Where To Start
+
+If you are opening this repo for the first time, start here:
+
+1. Read this `README.md` for product scope and architecture.
+2. Inspect `backend/` and `frontend/` for the live implementation.
+3. Inspect `data/` for governed treaty datasets and source registries.
+4. Inspect `docs/superpowers/plans/gate-reviews/` and `docs/superpowers/research/` for the staged evidence pack.
+
+Internal chat exports, private Codex working notes, and local run logs are intentionally archived outside the public reading path.
+
 ## What This Project Is
 
 `Tax Treaty Agent` is a bounded international tax treaty pre-review tool.
