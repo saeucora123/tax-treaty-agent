@@ -45,9 +45,16 @@ def test_evaluate_case_passes_for_terminated_stage4_case():
         "id": "stage4-terminated-001",
         "category": "multi_branch_dividend",
         "scenario": "中国公司向荷兰公司支付股息",
-        "fact_inputs": {
-            "direct_holding_confirmed": "yes",
-            "direct_holding_threshold_met": "unknown",
+        "input_mode": "guided",
+        "guided_input": {
+            "payer_country": "CN",
+            "payee_country": "NL",
+            "income_type": "dividends",
+            "facts": {
+                "direct_holding_confirmed": "yes",
+                "direct_holding_threshold_met": "unknown",
+                "holding_structure_is_direct": "yes",
+            },
         },
         "expected": {
             "supported": True,

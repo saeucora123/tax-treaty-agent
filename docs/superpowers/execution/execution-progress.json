@@ -1,9 +1,10 @@
 {
-  "last_updated": "2026-03-13",
+  "last_updated": "2026-03-17",
   "current_focus": [
-    "cross_cutting_infrastructure"
+    "cross_cutting_infrastructure",
+    "post_stage_6_slice_1"
   ],
-  "global_note": "Execution control is installed. Stage 1, Stage 2, Stage 3, Stage 3.5, Stage 4, Stage 5, and Stage 6 are complete; the next material decision is which post-Stage-6 slice to pursue without weakening the newly closed source-chain contract.",
+  "global_note": "Execution control is installed. Stage 1, Stage 2, Stage 3, Stage 3.5, Stage 4, Stage 5, and Stage 6 remain complete, and the first post-Stage-6 slice is now live: guided input is the primary path, free-text is explicitly legacy, response versioning is formalized, and BO/conflict workflow signals now survive into handoff output without weakening the closed source-chain contract.",
   "stages": {
     "stage_1": {
       "status_summary": "Stage 1 has passed gate with a deterministic 70-case evidence pack, zero Critical/Major/Minor overreach in the fixed suite, and whitepaper-backed metrics plus System Behavior Commitments.",
@@ -169,8 +170,8 @@
       ],
       "in_progress_items": [],
       "next_items": [
-        "Choose the first post-Stage-6 slice without weakening the new source-chain contract",
-        "Keep treaty-version, paragraph-reference, and fact-based MLI prompts stable unless a deliberate redesign is recorded"
+        "Remove the remaining independent fact_inputs path in Slice 2 after guided-input adoption is stable",
+        "Deepen the CN-NL dividend lane inside the new wizard-first contract without weakening treaty-version, paragraph-reference, or fact-based MLI prompt stability"
       ],
       "blocking_items": [],
       "targets": [

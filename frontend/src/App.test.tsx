@@ -815,14 +815,26 @@ test("re-runs the review with bounded fact inputs and shows user-declared facts"
               options: ["yes", "no", "unknown"],
             },
             {
+              fact_key: "beneficial_owner_confirmed",
+              prompt: "Has beneficial-owner status been separately confirmed outside this tool?",
+              input_type: "single_select",
+              options: ["yes", "no", "unknown"],
+            },
+            {
               fact_key: "pe_effectively_connected",
               prompt: "Is the dividend effectively connected with a permanent establishment or fixed base of the Dutch recipient in China?",
               input_type: "single_select",
               options: ["yes", "no", "unknown"],
             },
             {
-              fact_key: "beneficial_owner_confirmed",
-              prompt: "Has beneficial-owner status been separately confirmed outside this tool?",
+              fact_key: "holding_structure_is_direct",
+              prompt: "Is the holding structure confirmed to be direct with no intermediate holding entity between the recipient and the paying company?",
+              input_type: "single_select",
+              options: ["yes", "no", "unknown"],
+            },
+            {
+              fact_key: "mli_ppt_risk_flag",
+              prompt: "Has a principal purpose test (PPT) risk assessment been performed for this dividend payment under the MLI?",
               input_type: "single_select",
               options: ["yes", "no", "unknown"],
             },
@@ -985,11 +997,31 @@ test("re-runs the review with bounded fact inputs and shows user-declared facts"
     screen.getByLabelText(/if the holding is direct, is the direct holding at least 25%/i),
     "yes",
   );
+  await user.selectOptions(
+    screen.getByLabelText(/has beneficial-owner status been separately confirmed outside this tool/i),
+    "yes",
+  );
   expect(
     screen.getByLabelText(
       /is the dividend effectively connected with a permanent establishment or fixed base of the dutch recipient in china/i,
     ),
   ).toBeInTheDocument();
+  expect(
+    screen.getByLabelText(
+      /is the holding structure confirmed to be direct with no intermediate holding entity between the recipient and the paying company/i,
+    ),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByLabelText(
+      /has a principal purpose test \(ppt\) risk assessment been performed for this dividend payment under the mli/i,
+    ),
+  ).toBeInTheDocument();
+  await user.selectOptions(
+    screen.getByLabelText(
+      /is the holding structure confirmed to be direct with no intermediate holding entity between the recipient and the paying company/i,
+    ),
+    "yes",
+  );
   await user.click(screen.getByRole("button", { name: /re-run with these facts/i }));
 
   expect(await screen.findByText(/user-declared facts \(unverified\)/i)).toBeInTheDocument();
@@ -1007,12 +1039,20 @@ test("re-runs the review with bounded fact inputs and shows user-declared facts"
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        scenario: "中国公司向荷兰公司支付股息",
-        fact_inputs: {
-          direct_holding_confirmed: "yes",
-          direct_holding_threshold_met: "yes",
-          pe_effectively_connected: "unknown",
-          beneficial_owner_confirmed: "unknown",
+        input_mode: "guided",
+        guided_input: {
+          payer_country: "CN",
+          payee_country: "NL",
+          income_type: "dividends",
+          facts: {
+            direct_holding_confirmed: "yes",
+            direct_holding_threshold_met: "yes",
+            beneficial_owner_confirmed: "yes",
+            pe_effectively_connected: "unknown",
+            holding_structure_is_direct: "yes",
+            mli_ppt_risk_flag: "unknown",
+          },
+          scenario_text: "中国公司向荷兰公司支付股息",
         },
       }),
     }),
@@ -1486,12 +1526,18 @@ test("shows a terminated PE-exclusion exit when the user flags effectively conne
     "/api/analyze",
     expect.objectContaining({
       body: JSON.stringify({
-        scenario: "中国公司向荷兰公司支付股息",
-        fact_inputs: {
-          direct_holding_confirmed: "unknown",
-          direct_holding_threshold_met: "unknown",
-          pe_effectively_connected: "yes",
-          beneficial_owner_confirmed: "unknown",
+        input_mode: "guided",
+        guided_input: {
+          payer_country: "CN",
+          payee_country: "NL",
+          income_type: "dividends",
+          facts: {
+            direct_holding_confirmed: "unknown",
+            direct_holding_threshold_met: "unknown",
+            pe_effectively_connected: "yes",
+            beneficial_owner_confirmed: "unknown",
+          },
+          scenario_text: "中国公司向荷兰公司支付股息",
         },
       }),
     }),
@@ -1982,12 +2028,18 @@ test("shows a conflicting-facts termination exit when user-declared answers cont
     "/api/analyze",
     expect.objectContaining({
       body: JSON.stringify({
-        scenario: "中国公司向荷兰公司支付股息",
-        fact_inputs: {
-          direct_holding_confirmed: "no",
-          direct_holding_threshold_met: "yes",
-          pe_effectively_connected: "unknown",
-          beneficial_owner_confirmed: "unknown",
+        input_mode: "guided",
+        guided_input: {
+          payer_country: "CN",
+          payee_country: "NL",
+          income_type: "dividends",
+          facts: {
+            direct_holding_confirmed: "no",
+            direct_holding_threshold_met: "yes",
+            pe_effectively_connected: "unknown",
+            beneficial_owner_confirmed: "unknown",
+          },
+          scenario_text: "中国公司向荷兰公司支付股息",
         },
       }),
     }),
@@ -2137,7 +2189,7 @@ test("keeps workflow handoff visible alongside stage-4 fact completion controls"
       ],
       handoff_package: {
         machine_handoff: {
-          schema_version: "stage5.v1",
+          schema_version: "slice1.v1",
           record_kind: "supported",
           review_state_code: "can_be_completed",
           recommended_route: "complete_facts_then_rerun",
@@ -2152,6 +2204,8 @@ test("keeps workflow handoff visible alongside stage-4 fact completion controls"
           data_source_used: "stable",
           source_reference: "Article 10(2)(b)",
           review_priority: "high",
+          determining_condition_priority: null,
+          mli_ppt_review_required: true,
           blocking_facts: [
             "Whether shareholding facts support relying on the treaty position.",
           ],
@@ -2245,5 +2299,297 @@ test("keeps workflow handoff visible alongside stage-4 fact completion controls"
   expect(await screen.findByText(/complete missing facts/i)).toBeInTheDocument();
   expect(screen.getByText(/workflow handoff/i)).toBeInTheDocument();
   expect(screen.getByText(/complete the missing facts and rerun the pre-review/i)).toBeInTheDocument();
+  expect(screen.getByText(/determining condition priority: n\/a/i)).toBeInTheDocument();
+  expect(screen.getByText(/mli ppt review required: yes/i)).toBeInTheDocument();
+});
+
+
+test("submits a guided royalties review from the wizard-first workspace", async () => {
+  const user = userEvent.setup();
+
+  globalThis.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      schema_version: "slice1.v1",
+      input_mode_used: "guided",
+      supported: true,
+      review_state: {
+        state_code: "pre_review_complete",
+        state_label_zh: "预审完成",
+        state_summary: "系统已完成第一轮预审，请按标准复核流程继续。",
+      },
+      bo_precheck: {
+        status: "no_initial_flag",
+        reason_code: "beneficial_owner_confirmed",
+        reason_summary:
+          "The guided beneficial-owner fact is marked confirmed, so the system does not raise an initial BO workflow flag.",
+        facts_considered: [
+          {
+            fact_key: "beneficial_owner_status",
+            value: "yes",
+          },
+        ],
+        review_note: "Beneficial-owner status still requires human verification outside this tool.",
+      },
+      normalized_input: {
+        payer_country: "CN",
+        payee_country: "NL",
+        transaction_type: "royalties",
+      },
+      result: {
+        summary:
+          "Preliminary view: Article 12 Royalties appears relevant, with a treaty rate ceiling of 10%. Manual review is still recommended.",
+        boundary_note:
+          "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+        immediate_action:
+          "Proceed with standard manual review before relying on the treaty position.",
+        article_number: "12",
+        article_title: "Royalties",
+        source_reference: "Article 12(2)",
+        source_language: "en",
+        source_excerpt: "Treaty excerpt.",
+        rate: "10%",
+        extraction_confidence: 0.98,
+        auto_conclusion_allowed: true,
+        key_missing_facts: [],
+        review_checklist: [],
+        conditions: ["Treaty applicability depends on the facts of the payment."],
+        notes: [],
+        human_review_required: true,
+        review_priority: "normal",
+        review_reason: "Final eligibility depends on facts outside the current review scope.",
+      },
+      handoff_package: {
+        machine_handoff: {
+          schema_version: "slice1.v1",
+          record_kind: "supported",
+          review_state_code: "pre_review_complete",
+          recommended_route: "standard_review",
+          applicable_treaty: "中国-荷兰税收协定",
+          payment_direction: "CN -> NL",
+          income_type: "royalties",
+          article_number: "12",
+          article_title: "Royalties",
+          rate_display: "10%",
+          auto_conclusion_allowed: true,
+          human_review_required: true,
+          data_source_used: "stable",
+          source_reference: "Article 12(2)",
+          review_priority: "normal",
+          blocking_facts: [],
+          next_actions: [],
+          user_declared_facts: [],
+          bo_precheck: {
+            status: "no_initial_flag",
+            reason_code: "beneficial_owner_confirmed",
+            reason_summary:
+              "The guided beneficial-owner fact is marked confirmed, so the system does not raise an initial BO workflow flag.",
+            facts_considered: [
+              {
+                fact_key: "beneficial_owner_status",
+                value: "yes",
+              },
+            ],
+            review_note: "Beneficial-owner status still requires human verification outside this tool.",
+          },
+        },
+        human_review_brief: {
+          brief_title: "Treaty Pre-Review Brief",
+          headline: "CN -> NL royalties falls inside current treaty scope.",
+          disposition: "Proceed with standard human review.",
+          summary_lines: [],
+          facts_to_verify: [],
+          handoff_note: "This is a bounded pre-review output, not a final tax opinion.",
+        },
+      },
+    }),
+  }) as typeof fetch;
+
+  render(<App />);
+
+  await user.selectOptions(screen.getByLabelText(/payer jurisdiction/i), "CN");
+  await user.selectOptions(screen.getByLabelText(/payee jurisdiction/i), "NL");
+  await user.selectOptions(screen.getByLabelText(/income type/i), "royalties");
+  await user.selectOptions(
+    await screen.findByLabelText(/qualifying intellectual property/i),
+    "yes",
+  );
+  await user.selectOptions(
+    screen.getByLabelText(/beneficial-owner status for the royalty income/i),
+    "yes",
+  );
+  await user.selectOptions(
+    screen.getByLabelText(/contract, invoice, and payment flow support/i),
+    "yes",
+  );
+  await user.click(screen.getByRole("button", { name: /run guided review/i }));
+
+  expect((await screen.findAllByText(/bo precheck/i)).length).toBeGreaterThan(0);
+  expect((await screen.findAllByText(/no_initial_flag/i)).length).toBeGreaterThan(0);
+  expect(globalThis.fetch).toHaveBeenLastCalledWith(
+    "/api/analyze",
+    expect.objectContaining({
+      body: JSON.stringify({
+        input_mode: "guided",
+        guided_input: {
+          payer_country: "CN",
+          payee_country: "NL",
+          income_type: "royalties",
+          facts: {
+            royalty_character_confirmed: "yes",
+            beneficial_owner_status: "yes",
+            contract_payment_flow_consistent: "yes",
+          },
+        },
+      }),
+    }),
+  );
+});
+
+
+test("renders a guided-input conflict warning while keeping legacy free-text secondary", async () => {
+  const user = userEvent.setup();
+
+  globalThis.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      schema_version: "slice1.v1",
+      input_mode_used: "guided",
+      supported: true,
+      review_state: {
+        state_code: "needs_human_intervention",
+        state_label_zh: "需要人工介入",
+        state_summary: "当前结果已触发保守停止，应转入人工处理而不是继续自动推进。",
+      },
+      guided_conflict: {
+        status: "conflict_detected",
+        reason_code: "supplemental_text_conflicts_with_structured_facts",
+        reason_summary:
+          "Supplemental scenario text conflicts with the structured guided facts, so the system preserved the structured facts and escalated for manual review.",
+        structured_facts_win: true,
+        conflicting_claims: [
+          "scenario_text claims the reduced dividend branch can be used, but the structured facts do not support that branch",
+        ],
+      },
+      bo_precheck: {
+        status: "insufficient_facts",
+        reason_code: "beneficial_owner_unknown",
+        reason_summary: "The guided BO fact is still unknown.",
+        facts_considered: [
+          {
+            fact_key: "beneficial_owner_confirmed",
+            value: "unknown",
+          },
+        ],
+        review_note: "Confirm BO evidence before relying on treaty benefits.",
+      },
+      normalized_input: {
+        payer_country: "CN",
+        payee_country: "NL",
+        transaction_type: "dividends",
+      },
+      result: {
+        summary:
+          "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+        boundary_note:
+          "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+        immediate_action:
+          "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+        article_number: "10",
+        article_title: "Dividends",
+        source_reference: "Article 10(2)(b)",
+        source_language: "en",
+        source_excerpt: "Treaty excerpt.",
+        rate: "5% / 10%",
+        extraction_confidence: 0.98,
+        auto_conclusion_allowed: false,
+        key_missing_facts: [],
+        review_checklist: [],
+        conditions: ["Applies when the reduced-rate branch is not established."],
+        notes: [],
+        human_review_required: true,
+        review_priority: "high",
+        review_reason:
+          "Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+      },
+      handoff_package: {
+        machine_handoff: {
+          schema_version: "slice1.v1",
+          record_kind: "supported",
+          review_state_code: "needs_human_intervention",
+          recommended_route: "manual_review",
+          applicable_treaty: "中国-荷兰税收协定",
+          payment_direction: "CN -> NL",
+          income_type: "dividends",
+          article_number: "10",
+          article_title: "Dividends",
+          rate_display: "5% / 10%",
+          auto_conclusion_allowed: false,
+          human_review_required: true,
+          data_source_used: "stable",
+          source_reference: "Article 10(2)(b)",
+          review_priority: "high",
+          blocking_facts: [],
+          next_actions: [],
+          user_declared_facts: [],
+          bo_precheck: {
+            status: "insufficient_facts",
+            reason_code: "beneficial_owner_unknown",
+            reason_summary: "The guided BO fact is still unknown.",
+            facts_considered: [
+              {
+                fact_key: "beneficial_owner_confirmed",
+                value: "unknown",
+              },
+            ],
+            review_note: "Confirm BO evidence before relying on treaty benefits.",
+          },
+          guided_conflict: {
+            status: "conflict_detected",
+            reason_code: "supplemental_text_conflicts_with_structured_facts",
+            reason_summary:
+              "Supplemental scenario text conflicts with the structured guided facts, so the system preserved the structured facts and escalated for manual review.",
+            structured_facts_win: true,
+            conflicting_claims: [
+              "scenario_text claims the reduced dividend branch can be used, but the structured facts do not support that branch",
+            ],
+          },
+        },
+        human_review_brief: {
+          brief_title: "Treaty Pre-Review Brief",
+          headline: "Current scenario needs manual review.",
+          disposition: "Escalate this scenario for manual review.",
+          summary_lines: [],
+          facts_to_verify: [],
+          handoff_note: "This is a bounded pre-review output, not a final tax opinion.",
+        },
+      },
+    }),
+  }) as typeof fetch;
+
+  render(<App />);
+
+  expect(screen.getByRole("button", { name: /legacy free-text/i })).toBeInTheDocument();
+
+  await user.selectOptions(screen.getByLabelText(/payer jurisdiction/i), "CN");
+  await user.selectOptions(screen.getByLabelText(/payee jurisdiction/i), "NL");
+  await user.selectOptions(screen.getByLabelText(/income type/i), "dividends");
+  await user.type(
+    await screen.findByLabelText(/direct shareholding percentage/i),
+    "20",
+  );
+  await user.type(
+    screen.getByLabelText(/dividend payment date/i),
+    "2026-03-01",
+  );
+  await user.type(
+    screen.getByLabelText(/supplemental scenario text/i),
+    "中国公司向荷兰公司支付股息，且已满足 25% 直接持股门槛，可以适用协定优惠。",
+  );
+  await user.click(screen.getByRole("button", { name: /run guided review/i }));
+
+  expect(await screen.findByText(/guided input conflict/i)).toBeInTheDocument();
+  expect(screen.getByText(/structured facts win/i)).toBeInTheDocument();
+  expect(screen.getByText(/the guided bo fact is still unknown/i)).toBeInTheDocument();
 });
 

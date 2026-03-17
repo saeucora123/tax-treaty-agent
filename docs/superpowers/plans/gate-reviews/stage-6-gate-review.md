@@ -9,7 +9,7 @@ Decision owner: `project owner + user-approved execution route`
 ## Current Progress Snapshot
 
 <!-- STAGE_6_PROGRESS:START -->
-Last synced: `2026-03-13`
+Last synced: `2026-03-17`
 Status summary: Stage 6 has passed gate: the system now exposes treaty-version notes, paragraph-level excerpts, working-paper lineage, and fact-based MLI/PPT prompts across both supported treaty pairs and all three supported income types.
 Current checkpoint: Stage 6 gate is now PASS with CN-SG treaty truth-check completed, CN-NL alignment checks recorded, a 6-case source-chain replay pack passing, and a documented 15-minute human-review exercise.
 
@@ -28,8 +28,8 @@ Completed so far:
 In progress:
 
 Next up:
-- Choose the first post-Stage-6 slice without weakening the new source-chain contract
-- Keep treaty-version, paragraph-reference, and fact-based MLI prompts stable unless a deliberate redesign is recorded
+- Remove the remaining independent fact_inputs path in Slice 2 after guided-input adoption is stable
+- Deepen the CN-NL dividend lane inside the new wizard-first contract without weakening treaty-version, paragraph-reference, or fact-based MLI prompt stability
 
 Current blockers:
 <!-- STAGE_6_PROGRESS:END -->

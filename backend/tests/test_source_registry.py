@@ -49,6 +49,7 @@ def test_cn_nl_source_usage_map_references_known_sources_and_existing_artifacts(
         assert artifact["governance_status"] in {
             "curated_subset",
             "verified_excerpt",
+            "hand_aligned_source_fixture",
             "llm_generated_demo_artifact",
         }
         for source_id in artifact["derived_from_source_ids"]:

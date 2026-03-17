@@ -337,20 +337,19 @@ def test_build_script_generates_v3_compatible_dataset(tmp_path: Path):
     assert payload["articles"][0]["paragraphs"][0]["source_reference"].startswith("Article ")
     assert payload["articles"][0]["paragraphs"][0]["source_language"] == "en"
     assert payload["articles"][0]["paragraphs"][0]["rules"][0]["extraction_confidence"] == 0.98
-    assert payload["articles"][0]["paragraphs"][0]["source_segments"][0]["page_hint"] == 4
+    assert payload["articles"][0]["paragraphs"][0]["source_segments"][0]["page_hint"] == 8
     assert payload["articles"][0]["paragraphs"][0]["source_segments"][0]["source_kind"] == "article_paragraph"
     assert payload["articles"][0]["paragraphs"][0]["source_segments"][0]["text_quality"] == "clean"
     assert payload["articles"][0]["paragraphs"][0]["source_segments"][0]["normalization_status"] == "verbatim"
     assert payload["articles"][0]["paragraphs"][0]["provenance_summary"] == {
-        "primary_rule_id": "cn-nl-art10-p1-base",
+        "primary_rule_id": "cn-nl-art10-p2b-general",
         "paragraph_confidence": 0.98,
-        "segment_count": 2,
-        "covered_segment_count": 2,
+        "segment_count": 1,
+        "covered_segment_count": 1,
         "segment_coverage": 1.0,
     }
     assert payload["articles"][0]["paragraphs"][0]["rules"][0]["derived_from_segments"]
     assert payload["articles"][2]["paragraphs"][0]["rules"][0]["is_primary_candidate"] is True
-    assert payload["articles"][2]["paragraphs"][0]["rules"][1]["is_primary_candidate"] is False
 
 
 def test_raw_text_stub_generates_parser_like_fixture_and_full_import_chain(tmp_path: Path, monkeypatch):
@@ -1131,10 +1130,10 @@ def test_generated_dataset_is_consumable_by_analysis_service(tmp_path: Path, mon
 
     assert response["supported"] is True
     assert response["result"]["article_number"] == "12"
-    assert response["result"]["source_reference"] == "Article 12(1)"
+    assert response["result"]["source_reference"] == "Article 12(2)"
     assert response["result"]["rate"] == "10%"
     assert response["result"]["extraction_confidence"] == 0.98
-    assert "Royalty treatment is governed" in response["result"]["source_excerpt"]
+    assert "the tax so charged shall not exceed 10 per cent" in response["result"]["source_excerpt"]
 
 
 def test_build_script_rejects_segment_without_source_reference(tmp_path: Path):

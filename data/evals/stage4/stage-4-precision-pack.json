@@ -31,9 +31,17 @@
     "id": "stage4-narrowed-001",
     "category": "multi_branch_dividend",
     "scenario": "中国公司向荷兰公司支付股息",
-    "fact_inputs": {
-      "direct_holding_confirmed": "yes",
-      "direct_holding_threshold_met": "yes"
+    "input_mode": "guided",
+    "guided_input": {
+      "payer_country": "CN",
+      "payee_country": "NL",
+      "income_type": "dividends",
+      "facts": {
+        "direct_holding_confirmed": "yes",
+        "direct_holding_threshold_met": "yes",
+        "beneficial_owner_confirmed": "yes",
+        "holding_structure_is_direct": "yes"
+      }
     },
     "expected": {
       "supported": true,
@@ -49,9 +57,16 @@
     "id": "stage4-narrowed-002",
     "category": "multi_branch_dividend",
     "scenario": "中国居民企业向荷兰公司支付股息",
-    "fact_inputs": {
-      "direct_holding_confirmed": "yes",
-      "direct_holding_threshold_met": "no"
+    "input_mode": "guided",
+    "guided_input": {
+      "payer_country": "CN",
+      "payee_country": "NL",
+      "income_type": "dividends",
+      "facts": {
+        "direct_holding_confirmed": "yes",
+        "direct_holding_threshold_met": "no",
+        "holding_structure_is_direct": "yes"
+      }
     },
     "expected": {
       "supported": true,
@@ -67,9 +82,16 @@
     "id": "stage4-narrowed-003",
     "category": "multi_branch_dividend",
     "scenario": "中国公司向荷兰母公司支付股息",
-    "fact_inputs": {
-      "direct_holding_confirmed": "no",
-      "direct_holding_threshold_met": "unknown"
+    "input_mode": "guided",
+    "guided_input": {
+      "payer_country": "CN",
+      "payee_country": "NL",
+      "income_type": "dividends",
+      "facts": {
+        "direct_holding_confirmed": "no",
+        "direct_holding_threshold_met": "unknown",
+        "holding_structure_is_direct": "yes"
+      }
     },
     "expected": {
       "supported": true,
@@ -85,9 +107,16 @@
     "id": "stage4-narrowed-004",
     "category": "multi_branch_dividend",
     "scenario": "中国居民企业向荷兰母公司支付股息",
-    "fact_inputs": {
-      "direct_holding_confirmed": "no",
-      "direct_holding_threshold_met": "no"
+    "input_mode": "guided",
+    "guided_input": {
+      "payer_country": "CN",
+      "payee_country": "NL",
+      "income_type": "dividends",
+      "facts": {
+        "direct_holding_confirmed": "no",
+        "direct_holding_threshold_met": "no",
+        "holding_structure_is_direct": "yes"
+      }
     },
     "expected": {
       "supported": true,
@@ -103,9 +132,16 @@
     "id": "stage4-terminated-001",
     "category": "multi_branch_dividend",
     "scenario": "中国公司向荷兰公司支付股息",
-    "fact_inputs": {
-      "direct_holding_confirmed": "yes",
-      "direct_holding_threshold_met": "unknown"
+    "input_mode": "guided",
+    "guided_input": {
+      "payer_country": "CN",
+      "payee_country": "NL",
+      "income_type": "dividends",
+      "facts": {
+        "direct_holding_confirmed": "yes",
+        "direct_holding_threshold_met": "unknown",
+        "holding_structure_is_direct": "yes"
+      }
     },
     "expected": {
       "supported": true,
@@ -121,9 +157,16 @@
     "id": "stage4-terminated-002",
     "category": "multi_branch_dividend",
     "scenario": "中国居民企业向荷兰公司支付股息",
-    "fact_inputs": {
-      "direct_holding_confirmed": "unknown",
-      "direct_holding_threshold_met": "unknown"
+    "input_mode": "guided",
+    "guided_input": {
+      "payer_country": "CN",
+      "payee_country": "NL",
+      "income_type": "dividends",
+      "facts": {
+        "direct_holding_confirmed": "unknown",
+        "direct_holding_threshold_met": "unknown",
+        "holding_structure_is_direct": "yes"
+      }
     },
     "expected": {
       "supported": true,
@@ -139,9 +182,16 @@
     "id": "stage4-terminated-003",
     "category": "multi_branch_dividend",
     "scenario": "中国公司向荷兰母公司支付股息",
-    "fact_inputs": {
-      "direct_holding_confirmed": "unknown",
-      "direct_holding_threshold_met": "yes"
+    "input_mode": "guided",
+    "guided_input": {
+      "payer_country": "CN",
+      "payee_country": "NL",
+      "income_type": "dividends",
+      "facts": {
+        "direct_holding_confirmed": "unknown",
+        "direct_holding_threshold_met": "yes",
+        "holding_structure_is_direct": "yes"
+      }
     },
     "expected": {
       "supported": true,
@@ -171,8 +221,15 @@
     "id": "stage4-terminated-pe-001",
     "category": "multi_branch_dividend",
     "scenario": "中国公司向荷兰公司支付股息",
-    "fact_inputs": {
-      "pe_effectively_connected": "yes"
+    "input_mode": "guided",
+    "guided_input": {
+      "payer_country": "CN",
+      "payee_country": "NL",
+      "income_type": "dividends",
+      "facts": {
+        "pe_effectively_connected": "yes",
+        "holding_structure_is_direct": "yes"
+      }
     },
     "expected": {
       "supported": true,
@@ -188,10 +245,17 @@
     "id": "stage4-terminated-pe-002",
     "category": "multi_branch_dividend",
     "scenario": "中国居民企业向荷兰母公司支付股息",
-    "fact_inputs": {
-      "direct_holding_confirmed": "yes",
-      "direct_holding_threshold_met": "yes",
-      "pe_effectively_connected": "yes"
+    "input_mode": "guided",
+    "guided_input": {
+      "payer_country": "CN",
+      "payee_country": "NL",
+      "income_type": "dividends",
+      "facts": {
+        "direct_holding_confirmed": "yes",
+        "direct_holding_threshold_met": "yes",
+        "pe_effectively_connected": "yes",
+        "holding_structure_is_direct": "yes"
+      }
     },
     "expected": {
       "supported": true,
@@ -207,10 +271,17 @@
     "id": "stage4-terminated-bo-001",
     "category": "multi_branch_dividend",
     "scenario": "中国公司向荷兰公司支付股息",
-    "fact_inputs": {
-      "direct_holding_confirmed": "yes",
-      "direct_holding_threshold_met": "yes",
-      "beneficial_owner_confirmed": "no"
+    "input_mode": "guided",
+    "guided_input": {
+      "payer_country": "CN",
+      "payee_country": "NL",
+      "income_type": "dividends",
+      "facts": {
+        "direct_holding_confirmed": "yes",
+        "direct_holding_threshold_met": "yes",
+        "beneficial_owner_confirmed": "no",
+        "holding_structure_is_direct": "yes"
+      }
     },
     "expected": {
       "supported": true,
@@ -226,10 +297,17 @@
     "id": "stage4-terminated-bo-002",
     "category": "multi_branch_dividend",
     "scenario": "中国居民企业向荷兰母公司支付股息",
-    "fact_inputs": {
-      "direct_holding_confirmed": "no",
-      "direct_holding_threshold_met": "unknown",
-      "beneficial_owner_confirmed": "no"
+    "input_mode": "guided",
+    "guided_input": {
+      "payer_country": "CN",
+      "payee_country": "NL",
+      "income_type": "dividends",
+      "facts": {
+        "direct_holding_confirmed": "no",
+        "direct_holding_threshold_met": "unknown",
+        "beneficial_owner_confirmed": "no",
+        "holding_structure_is_direct": "yes"
+      }
     },
     "expected": {
       "supported": true,
@@ -245,9 +323,16 @@
     "id": "stage4-terminated-conflict-001",
     "category": "multi_branch_dividend",
     "scenario": "中国公司向荷兰公司支付股息",
-    "fact_inputs": {
-      "direct_holding_confirmed": "no",
-      "direct_holding_threshold_met": "yes"
+    "input_mode": "guided",
+    "guided_input": {
+      "payer_country": "CN",
+      "payee_country": "NL",
+      "income_type": "dividends",
+      "facts": {
+        "direct_holding_confirmed": "no",
+        "direct_holding_threshold_met": "yes",
+        "holding_structure_is_direct": "yes"
+      }
     },
     "expected": {
       "supported": true,
@@ -263,9 +348,16 @@
     "id": "stage4-terminated-conflict-002",
     "category": "multi_branch_dividend",
     "scenario": "中国居民企业向荷兰母公司支付股息",
-    "fact_inputs": {
-      "direct_holding_confirmed": "unknown",
-      "direct_holding_threshold_met": "yes"
+    "input_mode": "guided",
+    "guided_input": {
+      "payer_country": "CN",
+      "payee_country": "NL",
+      "income_type": "dividends",
+      "facts": {
+        "direct_holding_confirmed": "unknown",
+        "direct_holding_threshold_met": "yes",
+        "holding_structure_is_direct": "yes"
+      }
     },
     "expected": {
       "supported": true,

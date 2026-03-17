@@ -51,7 +51,7 @@ def test_returns_cn_sg_dividend_branch_candidates_from_stable_dataset():
     }
     assert "fact_completion" not in response.json()
     assert response.json()["handoff_package"]["machine_handoff"] == {
-        "schema_version": "stage5.v1",
+        "schema_version": "slice3.v1",
         "record_kind": "supported",
         "review_state_code": "can_be_completed",
         "recommended_route": "complete_facts_then_rerun",
@@ -82,6 +82,14 @@ def test_returns_cn_sg_dividend_branch_candidates_from_stable_dataset():
             }
         ],
         "user_declared_facts": [],
+        "bo_precheck": {
+            "status": "insufficient_facts",
+            "reason_code": "legacy_free_text_missing_bo_fact",
+            "reason_summary": "The current free-text path does not provide a structured BO fact, so the system cannot emit a stronger BO workflow signal.",
+            "facts_considered": [],
+            "review_note": "Confirm BO evidence before relying on treaty benefits.",
+        },
+        "guided_conflict": None,
     }
 
 
@@ -166,7 +174,11 @@ def test_returns_controlled_unavailable_data_source_for_cn_sg_llm_generated_requ
 
     assert response.status_code == 200
     payload = response.json()
-    assert {key: value for key, value in payload.items() if key != "handoff_package"} == {
+    assert {
+        key: value
+        for key, value in payload.items()
+        if key not in {"handoff_package", "input_interpretation"}
+    } == {
         "data_source_used": "llm_generated",
         "supported": False,
         "reason": "unavailable_data_source",
@@ -188,9 +200,13 @@ def test_returns_controlled_unavailable_data_source_for_cn_sg_llm_generated_requ
                 "priority": "high",
                 "action": "切回稳定数据源，或在人工确认数据已生成后再重试。",
                 "reason": "当前请求的数据集不可用，系统不会伪造协定结论。",
-            }
-        ],
+                }
+            ],
+            "input_mode_used": "free_text",
+        "schema_version": "slice3.v1",
     }
+    if "input_interpretation" in payload:
+        assert payload["input_interpretation"]["parser_source"] == "llm"
     assert payload["handoff_package"]["machine_handoff"]["recommended_route"] == "manual_review"
     assert payload["handoff_package"]["human_review_brief"]["disposition"] == (
         "Escalate this scenario for manual review."

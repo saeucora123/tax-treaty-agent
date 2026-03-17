@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import warnings
 from pathlib import Path
 
 from app.llm_input_parser import LLMInputParserError, parse_scenario_to_json
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+SCHEMA_VERSION = "slice3.v1"
 STABLE_TREATY_REGISTRY = {
     ("CN", "NL"): REPO_ROOT / "data" / "treaties" / "cn-nl.v3.json",
     ("CN", "SG"): REPO_ROOT / "data" / "treaties" / "cn-sg.v3.json",
@@ -137,8 +139,18 @@ STATE_LABELS_ZH = {
 FACT_VALUE_LABELS = {
     "direct_holding_confirmed": "Direct holding confirmed",
     "direct_holding_threshold_met": "Direct holding is at least 25%",
+    "direct_holding_percentage": "Direct holding percentage (as of payment date)",
+    "payment_date": "Dividend payment date",
+    "holding_period_months": "Continuous holding period (months)",
     "pe_effectively_connected": "Dividend effectively connected with a China PE / fixed base",
     "beneficial_owner_confirmed": "Beneficial owner status separately confirmed",
+    "holding_structure_is_direct": "Holding structure is direct (no intermediate entity)",
+    "mli_ppt_risk_flag": "MLI PPT risk assessment performed",
+    "interest_character_confirmed": "Interest characterization separately confirmed",
+    "beneficial_owner_status": "Beneficial owner status separately confirmed",
+    "lending_documents_consistent": "Loan documents and payment records support the interest characterization",
+    "royalty_character_confirmed": "Qualifying IP royalty characterization separately confirmed",
+    "contract_payment_flow_consistent": "Contract, invoice, and payment flow support the royalty characterization",
 }
 HANDOFF_RECOMMENDED_ROUTE_BY_STATE = {
     "pre_review_complete": "standard_review",
@@ -148,6 +160,73 @@ HANDOFF_RECOMMENDED_ROUTE_BY_STATE = {
     "out_of_scope": "out_of_scope_rewrite",
 }
 HANDOFF_NOTE = "This is a bounded pre-review output, not a final tax opinion."
+DIVIDEND_FACT_KEYS = (
+    "direct_holding_percentage",
+    "payment_date",
+    "holding_period_months",
+    "direct_holding_confirmed",
+    "direct_holding_threshold_met",
+    "beneficial_owner_confirmed",
+    "pe_effectively_connected",
+    "holding_structure_is_direct",
+    "mli_ppt_risk_flag",
+)
+DIVIDEND_RAW_FACT_KEYS = (
+    "direct_holding_percentage",
+    "payment_date",
+    "holding_period_months",
+)
+# @deprecated bridge fields kept for Slice 3 compatibility only. They are
+# superseded by direct_holding_percentage and will be removed in Slice 4.
+DIVIDEND_DEPRECATED_BRIDGE_FACT_KEYS = (
+    "direct_holding_confirmed",
+    "direct_holding_threshold_met",
+)
+DIVIDEND_SELECT_FACT_KEYS = (
+    "beneficial_owner_confirmed",
+    "pe_effectively_connected",
+    "holding_structure_is_direct",
+    "mli_ppt_risk_flag",
+    *DIVIDEND_DEPRECATED_BRIDGE_FACT_KEYS,
+)
+GUIDED_FACT_CONFIG = {
+    "dividends": list(DIVIDEND_FACT_KEYS),
+    "interest": [
+        "interest_character_confirmed",
+        "beneficial_owner_status",
+        "lending_documents_consistent",
+    ],
+    "royalties": [
+        "royalty_character_confirmed",
+        "beneficial_owner_status",
+        "contract_payment_flow_consistent",
+    ],
+}
+
+
+def _normalize_guided_fact_value(value: object) -> str | None:
+    if not isinstance(value, str):
+        return None
+    normalized = value.strip()
+    return normalized or None
+
+
+def calculate_threshold_met(percentage_str: str) -> bool | None:
+    if percentage_str == "unknown":
+        return None
+    try:
+        return float(percentage_str) >= 25.0
+    except (TypeError, ValueError):
+        return None
+
+
+def calculate_holding_period_signal(months_str: str | None) -> bool:
+    if months_str in {None, "", "unknown"}:
+        return True
+    try:
+        return int(months_str) < 12
+    except (TypeError, ValueError):
+        return True
 
 
 def canonical_country_pair(*countries: str) -> tuple[str, str]:
@@ -200,6 +279,7 @@ def build_treaty_display_name(payer_country: str, payee_country: str) -> str:
 
 
 def finalize_response(response: dict) -> dict:
+    response["schema_version"] = SCHEMA_VERSION
     response["handoff_package"] = build_handoff_package(response)
     return response
 
@@ -221,6 +301,8 @@ def build_machine_handoff(response: dict) -> dict:
     user_declared_facts = response.get("user_declared_facts") or {}
     source_trace = result.get("source_trace") or {}
     mli_context = result.get("mli_context") or {}
+    bo_precheck = response.get("bo_precheck")
+    guided_conflict = response.get("guided_conflict")
 
     if supported:
         record_kind = "supported"
@@ -255,8 +337,8 @@ def build_machine_handoff(response: dict) -> dict:
         review_priority = "high" if review_state_code in {"needs_human_intervention", "out_of_scope"} else "normal"
         blocking_facts = list(response.get("missing_fields", []))
 
-    return {
-        "schema_version": "stage5.v1",
+    machine_handoff = {
+        "schema_version": SCHEMA_VERSION,
         "record_kind": record_kind,
         "review_state_code": review_state_code,
         "recommended_route": HANDOFF_RECOMMENDED_ROUTE_BY_STATE[review_state_code],
@@ -277,7 +359,135 @@ def build_machine_handoff(response: dict) -> dict:
         "blocking_facts": blocking_facts,
         "next_actions": list(response.get("next_actions", [])),
         "user_declared_facts": list(user_declared_facts.get("facts", [])),
+        "bo_precheck": bo_precheck,
+        "guided_conflict": guided_conflict,
     }
+    if supported and is_cn_nl_dividend_response(response):
+        machine_handoff["determining_condition_priority"] = determine_dividend_condition_priority(response)
+        machine_handoff["mli_ppt_review_required"] = build_dividend_mli_ppt_review_required(
+            response.get("user_declared_facts") or {}
+        )
+        machine_handoff["short_holding_period_review_required"] = (
+            build_dividend_short_holding_period_review_required(response)
+        )
+        machine_handoff["payment_date_unconfirmed"] = build_dividend_payment_date_unconfirmed(
+            response
+        )
+        machine_handoff["calculated_threshold_met"] = build_dividend_calculated_threshold_met(
+            response
+        )
+        source_reference = build_dividend_handoff_source_reference(
+            response,
+            machine_handoff["determining_condition_priority"],
+        )
+        if source_reference is not None:
+            machine_handoff["source_reference"] = source_reference
+    return machine_handoff
+
+
+def is_cn_nl_dividend_response(response: dict) -> bool:
+    normalized_input = response.get("normalized_input") or {}
+    return (
+        response.get("supported") is True
+        and normalized_input.get("payer_country") == "CN"
+        and normalized_input.get("payee_country") == "NL"
+        and normalized_input.get("transaction_type") == "dividends"
+    )
+
+
+def build_dividend_handoff_source_reference(
+    response: dict,
+    determining_condition_priority: int | None,
+) -> str | None:
+    if determining_condition_priority == 1:
+        return "Art. 10(4)"
+    if determining_condition_priority in {4, 6, 8, 10}:
+        return "Art. 10(2)(b)"
+    if determining_condition_priority == 12:
+        return "Art. 10(2)(a)"
+    return (response.get("result") or {}).get("source_reference")
+
+
+def build_dividend_mli_ppt_review_required(user_declared_facts: dict) -> bool:
+    for fact in user_declared_facts.get("facts", []):
+        if fact.get("fact_key") == "mli_ppt_risk_flag":
+            return fact.get("value") != "yes"
+    return True
+
+
+def build_dividend_short_holding_period_review_required(response: dict) -> bool:
+    facts = extract_user_declared_facts_map(response)
+    return calculate_holding_period_signal(facts.get("holding_period_months"))
+
+
+def build_dividend_payment_date_unconfirmed(response: dict) -> bool:
+    facts = extract_user_declared_facts_map(response)
+    percentage = facts.get("direct_holding_percentage")
+    if calculate_threshold_met(percentage) is None and percentage != "unknown":
+        return False
+    if percentage in {None, "unknown"}:
+        return False
+    return facts.get("payment_date") in {None, "", "unknown"}
+
+
+def build_dividend_calculated_threshold_met(response: dict) -> bool | None:
+    facts = extract_user_declared_facts_map(response)
+    percentage = facts.get("direct_holding_percentage")
+    if percentage in {None, ""}:
+        return None
+    return calculate_threshold_met(percentage)
+
+
+def determine_dividend_condition_priority(response: dict) -> int | None:
+    fact_completion_status = (response.get("fact_completion_status") or {}).get("status_code")
+    facts = extract_user_declared_facts_map(response)
+    calculated_threshold_met = calculate_threshold_met(facts.get("direct_holding_percentage"))
+    percentage_present = "direct_holding_percentage" in facts
+    percentage_unknown = facts.get("direct_holding_percentage") == "unknown"
+
+    if response.get("guided_conflict") is not None or fact_completion_status == "terminated_conflicting_user_facts":
+        return 13
+    if fact_completion_status == "terminated_pe_exclusion":
+        return 1
+    if fact_completion_status == "terminated_beneficial_owner_unconfirmed":
+        return 2
+    if fact_completion_status == "terminated_unknown_facts":
+        if facts.get("beneficial_owner_confirmed") == "unknown":
+            return 3
+        if percentage_unknown:
+            return 5
+        if not percentage_present and facts.get("direct_holding_confirmed") == "unknown":
+            return 7
+        if not percentage_present and facts.get("direct_holding_threshold_met") == "unknown":
+            return 9
+        if facts.get("holding_structure_is_direct") == "unknown":
+            return 11
+        return None
+    if fact_completion_status != "completed_narrowed":
+        return None
+    if (response.get("result") or {}).get("rate") == "5%":
+        if calculated_threshold_met is True:
+            return 12
+        return 12 if _resolve_deprecated_bridge_dividend_branch(facts, emit_warning=False) == "5%" else None
+    if calculated_threshold_met is False:
+        return 4
+    if not percentage_present and facts.get("direct_holding_confirmed") == "no":
+        return 6
+    if not percentage_present and facts.get("direct_holding_threshold_met") == "no":
+        return 8
+    if facts.get("holding_structure_is_direct") == "no":
+        return 10
+    return None
+
+
+def extract_user_declared_facts_map(response: dict) -> dict[str, str]:
+    facts: dict[str, str] = {}
+    for fact in (response.get("user_declared_facts") or {}).get("facts", []):
+        fact_key = fact.get("fact_key")
+        value = fact.get("value")
+        if fact_key and isinstance(value, str):
+            facts[fact_key] = value
+    return facts
 
 
 def build_payment_direction(normalized_input: dict) -> str | None:
@@ -348,6 +558,10 @@ def build_handoff_summary_lines(response: dict, machine_handoff: dict) -> list[s
 
     if machine_handoff["user_declared_facts"]:
         lines.append("User-declared facts remain unverified and should be checked during review.")
+    if machine_handoff.get("bo_precheck"):
+        lines.append(machine_handoff["bo_precheck"]["reason_summary"])
+    if machine_handoff.get("guided_conflict"):
+        lines.append(machine_handoff["guided_conflict"]["reason_summary"])
     return lines
 
 
@@ -358,21 +572,259 @@ def build_handoff_facts_to_verify(response: dict, machine_handoff: dict) -> list
             0,
             "Verify the user-declared facts before relying on the narrowed treaty result.",
         )
+    if machine_handoff.get("bo_precheck"):
+        facts_to_verify.append(machine_handoff["bo_precheck"]["review_note"])
+    if machine_handoff.get("guided_conflict"):
+        facts_to_verify.extend(machine_handoff["guided_conflict"]["conflicting_claims"])
     if not facts_to_verify and response.get("supported"):
         facts_to_verify.extend(response.get("result", {}).get("review_checklist", []))
     return facts_to_verify
 
 
+def resolve_input_mode(
+    input_mode: str | None,
+    *,
+    scenario: str | None,
+    guided_input: dict | None,
+) -> str:
+    if input_mode == "guided":
+        return "guided"
+    if input_mode == "free_text":
+        return "free_text"
+    if guided_input:
+        return "guided"
+    if scenario:
+        return "free_text"
+    return "free_text"
+
+
+def build_guided_payload(guided_input: dict | None) -> dict:
+    payload = dict(guided_input or {})
+    facts = {}
+    for key, value in dict(payload.get("facts") or {}).items():
+        normalized = _normalize_guided_fact_value(value)
+        if normalized is not None:
+            facts[key] = normalized
+    payload["facts"] = facts
+    return payload
+
+
+def normalize_guided_input(guided_input: dict) -> dict:
+    payer_country = guided_input.get("payer_country")
+    payee_country = guided_input.get("payee_country")
+    transaction_type = guided_input.get("income_type") or "unknown"
+    country_pair = None
+    reason = "ok"
+    if payer_country and payee_country:
+        country_pair = (payer_country, payee_country)
+    else:
+        reason = "incomplete_scenario"
+    if transaction_type == "unknown":
+        reason = "incomplete_scenario"
+    return {
+        "country_pair": country_pair,
+        "payer_country": payer_country,
+        "payee_country": payee_country,
+        "transaction_type": transaction_type,
+        "matched_transaction_label": None,
+        "parser_source": "guided",
+        "reason": reason,
+    }
+
+
+def filter_guided_facts_for_income_type(facts: dict, income_type: str) -> dict:
+    allowed = GUIDED_FACT_CONFIG.get(income_type, [])
+    filtered: dict[str, str] = {}
+    for key, value in facts.items():
+        if key not in allowed:
+            continue
+        if income_type != "dividends":
+            if value in {"yes", "no", "unknown"}:
+                filtered[key] = value
+            continue
+        if key in DIVIDEND_RAW_FACT_KEYS:
+            filtered[key] = value
+            continue
+        if value in {"yes", "no", "unknown"}:
+            filtered[key] = value
+    return filtered
+
+
+def build_bo_precheck(input_mode_used: str, normalized: dict, guided_facts: dict) -> dict | None:
+    income_type = normalized.get("transaction_type")
+    if income_type not in {"dividends", "interest", "royalties"}:
+        return None
+
+    bo_fact_key = "beneficial_owner_confirmed" if income_type == "dividends" else "beneficial_owner_status"
+    is_cn_nl_dividend = (
+        income_type == "dividends"
+        and normalized.get("payer_country") == "CN"
+        and normalized.get("payee_country") == "NL"
+    )
+
+    def build_facts_considered() -> list[dict]:
+        if is_cn_nl_dividend:
+            return [
+                {
+                    "fact_key": "beneficial_owner_confirmed",
+                    "value": guided_facts.get("beneficial_owner_confirmed", "unknown"),
+                },
+                {
+                    "fact_key": "holding_structure_is_direct",
+                    "value": guided_facts.get("holding_structure_is_direct", "unknown"),
+                },
+            ]
+        if bo_fact_key not in guided_facts:
+            return []
+        return [{"fact_key": bo_fact_key, "value": guided_facts[bo_fact_key]}]
+
+    facts_considered = build_facts_considered()
+    if bo_fact_key not in guided_facts:
+        return {
+            "status": "insufficient_facts",
+            "reason_code": "legacy_free_text_missing_bo_fact"
+            if input_mode_used == "free_text"
+            else "beneficial_owner_unknown",
+            "reason_summary": (
+                "The current free-text path does not provide a structured BO fact, so the system cannot emit a stronger BO workflow signal."
+                if input_mode_used == "free_text"
+                else "The guided BO fact is still unknown."
+            ),
+            "facts_considered": facts_considered,
+            "review_note": "Confirm BO evidence before relying on treaty benefits.",
+        }
+
+    value = guided_facts[bo_fact_key]
+    if (
+        is_cn_nl_dividend
+        and value == "yes"
+        and guided_facts.get("holding_structure_is_direct") == "no"
+        and (
+            guided_facts.get("direct_holding_threshold_met") == "yes"
+            or calculate_threshold_met(guided_facts.get("direct_holding_percentage")) is True
+        )
+    ):
+        return {
+            "status": "flagged_for_review",
+            "reason_code": "indirect_structure_requires_bo_review",
+            "reason_summary": "The dividend facts indicate an intermediate holding structure despite a claimed threshold path, so BO-focused manual review is required.",
+            "facts_considered": facts_considered,
+            "review_note": "Review the intermediate holding structure and BO support before relying on treaty benefits.",
+        }
+    if value == "yes":
+        return {
+            "status": "no_initial_flag",
+            "reason_code": "beneficial_owner_confirmed",
+            "reason_summary": "The guided beneficial-owner fact is marked confirmed, so the system does not raise an initial BO workflow flag.",
+            "facts_considered": facts_considered,
+            "review_note": "Beneficial-owner status still requires human verification outside this tool.",
+        }
+    if value == "no":
+        return {
+            "status": "flagged_for_review",
+            "reason_code": "beneficial_owner_not_confirmed",
+            "reason_summary": "The guided beneficial-owner fact is marked unconfirmed, so the case should be escalated for BO-focused manual review.",
+            "facts_considered": facts_considered,
+            "review_note": "Do not rely on treaty benefits until BO support has been reviewed manually.",
+        }
+    return {
+        "status": "insufficient_facts",
+        "reason_code": "beneficial_owner_unknown",
+        "reason_summary": "The guided BO fact is still unknown.",
+        "facts_considered": facts_considered,
+        "review_note": "Confirm BO evidence before relying on treaty benefits.",
+    }
+
+
+def text_claims_reduced_dividend_branch(text: str) -> bool:
+    lowered = text.lower()
+    markers = ["25%", "直接持股", "协定优惠", "优惠税率", "5%", "reduced rate", "treaty benefit"]
+    return any(marker in text or marker in lowered for marker in markers)
+
+
+def detect_guided_conflict(guided_payload: dict, normalized: dict) -> dict | None:
+    scenario_text = (guided_payload.get("scenario_text") or "").strip()
+    if not scenario_text:
+        return None
+
+    conflicting_claims: list[str] = []
+    supplemental_normalized = normalize_input(scenario_text)
+    for field in ("payer_country", "payee_country", "transaction_type"):
+        guided_value = normalized.get(field)
+        supplemental_value = supplemental_normalized.get(field)
+        if guided_value and supplemental_value and guided_value != supplemental_value:
+            conflicting_claims.append(
+                f"scenario_text maps {field} to {supplemental_value}, but the structured facts fix it as {guided_value}"
+            )
+
+    guided_facts = guided_payload.get("facts") or {}
+    if normalized.get("transaction_type") == "dividends":
+        reduced_branch_supported = (
+            guided_facts.get("direct_holding_confirmed") == "yes"
+            and guided_facts.get("direct_holding_threshold_met") == "yes"
+            and guided_facts.get("holding_structure_is_direct") == "yes"
+        )
+        if text_claims_reduced_dividend_branch(scenario_text) and not reduced_branch_supported:
+            conflicting_claims.append(
+                "scenario_text claims the reduced dividend branch can be used, but the structured facts do not support that branch"
+            )
+
+    if not conflicting_claims:
+        return None
+
+    return {
+        "status": "conflict_detected",
+        "reason_code": "supplemental_text_conflicts_with_structured_facts",
+        "reason_summary": "Supplemental scenario text conflicts with the structured guided facts, so the system preserved the structured facts and escalated for manual review.",
+        "structured_facts_win": True,
+        "conflicting_claims": conflicting_claims,
+    }
+
+
+def apply_guided_conflict_override(response: dict) -> None:
+    if not response.get("supported") or not response.get("guided_conflict"):
+        return
+    response["review_state"] = {
+        "state_code": "needs_human_intervention",
+        "state_label_zh": STATE_LABELS_ZH["needs_human_intervention"],
+        "state_summary": build_supported_state_summary("needs_human_intervention"),
+    }
+    conflict_action = {
+        "priority": "high",
+        "action": "停止依赖当前补充文本的自动推进，并以结构化事实为准转入人工复核。",
+        "reason": "补充文本与结构化 guided facts 存在冲突；系统已保留结构化事实并拒绝自动调和两者。",
+    }
+    existing_actions = list(response.get("next_actions", []))
+    if conflict_action not in existing_actions:
+        response["next_actions"] = [conflict_action, *existing_actions]
+
+
 def analyze_scenario(
-    scenario: str,
+    scenario: str | None,
     data_source: str = "stable",
-    fact_inputs: dict | None = None,
+    input_mode: str | None = None,
+    guided_input: dict | None = None,
 ) -> dict:
     resolved_data_source = normalize_data_source(data_source)
-    normalized = normalize_input(scenario)
-    input_interpretation = build_input_interpretation(normalized)
+    input_mode_used = resolve_input_mode(
+        input_mode,
+        scenario=scenario,
+        guided_input=guided_input,
+    )
+    guided_payload = build_guided_payload(guided_input)
+    if input_mode_used == "guided":
+        normalized = normalize_guided_input(guided_payload)
+        input_interpretation = None
+    else:
+        normalized = normalize_input(scenario or "")
+        input_interpretation = build_input_interpretation(normalized)
+    structured_guided_facts = filter_guided_facts_for_income_type(
+        guided_payload.get("facts") or {},
+        normalized.get("transaction_type", "unknown"),
+    )
     if normalized["reason"] == "incomplete_scenario":
         response = {
+            "input_mode_used": input_mode_used,
             "data_source_used": resolved_data_source,
             "supported": False,
             "reason": "incomplete_scenario",
@@ -394,6 +846,7 @@ def analyze_scenario(
 
     if not is_supported_stable_pair(pair):
         response = {
+            "input_mode_used": input_mode_used,
             "data_source_used": resolved_data_source,
             "supported": False,
             "reason": "unsupported_country_pair",
@@ -416,6 +869,7 @@ def analyze_scenario(
 
     if not is_pair_available_in_data_source(pair, resolved_data_source):
         response = build_data_source_unavailable_response(resolved_data_source)
+        response["input_mode_used"] = input_mode_used
         if input_interpretation is not None:
             response["input_interpretation"] = input_interpretation
         return finalize_response(response)
@@ -430,12 +884,14 @@ def analyze_scenario(
         )
     except FileNotFoundError:
         response = build_data_source_unavailable_response(resolved_data_source)
+        response["input_mode_used"] = input_mode_used
         if input_interpretation is not None:
             response["input_interpretation"] = input_interpretation
         return finalize_response(response)
 
     if match is None:
         response = {
+            "input_mode_used": input_mode_used,
             "data_source_used": resolved_data_source,
             "supported": False,
             "reason": "unsupported_transaction_type",
@@ -457,10 +913,11 @@ def analyze_scenario(
     match, stage4_payload = apply_stage4_fact_completion(
         match,
         normalized=normalized,
-        fact_inputs=fact_inputs or {},
+        guided_facts=structured_guided_facts,
     )
     shaped_result = shape_result(match)
     response = {
+        "input_mode_used": input_mode_used,
         "data_source_used": resolved_data_source,
         "supported": True,
         "normalized_input": {
@@ -485,6 +942,18 @@ def analyze_scenario(
             response["review_state"] = stage4_payload["review_state_override"]
         if stage4_payload["next_actions_override"] is not None:
             response["next_actions"] = stage4_payload["next_actions_override"]
+    if "user_declared_facts" not in response and structured_guided_facts:
+        response["user_declared_facts"] = build_user_declared_facts(structured_guided_facts)
+    response["bo_precheck"] = build_bo_precheck(
+        input_mode_used,
+        normalized,
+        structured_guided_facts,
+    )
+    if input_mode_used == "guided":
+        guided_conflict = detect_guided_conflict(guided_payload, normalized)
+        if guided_conflict is not None:
+            response["guided_conflict"] = guided_conflict
+            apply_guided_conflict_override(response)
     if input_interpretation is not None:
         response["input_interpretation"] = input_interpretation
     return finalize_response(response)
@@ -1496,14 +1965,14 @@ def apply_stage4_fact_completion(
     entry: dict,
     *,
     normalized: dict,
-    fact_inputs: dict,
+    guided_facts: dict,
 ) -> tuple[dict, dict]:
     payload = build_empty_stage4_payload()
     if not is_stage4_dividend_target(entry, normalized):
         return entry, payload
 
     payload["stage4_active"] = True
-    declared_facts = normalize_stage4_fact_inputs(fact_inputs)
+    declared_facts = normalize_stage4_guided_facts(guided_facts)
     if declared_facts:
         payload["user_declared_facts"] = build_user_declared_facts(declared_facts)
 
@@ -1529,7 +1998,7 @@ def apply_stage4_fact_completion(
             to_state_label=STATE_LABELS_ZH["needs_human_intervention"],
             from_rate="5% / 10%",
             to_rate="Article 10 branch excluded",
-            fact_inputs=declared_facts,
+            declared_facts=declared_facts,
         )
         payload["review_state_override"] = {
             "state_code": "needs_human_intervention",
@@ -1541,6 +2010,62 @@ def apply_stage4_fact_completion(
                 "priority": "high",
                 "action": "停止依赖当前股息分支自动缩减，并确认荷兰收款方是否在中国存在与该股息实际联系的常设机构或固定基地。",
                 "reason": "如果该排除情形成立，当前场景可能需要转入其他条款并进行人工复核，而不是继续沿用 Article 10 分支结果。",
+            }
+        ]
+        return entry, payload
+
+    if declared_facts.get("beneficial_owner_confirmed") == "no":
+        payload["fact_completion"] = None
+        payload["fact_completion_status"] = {
+            "status_code": "terminated_beneficial_owner_unconfirmed",
+            "status_label_zh": "受益所有人前提未确认",
+            "status_summary": "协定优惠前提中的受益所有人身份尚未被单独确认，系统结束当前股息分支自动缩减。",
+        }
+        payload["change_summary"] = build_stage4_change_summary(
+            from_state_label=STATE_LABELS_ZH["can_be_completed"],
+            to_state_label=STATE_LABELS_ZH["needs_human_intervention"],
+            from_rate=resolve_dividend_branch_without_bo_gate(declared_facts) or "5% / 10%",
+            to_rate="treaty rate cannot be relied on yet",
+            declared_facts=declared_facts,
+        )
+        payload["review_state_override"] = {
+            "state_code": "needs_human_intervention",
+            "state_label_zh": STATE_LABELS_ZH["needs_human_intervention"],
+            "state_summary": build_supported_state_summary("needs_human_intervention"),
+        }
+        payload["next_actions_override"] = [
+            {
+                "priority": "high",
+                "action": "先单独确认受益所有人身份及其支持材料，在未确认前不要依赖当前协定优惠税率分支。",
+                "reason": "受益所有人是协定优惠适用的前提条件；系统不会仅凭当前输入替你判断这一点是否成立。",
+            }
+        ]
+        return entry, payload
+
+    if declared_facts.get("beneficial_owner_confirmed") == "unknown":
+        payload["fact_completion"] = None
+        payload["fact_completion_status"] = {
+            "status_code": "terminated_unknown_facts",
+            "status_label_zh": "停止自动缩减",
+            "status_summary": "关键事实仍未确认，系统结束当前补事实流程并建议先在线下核实。",
+        }
+        payload["change_summary"] = build_stage4_change_summary(
+            from_state_label=STATE_LABELS_ZH["can_be_completed"],
+            to_state_label=STATE_LABELS_ZH["needs_human_intervention"],
+            from_rate="5% / 10%",
+            to_rate="5% / 10%",
+            declared_facts=declared_facts,
+        )
+        payload["review_state_override"] = {
+            "state_code": "needs_human_intervention",
+            "state_label_zh": STATE_LABELS_ZH["needs_human_intervention"],
+            "state_summary": build_supported_state_summary("needs_human_intervention"),
+        }
+        payload["next_actions_override"] = [
+            {
+                "priority": "high",
+                "action": "先在线下确认直接持股比例和持股方式，再重新发起预审或转交人工复核。",
+                "reason": "当前关键分支事实仍未确认，系统不会继续自动缩减股息税率分支。",
             }
         ]
         return entry, payload
@@ -1557,7 +2082,7 @@ def apply_stage4_fact_completion(
             to_state_label=STATE_LABELS_ZH["needs_human_intervention"],
             from_rate="5% / 10%",
             to_rate="treaty rate cannot be narrowed due to conflicting facts",
-            fact_inputs=declared_facts,
+            declared_facts=declared_facts,
         )
         payload["review_state_override"] = {
             "state_code": "needs_human_intervention",
@@ -1569,34 +2094,6 @@ def apply_stage4_fact_completion(
                 "priority": "high",
                 "action": "先核对直接持股方式和持股比例的真实情况；当前答案彼此冲突，系统不会继续自动缩减股息税率分支。",
                 "reason": "例如，在未直接持股的情况下不能同时把直接持股门槛判断为已满足；请先在线下核实后再重新预审。",
-            }
-        ]
-        return entry, payload
-
-    if declared_facts.get("beneficial_owner_confirmed") == "no":
-        payload["fact_completion"] = None
-        payload["fact_completion_status"] = {
-            "status_code": "terminated_beneficial_owner_unconfirmed",
-            "status_label_zh": "受益所有人前提未确认",
-            "status_summary": "协定优惠前提中的受益所有人身份尚未被单独确认，系统结束当前股息分支自动缩减。",
-        }
-        payload["change_summary"] = build_stage4_change_summary(
-            from_state_label=STATE_LABELS_ZH["can_be_completed"],
-            to_state_label=STATE_LABELS_ZH["needs_human_intervention"],
-            from_rate=branch_resolution or "5% / 10%",
-            to_rate="treaty rate cannot be relied on yet",
-            fact_inputs=declared_facts,
-        )
-        payload["review_state_override"] = {
-            "state_code": "needs_human_intervention",
-            "state_label_zh": STATE_LABELS_ZH["needs_human_intervention"],
-            "state_summary": build_supported_state_summary("needs_human_intervention"),
-        }
-        payload["next_actions_override"] = [
-            {
-                "priority": "high",
-                "action": "先单独确认受益所有人身份及其支持材料，在未确认前不要依赖当前协定优惠税率分支。",
-                "reason": "受益所有人是协定优惠适用的前提条件；系统不会仅凭当前输入替你判断这一点是否成立。",
             }
         ]
         return entry, payload
@@ -1613,7 +2110,7 @@ def apply_stage4_fact_completion(
             to_state_label=STATE_LABELS_ZH["needs_human_intervention"],
             from_rate="5% / 10%",
             to_rate="5% / 10%",
-            fact_inputs=declared_facts,
+            declared_facts=declared_facts,
         )
         payload["review_state_override"] = {
             "state_code": "needs_human_intervention",
@@ -1673,7 +2170,7 @@ def apply_stage4_fact_completion(
         to_state_label=STATE_LABELS_ZH["pre_review_complete"],
         from_rate="5% / 10%",
         to_rate=branch_resolution,
-        fact_inputs=declared_facts,
+        declared_facts=declared_facts,
     )
     return narrowed_entry, payload
 
@@ -1691,18 +2188,23 @@ def is_stage4_dividend_target(entry: dict, normalized: dict) -> bool:
     return {"5%", "10%"}.issubset(candidate_rates)
 
 
-def normalize_stage4_fact_inputs(fact_inputs: dict) -> dict:
+def normalize_stage4_guided_facts(guided_facts: dict) -> dict:
     normalized = {}
-    for key in FACT_VALUE_LABELS:
-        value = fact_inputs.get(key)
+    for key in DIVIDEND_FACT_KEYS:
+        value = guided_facts.get(key)
+        if key in DIVIDEND_RAW_FACT_KEYS:
+            normalized_value = _normalize_guided_fact_value(value)
+            if normalized_value is not None:
+                normalized[key] = normalized_value
+            continue
         if value in {"yes", "no", "unknown"}:
             normalized[key] = value
     return normalized
 
 
-def build_user_declared_facts(fact_inputs: dict) -> dict:
+def build_user_declared_facts(declared_facts: dict) -> dict:
     facts = []
-    for key, value in fact_inputs.items():
+    for key, value in declared_facts.items():
         facts.append(
             {
                 "fact_key": key,
@@ -1716,24 +2218,105 @@ def build_user_declared_facts(fact_inputs: dict) -> dict:
     }
 
 
-def resolve_dividend_branch_from_facts(fact_inputs: dict) -> str | None:
-    direct_holding = fact_inputs.get("direct_holding_confirmed")
-    threshold_met = fact_inputs.get("direct_holding_threshold_met")
-
-    if direct_holding == "no":
+def resolve_dividend_branch_from_facts(declared_facts: dict) -> str | None:
+    percentage = declared_facts.get("direct_holding_percentage")
+    calculated_threshold_met = calculate_threshold_met(percentage)
+    holding_structure_is_direct = declared_facts.get("holding_structure_is_direct")
+    if calculated_threshold_met is False:
         return "10%"
-    if direct_holding != "yes":
+    if percentage == "unknown":
         return None
-    if threshold_met == "yes":
-        return "5%"
-    if threshold_met == "no":
+    if percentage is None and any(
+        key in declared_facts for key in DIVIDEND_DEPRECATED_BRIDGE_FACT_KEYS
+    ):
+        bridge_branch = resolve_deprecated_bridge_dividend_branch(declared_facts)
+        if bridge_branch is not None:
+            return bridge_branch
+    if holding_structure_is_direct == "no":
         return "10%"
+    if holding_structure_is_direct == "unknown":
+        return None
+    if (
+        calculated_threshold_met is True
+        and holding_structure_is_direct == "yes"
+        and declared_facts.get("beneficial_owner_confirmed") == "yes"
+    ):
+        return "5%"
     return None
 
 
-def has_conflicting_dividend_facts(fact_inputs: dict) -> bool:
-    direct_holding = fact_inputs.get("direct_holding_confirmed")
-    threshold_met = fact_inputs.get("direct_holding_threshold_met")
+def _resolve_deprecated_bridge_dividend_branch(
+    declared_facts: dict,
+    *,
+    emit_warning: bool,
+) -> str | None:
+    if emit_warning:
+        warnings.warn(
+            "Deprecated dividend bridge facts were used without direct_holding_percentage.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    direct_holding = declared_facts.get("direct_holding_confirmed")
+    threshold_met = declared_facts.get("direct_holding_threshold_met")
+    if direct_holding == "no":
+        return "10%"
+    if direct_holding == "unknown":
+        return None
+    if threshold_met == "no":
+        return "10%"
+    if threshold_met == "unknown":
+        return None
+    if (
+        direct_holding == "yes"
+        and threshold_met == "yes"
+        and declared_facts.get("holding_structure_is_direct") == "yes"
+        and declared_facts.get("beneficial_owner_confirmed") == "yes"
+    ):
+        return "5%"
+    return None
+
+
+def resolve_deprecated_bridge_dividend_branch(declared_facts: dict) -> str | None:
+    """Use @deprecated threshold-level dividend fields when raw facts are absent."""
+    return _resolve_deprecated_bridge_dividend_branch(
+        declared_facts,
+        emit_warning=True,
+    )
+
+
+def resolve_dividend_branch_without_bo_gate(declared_facts: dict) -> str | None:
+    percentage = declared_facts.get("direct_holding_percentage")
+    calculated_threshold_met = calculate_threshold_met(percentage)
+    holding_structure_is_direct = declared_facts.get("holding_structure_is_direct")
+    if calculated_threshold_met is False:
+        return "10%"
+    if percentage == "unknown":
+        return None
+    if percentage is None and any(
+        key in declared_facts for key in DIVIDEND_DEPRECATED_BRIDGE_FACT_KEYS
+    ):
+        direct_holding = declared_facts.get("direct_holding_confirmed")
+        threshold_met = declared_facts.get("direct_holding_threshold_met")
+        if direct_holding == "no":
+            return "10%"
+        if direct_holding != "yes":
+            return None
+        if threshold_met == "no":
+            return "10%"
+        if threshold_met != "yes":
+            return None
+    if holding_structure_is_direct == "no":
+        return "10%"
+    if holding_structure_is_direct != "yes":
+        return None
+    return "5%"
+
+
+def has_conflicting_dividend_facts(declared_facts: dict) -> bool:
+    if "direct_holding_percentage" in declared_facts:
+        return False
+    direct_holding = declared_facts.get("direct_holding_confirmed")
+    threshold_met = declared_facts.get("direct_holding_threshold_met")
     return threshold_met == "yes" and direct_holding != "yes"
 
 
@@ -1753,14 +2336,23 @@ def build_dividend_fact_completion() -> dict:
         "user_declaration_note": "Facts entered here are user-declared and not independently verified.",
         "facts": [
             {
-                "fact_key": "direct_holding_confirmed",
-                "prompt": "Does the Dutch recipient directly hold capital in the Chinese payer?",
-                "input_type": "single_select",
-                "options": ["yes", "no", "unknown"],
+                "fact_key": "direct_holding_percentage",
+                "prompt": "What is the recipient's direct shareholding percentage in the paying company as of the payment date?",
+                "input_type": "text",
             },
             {
-                "fact_key": "direct_holding_threshold_met",
-                "prompt": "If the holding is direct, is the direct holding at least 25%?",
+                "fact_key": "payment_date",
+                "prompt": "What is the dividend payment date (or declared payment date)?",
+                "input_type": "text",
+            },
+            {
+                "fact_key": "holding_period_months",
+                "prompt": "How many months has the recipient continuously held the shares as of the payment date?",
+                "input_type": "text",
+            },
+            {
+                "fact_key": "beneficial_owner_confirmed",
+                "prompt": "Has beneficial-owner status been separately confirmed outside this tool?",
                 "input_type": "single_select",
                 "options": ["yes", "no", "unknown"],
             },
@@ -1771,8 +2363,14 @@ def build_dividend_fact_completion() -> dict:
                 "options": ["yes", "no", "unknown"],
             },
             {
-                "fact_key": "beneficial_owner_confirmed",
-                "prompt": "Has beneficial-owner status been separately confirmed outside this tool?",
+                "fact_key": "holding_structure_is_direct",
+                "prompt": "Is the holding structure confirmed to be direct with no intermediate holding entity between the recipient and the paying company?",
+                "input_type": "single_select",
+                "options": ["yes", "no", "unknown"],
+            },
+            {
+                "fact_key": "mli_ppt_risk_flag",
+                "prompt": "Has a principal purpose test (PPT) risk assessment been performed for this dividend payment under the MLI?",
                 "input_type": "single_select",
                 "options": ["yes", "no", "unknown"],
             },
@@ -1786,7 +2384,7 @@ def build_stage4_change_summary(
     to_state_label: str,
     from_rate: str,
     to_rate: str,
-    fact_inputs: dict,
+    declared_facts: dict,
 ) -> dict:
     return {
         "summary_label": "Result Change Summary",
@@ -1794,7 +2392,7 @@ def build_stage4_change_summary(
         "rate_change": f"{from_rate} -> {to_rate}",
         "trigger_facts": [
             f"{FACT_VALUE_LABELS[key]}: {value}"
-            for key, value in fact_inputs.items()
+            for key, value in declared_facts.items()
         ],
     }
 

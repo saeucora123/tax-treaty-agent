@@ -101,9 +101,17 @@ def test_run_stage5_evaluation_writes_report_file(tmp_path: Path):
                     "id": "stage5-stage4-001",
                     "category": "stage4_bounded",
                     "scenario": "中国公司向荷兰公司支付股息",
-                    "fact_inputs": {
-                        "direct_holding_confirmed": "yes",
-                        "direct_holding_threshold_met": "yes",
+                    "input_mode": "guided",
+                    "guided_input": {
+                        "payer_country": "CN",
+                        "payee_country": "NL",
+                        "income_type": "dividends",
+                        "facts": {
+                            "direct_holding_confirmed": "yes",
+                            "direct_holding_threshold_met": "yes",
+                            "beneficial_owner_confirmed": "yes",
+                            "holding_structure_is_direct": "yes",
+                        },
                     },
                     "expected": {
                         "supported": True,

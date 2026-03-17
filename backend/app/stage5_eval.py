@@ -172,7 +172,8 @@ def run_case_through_service(case: dict) -> dict:
         return service.analyze_scenario(
             case["scenario"],
             data_source=case.get("data_source", "stable"),
-            fact_inputs=case.get("fact_inputs"),
+            input_mode=case.get("input_mode"),
+            guided_input=case.get("guided_input"),
         )
 
 

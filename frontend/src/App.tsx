@@ -1,5 +1,9 @@
 import { FormEvent, useState } from "react";
 
+type InputMode = "guided" | "free_text";
+type GuidedFactValue = string;
+type GuidedSelectFactValue = "yes" | "no" | "unknown";
+
 type ReviewState = {
   state_code:
     | "pre_review_complete"
@@ -27,8 +31,8 @@ type ConfirmedScope = {
 type FactCompletionQuestion = {
   fact_key: string;
   prompt: string;
-  input_type: "single_select";
-  options: Array<"yes" | "no" | "unknown">;
+  input_type: "single_select" | "text";
+  options?: Array<GuidedSelectFactValue>;
 };
 
 type FactCompletion = {
@@ -42,7 +46,7 @@ type UserDeclaredFacts = {
   declaration_label: string;
   facts: Array<{
     fact_key: string;
-    value: "yes" | "no" | "unknown";
+    value: string;
     label: string;
   }>;
 };
@@ -85,7 +89,7 @@ type MLIContext = {
 };
 
 type MachineHandoff = {
-  schema_version: "stage5.v1";
+  schema_version: string;
   record_kind: "supported" | "unsupported" | "incomplete";
   review_state_code: ReviewState["state_code"];
   recommended_route:
@@ -111,9 +115,16 @@ type MachineHandoff = {
   next_actions: NextAction[];
   user_declared_facts: Array<{
     fact_key: string;
-    value: "yes" | "no" | "unknown";
+    value: GuidedFactValue;
     label: string;
   }>;
+  bo_precheck?: BOPrecheck;
+  guided_conflict?: GuidedConflict;
+  determining_condition_priority?: number | null;
+  mli_ppt_review_required?: boolean;
+  short_holding_period_review_required?: boolean;
+  payment_date_unconfirmed?: boolean;
+  calculated_threshold_met?: boolean | null;
 };
 
 type HumanReviewBrief = {
@@ -130,8 +141,29 @@ type HandoffPackage = {
   human_review_brief: HumanReviewBrief;
 };
 
+type BOPrecheck = {
+  status: "not_run" | "insufficient_facts" | "flagged_for_review" | "no_initial_flag";
+  reason_code: string;
+  reason_summary: string;
+  facts_considered: Array<{
+    fact_key: string;
+    value: string;
+  }>;
+  review_note: string;
+};
+
+type GuidedConflict = {
+  status: "conflict_detected";
+  reason_code: string;
+  reason_summary: string;
+  structured_facts_win: boolean;
+  conflicting_claims: string[];
+};
+
 type AnalyzeResponse =
   | {
+      schema_version?: string;
+      input_mode_used?: InputMode;
       supported: false;
       review_state?: ReviewState;
       next_actions?: NextAction[];
@@ -146,6 +178,8 @@ type AnalyzeResponse =
       input_interpretation?: InputInterpretation;
     }
   | {
+      schema_version?: string;
+      input_mode_used?: InputMode;
       supported: true;
       review_state?: ReviewState;
       next_actions?: NextAction[];
@@ -155,6 +189,8 @@ type AnalyzeResponse =
       change_summary?: ChangeSummary | null;
       fact_completion?: FactCompletion | null;
       user_declared_facts?: UserDeclaredFacts | null;
+      bo_precheck?: BOPrecheck;
+      guided_conflict?: GuidedConflict;
       handoff_package?: HandoffPackage;
       normalized_input: {
         payer_country: string;
@@ -225,27 +261,150 @@ const FIELD_LABELS: Record<string, string> = {
   payee_country: "Payee country",
   transaction_type: "Income type",
 };
+const GUIDED_FACT_CONFIG: Record<
+  string,
+  Array<{
+    fact_key: string;
+    prompt: string;
+    input_type: "single_select" | "text";
+  }>
+> = {
+  dividends: [
+    {
+      fact_key: "direct_holding_percentage",
+      prompt: "What is the recipient's direct shareholding percentage in the paying company as of the payment date?",
+      input_type: "text",
+    },
+    {
+      fact_key: "payment_date",
+      prompt: "What is the dividend payment date (or declared payment date)?",
+      input_type: "text",
+    },
+    {
+      fact_key: "holding_period_months",
+      prompt: "How many months has the recipient continuously held the shares as of the payment date?",
+      input_type: "text",
+    },
+    {
+      fact_key: "beneficial_owner_confirmed",
+      prompt: "Has beneficial-owner status been separately confirmed outside this tool?",
+      input_type: "single_select",
+    },
+    {
+      fact_key: "pe_effectively_connected",
+      prompt:
+        "Is the dividend effectively connected with a permanent establishment or fixed base of the Dutch recipient in China?",
+      input_type: "single_select",
+    },
+    {
+      fact_key: "holding_structure_is_direct",
+      prompt:
+        "Is the holding structure confirmed to be direct with no intermediate holding entity between the recipient and the paying company?",
+      input_type: "single_select",
+    },
+    {
+      fact_key: "mli_ppt_risk_flag",
+      prompt:
+        "Has a principal purpose test (PPT) risk assessment been performed for this dividend payment under the MLI?",
+      input_type: "single_select",
+    },
+  ],
+  interest: [
+    {
+      fact_key: "interest_character_confirmed",
+      prompt: "Is the payment legally characterized as interest under the financing arrangement?",
+      input_type: "single_select",
+    },
+    {
+      fact_key: "beneficial_owner_status",
+      prompt: "Has the recipient's beneficial-owner status for the interest income been separately confirmed?",
+      input_type: "single_select",
+    },
+    {
+      fact_key: "lending_documents_consistent",
+      prompt:
+        "Do the loan agreement, interest calculation, and payment records support the current interest characterization?",
+      input_type: "single_select",
+    },
+  ],
+  royalties: [
+    {
+      fact_key: "royalty_character_confirmed",
+      prompt:
+        "Is the payment actually for the use of, or the right to use, qualifying intellectual property?",
+      input_type: "single_select",
+    },
+    {
+      fact_key: "beneficial_owner_status",
+      prompt: "Has the recipient's beneficial-owner status for the royalty income been separately confirmed?",
+      input_type: "single_select",
+    },
+    {
+      fact_key: "contract_payment_flow_consistent",
+      prompt:
+        "Do the contract, invoice, and payment flow support the current royalty characterization?",
+      input_type: "single_select",
+    },
+  ],
+};
 
 export default function App() {
+  const [submissionMode, setSubmissionMode] = useState<InputMode>("guided");
+  const [guidedPayerCountry, setGuidedPayerCountry] = useState("CN");
+  const [guidedPayeeCountry, setGuidedPayeeCountry] = useState("NL");
+  const [guidedIncomeType, setGuidedIncomeType] = useState("dividends");
+  const [guidedScenarioText, setGuidedScenarioText] = useState("");
+  const [guidedFacts, setGuidedFacts] = useState<Record<string, GuidedFactValue>>({
+    direct_holding_percentage: "",
+    payment_date: "",
+    holding_period_months: "",
+    beneficial_owner_confirmed: "unknown",
+    pe_effectively_connected: "unknown",
+    holding_structure_is_direct: "unknown",
+    mli_ppt_risk_flag: "unknown",
+  });
   const [scenario, setScenario] = useState("");
   const [result, setResult] = useState<AnalyzeResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [factSelections, setFactSelections] = useState<Record<string, string>>({});
 
-  async function submitReview(factInputs?: Record<string, string>) {
+  async function submitReview(
+    factInputs?: Record<string, string>,
+    modeOverride?: InputMode,
+    guidedOverride?: {
+      payer_country: string;
+      payee_country: string;
+      income_type: string;
+      facts: Record<string, string>;
+      scenario_text?: string;
+    },
+  ) {
     setIsLoading(true);
     setError("");
 
     try {
+      const resolvedMode = modeOverride ?? submissionMode;
+      const body =
+        resolvedMode === "guided"
+          ? {
+              input_mode: "guided",
+              guided_input:
+                guidedOverride ?? {
+                  payer_country: guidedPayerCountry,
+                  payee_country: guidedPayeeCountry,
+                  income_type: guidedIncomeType,
+                  facts: guidedFacts,
+                  ...(guidedScenarioText.trim()
+                    ? { scenario_text: guidedScenarioText.trim() }
+                    : {}),
+                },
+            }
+          : { scenario };
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          factInputs
-            ? { scenario, fact_inputs: factInputs }
-            : { scenario },
-        ),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
@@ -266,13 +425,19 @@ export default function App() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!scenario.trim()) return;
-    await submitReview();
+    if (submissionMode === "free_text" && !scenario.trim()) return;
+    await submitReview(undefined, submissionMode);
   }
 
   async function handleFactCompletionSubmit() {
-    if (!scenario.trim()) return;
-    await submitReview(factSelections);
+    if (!scenario.trim() || !result || !result.supported) return;
+    await submitReview(undefined, "guided", {
+      payer_country: result.normalized_input.payer_country,
+      payee_country: result.normalized_input.payee_country,
+      income_type: result.normalized_input.transaction_type,
+      facts: factSelections,
+      scenario_text: scenario.trim(),
+    });
   }
 
   function buildInitialFactSelections(payload: AnalyzeResponse) {
@@ -281,7 +446,7 @@ export default function App() {
     }
     const nextSelections: Record<string, string> = {};
     for (const fact of payload.fact_completion.facts) {
-      nextSelections[fact.fact_key] = "unknown";
+      nextSelections[fact.fact_key] = fact.input_type === "text" ? "" : "unknown";
     }
     return nextSelections;
   }
@@ -294,6 +459,19 @@ export default function App() {
 
   function formatConfidence(confidence: number) {
     return `${Math.round(confidence * 100)}% extraction confidence`;
+  }
+
+  function getGuidedFactsForIncomeType(incomeType: string) {
+    return GUIDED_FACT_CONFIG[incomeType] ?? [];
+  }
+
+  function handleGuidedIncomeTypeChange(nextIncomeType: string) {
+    setGuidedIncomeType(nextIncomeType);
+    const nextFacts: Record<string, GuidedFactValue> = {};
+    for (const fact of getGuidedFactsForIncomeType(nextIncomeType)) {
+      nextFacts[fact.fact_key] = fact.input_type === "text" ? "" : "unknown";
+    }
+    setGuidedFacts(nextFacts);
   }
 
   function formatReviewStatus(result: Extract<AnalyzeResponse, { supported: true }>["result"]) {
@@ -349,10 +527,11 @@ export default function App() {
     return "Low";
   }
 
-  function formatFactValue(value: "yes" | "no" | "unknown") {
+  function formatFactValue(value: string) {
     if (value === "yes") return "yes";
     if (value === "no") return "no";
-    return "unknown";
+    if (value === "unknown") return "unknown";
+    return value;
   }
 
   function renderInputInterpretation(inputInterpretation?: InputInterpretation) {
@@ -479,6 +658,54 @@ export default function App() {
     );
   }
 
+  function renderBOPrecheck(boPrecheck?: BOPrecheck) {
+    if (!boPrecheck) {
+      return null;
+    }
+
+    return (
+      <div className="record-row highlight-row">
+        <div className="row-label">BO Precheck</div>
+        <div className="row-value">
+          <p><strong>{boPrecheck.status}</strong></p>
+          <p>{boPrecheck.reason_summary}</p>
+          <ul className="formal-list">
+            <li>Reason code: {boPrecheck.reason_code}</li>
+            {boPrecheck.facts_considered.map((fact) => (
+              <li key={fact.fact_key}>
+                {fact.fact_key}: {fact.value}
+              </li>
+            ))}
+            <li>{boPrecheck.review_note}</li>
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
+  function renderGuidedConflict(guidedConflict?: GuidedConflict) {
+    if (!guidedConflict) {
+      return null;
+    }
+
+    return (
+      <div className="record-row warning-row review-flagged">
+        <div className="row-label">Guided Input Conflict</div>
+        <div className="row-value">
+          <p><strong>{guidedConflict.status}</strong></p>
+          <p>{guidedConflict.reason_summary}</p>
+          <ul className="formal-list">
+            <li>Reason code: {guidedConflict.reason_code}</li>
+            <li>Structured facts win: {guidedConflict.structured_facts_win ? "yes" : "no"}</li>
+            {guidedConflict.conflicting_claims.map((claim, idx) => (
+              <li key={idx}>{claim}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
   function renderUserDeclaredFacts(userDeclaredFacts?: UserDeclaredFacts | null) {
     if (!userDeclaredFacts || userDeclaredFacts.facts.length === 0) {
       return null;
@@ -556,22 +783,36 @@ export default function App() {
               <div key={fact.fact_key}>
                 <label htmlFor={`fact-${fact.fact_key}`}>{fact.prompt}</label>
                 <div>
-                  <select
-                    id={`fact-${fact.fact_key}`}
-                    value={factSelections[fact.fact_key] ?? "unknown"}
-                    onChange={(event) =>
-                      setFactSelections((current) => ({
-                        ...current,
-                        [fact.fact_key]: event.target.value,
-                      }))
-                    }
-                  >
-                    {fact.options.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+                  {fact.input_type === "text" ? (
+                    <input
+                      id={`fact-${fact.fact_key}`}
+                      type="text"
+                      value={factSelections[fact.fact_key] ?? ""}
+                      onChange={(event) =>
+                        setFactSelections((current) => ({
+                          ...current,
+                          [fact.fact_key]: event.target.value,
+                        }))
+                      }
+                    />
+                  ) : (
+                    <select
+                      id={`fact-${fact.fact_key}`}
+                      value={factSelections[fact.fact_key] ?? "unknown"}
+                      onChange={(event) =>
+                        setFactSelections((current) => ({
+                          ...current,
+                          [fact.fact_key]: event.target.value,
+                        }))
+                      }
+                    >
+                      {fact.options?.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </div>
               </div>
             ))}
@@ -618,11 +859,42 @@ export default function App() {
             {machineHandoff.rate_display && (
               <li>Rate display: {machineHandoff.rate_display}</li>
             )}
+            {machineHandoff.determining_condition_priority !== undefined && (
+              <li>
+                Determining condition priority: {machineHandoff.determining_condition_priority ?? "n/a"}
+              </li>
+            )}
+            {machineHandoff.mli_ppt_review_required !== undefined && (
+              <li>
+                MLI PPT review required: {machineHandoff.mli_ppt_review_required ? "yes" : "no"}
+              </li>
+            )}
+            {machineHandoff.short_holding_period_review_required !== undefined && (
+              <li>
+                Short holding period review required: {machineHandoff.short_holding_period_review_required ? "yes" : "no"}
+              </li>
+            )}
+            {machineHandoff.payment_date_unconfirmed !== undefined && (
+              <li>
+                Payment date unconfirmed: {machineHandoff.payment_date_unconfirmed ? "yes" : "no"}
+              </li>
+            )}
+            {machineHandoff.calculated_threshold_met !== undefined && (
+              <li>
+                Calculated threshold met: {machineHandoff.calculated_threshold_met === null ? "n/a" : machineHandoff.calculated_threshold_met ? "yes" : "no"}
+              </li>
+            )}
             {machineHandoff.treaty_version && (
               <li>Treaty version: {machineHandoff.treaty_version}</li>
             )}
             {machineHandoff.mli_summary && (
               <li>MLI / PPT: {machineHandoff.mli_summary}</li>
+            )}
+            {machineHandoff.bo_precheck && (
+              <li>BO precheck: {machineHandoff.bo_precheck.status}</li>
+            )}
+            {machineHandoff.guided_conflict && (
+              <li>Guided conflict: {machineHandoff.guided_conflict.reason_code}</li>
             )}
           </ul>
           {humanReviewBrief.summary_lines.length > 0 && (
@@ -684,12 +956,160 @@ export default function App() {
         <section className="submission-section">
           <form className="query-form" onSubmit={handleSubmit}>
             <div className="form-group">
+              <span className="section-heading">I. Scenario Submission</span>
+              <p className="section-desc">
+                Guided input is the primary path. Legacy free-text remains available for demo and parser validation.
+              </p>
+              <div className="action-row">
+                <button
+                  type="button"
+                  className="btn-seal"
+                  onClick={() => setSubmissionMode("guided")}
+                >
+                  Guided Workspace
+                </button>
+                <button
+                  type="button"
+                  className="btn-seal"
+                  onClick={() => setSubmissionMode("free_text")}
+                >
+                  Legacy Free-Text
+                </button>
+              </div>
+            </div>
+
+            {submissionMode === "guided" && (
+              <div className="form-group">
+                <div className="record-row">
+                  <div className="row-label">
+                    <label htmlFor="guided-payer">Payer jurisdiction</label>
+                  </div>
+                  <div className="row-value">
+                    <select
+                      id="guided-payer"
+                      value={guidedPayerCountry}
+                      onChange={(event) => setGuidedPayerCountry(event.target.value)}
+                    >
+                      <option value="CN">CN</option>
+                      <option value="NL">NL</option>
+                      <option value="SG">SG</option>
+                      <option value="US">US</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="record-row">
+                  <div className="row-label">
+                    <label htmlFor="guided-payee">Payee jurisdiction</label>
+                  </div>
+                  <div className="row-value">
+                    <select
+                      id="guided-payee"
+                      value={guidedPayeeCountry}
+                      onChange={(event) => setGuidedPayeeCountry(event.target.value)}
+                    >
+                      <option value="NL">NL</option>
+                      <option value="CN">CN</option>
+                      <option value="SG">SG</option>
+                      <option value="US">US</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="record-row">
+                  <div className="row-label">
+                    <label htmlFor="guided-income-type">Income type</label>
+                  </div>
+                  <div className="row-value">
+                    <select
+                      id="guided-income-type"
+                      value={guidedIncomeType}
+                      onChange={(event) => handleGuidedIncomeTypeChange(event.target.value)}
+                    >
+                      <option value="dividends">dividends</option>
+                      <option value="interest">interest</option>
+                      <option value="royalties">royalties</option>
+                    </select>
+                  </div>
+                </div>
+
+                {getGuidedFactsForIncomeType(guidedIncomeType).map((fact) => (
+                  <div className="record-row" key={fact.fact_key}>
+                    <div className="row-label">
+                      <label htmlFor={`guided-fact-${fact.fact_key}`}>{fact.prompt}</label>
+                    </div>
+                    <div className="row-value">
+                      {fact.input_type === "text" ? (
+                        <input
+                          id={`guided-fact-${fact.fact_key}`}
+                          type="text"
+                          value={guidedFacts[fact.fact_key] ?? ""}
+                          onChange={(event) =>
+                            setGuidedFacts((current) => ({
+                              ...current,
+                              [fact.fact_key]: event.target.value,
+                            }))
+                          }
+                        />
+                      ) : (
+                        <select
+                          id={`guided-fact-${fact.fact_key}`}
+                          value={guidedFacts[fact.fact_key] ?? "unknown"}
+                          onChange={(event) =>
+                            setGuidedFacts((current) => ({
+                              ...current,
+                              [fact.fact_key]: event.target.value,
+                            }))
+                          }
+                        >
+                          <option value="yes">yes</option>
+                          <option value="no">no</option>
+                          <option value="unknown">unknown</option>
+                        </select>
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                <div className="record-row">
+                  <div className="row-label">
+                    <label htmlFor="guided-scenario-text">Supplemental scenario text</label>
+                  </div>
+                  <div className="row-value">
+                    <textarea
+                      id="guided-scenario-text"
+                      rows={3}
+                      value={guidedScenarioText}
+                      onChange={(event) => setGuidedScenarioText(event.target.value)}
+                      className="typewriter-input"
+                    />
+                  </div>
+                </div>
+
+                <div className="action-row">
+                  <button
+                    type="button"
+                    disabled={isLoading}
+                    className="btn-seal"
+                    onClick={() => {
+                      setSubmissionMode("guided");
+                      void submitReview(undefined, "guided");
+                    }}
+                  >
+                    {isLoading && submissionMode === "guided" ? "Running Review..." : "Run Guided Review"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="form-group">
+              {submissionMode !== "free_text" && (
+                <p className="section-desc">Legacy free-text stays available as a secondary compatibility lane.</p>
+              )}
               <label htmlFor="scenario-input" className="section-heading">
-                I. Scenario Submission
+                Legacy Free-Text
                 <span className="sr-only">Cross-border scenario</span>
               </label>
               <p className="section-desc">
-                Describe the payer, payee, and income type to run a treaty-limited review.
+                Use the older parser-oriented lane for demo and validation only.
               </p>
 
               <div className="paper-input-wrapper">
@@ -703,6 +1123,20 @@ export default function App() {
                   className="typewriter-input"
                 />
               </div>
+
+              <div className="action-row">
+                <button
+                  type="button"
+                  disabled={isLoading || !scenario.trim()}
+                  className="btn-seal"
+                  onClick={() => {
+                    setSubmissionMode("free_text");
+                    void submitReview(undefined, "free_text");
+                  }}
+                >
+                  {isLoading && submissionMode === "free_text" ? "Running Review..." : "Run Review"}
+                </button>
+              </div>
             </div>
 
             <div className="archive-reference-block">
@@ -713,7 +1147,10 @@ export default function App() {
                     <button
                       type="button"
                       className="text-link-button"
-                      onClick={() => setScenario(example.scenario)}
+                      onClick={() => {
+                        setSubmissionMode("free_text");
+                        setScenario(example.scenario);
+                      }}
                     >
                       <span className="example-state-tag">[{example.state}]</span>{" "}
                       [Ref. {String(i + 1).padStart(2, "0")}]: {example.scenario}
@@ -724,11 +1161,6 @@ export default function App() {
               </ul>
             </div>
 
-            <div className="action-row">
-              <button type="submit" disabled={isLoading || !scenario.trim()} className="btn-seal">
-                {isLoading ? "Running Review..." : "Run Review"}
-              </button>
-            </div>
           </form>
 
           {error && (
@@ -766,6 +1198,8 @@ export default function App() {
                   </div>
                 </div>
 
+                {renderGuidedConflict(result.guided_conflict)}
+                {renderBOPrecheck(result.bo_precheck)}
                 {renderInputInterpretation(result.input_interpretation)}
                 {renderConfirmedScope(result.confirmed_scope)}
                 {renderSourceChain(result.result.source_trace, result.result.mli_context)}
