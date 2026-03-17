@@ -7,9 +7,9 @@ import sys
 from pathlib import Path
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-RAW_INGEST_SCRIPT_PATH = REPO_ROOT / "scripts" / "ingest_cn_nl_raw_text_stub.py"
-PDF_INGEST_SCRIPT_PATH = REPO_ROOT / "scripts" / "ingest_cn_nl_pdf_stub.py"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+RAW_INGEST_SCRIPT_PATH = REPO_ROOT / "scripts" / "experimental" / "ingest_cn_nl_raw_text_stub.py"
+PDF_INGEST_SCRIPT_PATH = REPO_ROOT / "scripts" / "experimental" / "ingest_cn_nl_pdf_stub.py"
 DEFAULT_CATALOG_PATH = REPO_ROOT / "data" / "source_documents" / "source-catalog.stub.json"
 DEFAULT_SUMMARY_OUTPUT_PATH = REPO_ROOT / "data" / "treaties" / "source-catalog.summary.json"
 SOURCE_REGISTRY_PATH = REPO_ROOT / "data" / "source_registry" / "cn-nl-official-sources.json"

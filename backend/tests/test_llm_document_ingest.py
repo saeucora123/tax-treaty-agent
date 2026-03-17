@@ -284,7 +284,7 @@ def test_generated_dividend_branch_dataset_triggers_no_auto_conclusion_guard(
     monkeypatch.setattr(service, "LLM_GENERATED_DATA_PATH", dataset_output_path)
 
     response = client.post(
-        "/analyze",
+        "/internal/analyze",
         json={
             "scenario": "中国公司向荷兰公司支付股息",
             "data_source": "llm_generated",

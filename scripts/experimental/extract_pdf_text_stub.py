@@ -8,7 +8,7 @@ from pathlib import Path
 from pypdf import PdfReader
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INPUT_PATH = REPO_ROOT / "data" / "raw_documents" / "cn-nl-text.pdf"
 DEFAULT_OUTPUT_PATH = REPO_ROOT / "data" / "raw_documents" / "cn-nl-extracted.txt"
 ARTICLE_HEADING_PATTERN = re.compile(r"^Article\s+\d+\s+.+$")

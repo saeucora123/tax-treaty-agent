@@ -5,7 +5,12 @@ import json
 import sys
 from pathlib import Path
 
-from build_cn_nl_dataset import (
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS_PATH = REPO_ROOT / "scripts"
+if str(SCRIPTS_PATH) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_PATH))
+
+from build_treaty_dataset import (
     SourceValidationError,
     build_dataset,
     validate_source_payload,
@@ -19,8 +24,6 @@ from parse_cn_nl_raw_text_stub import (
     write_payload,
 )
 
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PARSED_OUTPUT_PATH = (
     REPO_ROOT / "data" / "source_documents" / "cn-nl-ingested.parsed.json"
 )

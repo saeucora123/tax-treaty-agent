@@ -7,12 +7,12 @@ from app import service
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCRIPT_PATH = REPO_ROOT / "scripts" / "build_cn_nl_dataset.py"
+SCRIPT_PATH = REPO_ROOT / "scripts" / "build_treaty_dataset.py"
 SOURCE_PATH = REPO_ROOT / "data" / "source_documents" / "cn-nl-main-treaty.json"
-RAW_PARSE_SCRIPT_PATH = REPO_ROOT / "scripts" / "parse_cn_nl_raw_text_stub.py"
-RAW_INGEST_SCRIPT_PATH = REPO_ROOT / "scripts" / "ingest_cn_nl_raw_text_stub.py"
-PDF_INGEST_SCRIPT_PATH = REPO_ROOT / "scripts" / "ingest_cn_nl_pdf_stub.py"
-CATALOG_INGEST_SCRIPT_PATH = REPO_ROOT / "scripts" / "ingest_source_catalog_stub.py"
+RAW_PARSE_SCRIPT_PATH = REPO_ROOT / "scripts" / "experimental" / "parse_cn_nl_raw_text_stub.py"
+RAW_INGEST_SCRIPT_PATH = REPO_ROOT / "scripts" / "experimental" / "ingest_cn_nl_raw_text_stub.py"
+PDF_INGEST_SCRIPT_PATH = REPO_ROOT / "scripts" / "experimental" / "ingest_cn_nl_pdf_stub.py"
+SOURCE_INGEST_SCRIPT_PATH = REPO_ROOT / "scripts" / "run_source_ingest.py"
 RAW_TEXT_PATH = REPO_ROOT / "data" / "raw_documents" / "cn-nl-article12.stub.txt"
 RAW_MULTI_TEXT_PATH = REPO_ROOT / "data" / "raw_documents" / "cn-nl-multi-article.stub.txt"
 RAW_SEMI_STRUCTURED_TEXT_PATH = (
@@ -118,13 +118,13 @@ def run_pdf_ingest(
     )
 
 
-def run_catalog_ingest(
+def run_source_ingest(
     catalog_path: Path,
     summary_output_path: Path,
 ) -> subprocess.CompletedProcess[str]:
     command = [
         sys.executable,
-        str(CATALOG_INGEST_SCRIPT_PATH),
+        str(SOURCE_INGEST_SCRIPT_PATH),
         "--catalog",
         str(catalog_path),
         "--summary-output",
@@ -804,7 +804,7 @@ def test_source_catalog_ingest_runs_mixed_sources_and_writes_batch_summary(tmp_p
         encoding="utf-8",
     )
 
-    result = run_catalog_ingest(catalog_path=catalog_path, summary_output_path=summary_output_path)
+    result = run_source_ingest(catalog_path=catalog_path, summary_output_path=summary_output_path)
 
     assert result.returncode == 0, result.stderr
     assert raw_dataset_output_path.exists()
@@ -904,7 +904,7 @@ def test_source_catalog_ingest_records_failures_without_stopping_batch(tmp_path:
         encoding="utf-8",
     )
 
-    result = run_catalog_ingest(catalog_path=catalog_path, summary_output_path=summary_output_path)
+    result = run_source_ingest(catalog_path=catalog_path, summary_output_path=summary_output_path)
 
     assert result.returncode == 1
     assert raw_dataset_output_path.exists()
@@ -1019,7 +1019,7 @@ def test_source_catalog_ingest_rejects_unknown_official_source_id(tmp_path: Path
         encoding="utf-8",
     )
 
-    result = run_catalog_ingest(catalog_path=catalog_path, summary_output_path=summary_output_path)
+    result = run_source_ingest(catalog_path=catalog_path, summary_output_path=summary_output_path)
 
     assert result.returncode == 1
     assert not raw_dataset_output_path.exists()

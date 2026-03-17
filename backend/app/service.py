@@ -4,204 +4,46 @@ import json
 import warnings
 from pathlib import Path
 
+from app.constants import (
+    AUTO_CONCLUSION_CONFIDENCE_THRESHOLD,
+    BOUNDARY_NOTE,
+    COUNTRY_FOOTPRINTS,
+    FACT_VALUE_LABELS,
+    HANDOFF_NOTE,
+    HANDOFF_RECOMMENDED_ROUTE_BY_STATE,
+    KEY_MISSING_FACTS,
+    NORMAL_CONFIDENCE_THRESHOLD,
+    PAIR_LABELS_EN,
+    REVIEW_CHECKLISTS,
+    SCHEMA_VERSION,
+    STATE_LABELS_ZH,
+    SUPPORTED_SCOPE_EXAMPLES_BY_PAIR,
+    TREATY_DISPLAY_NAMES_ZH,
+    TRANSACTION_KEYWORDS,
+    TRANSACTION_LABELS_ZH,
+)
+from app.guided_facts import (
+    BACKEND_GUIDED_FACT_CONFIG,
+    DIVIDEND_DEPRECATED_BRIDGE_FACT_KEYS,
+    DIVIDEND_FACT_KEYS,
+    DIVIDEND_RAW_FACT_KEYS,
+)
 from app.llm_input_parser import LLMInputParserError, parse_scenario_to_json
-
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
-SCHEMA_VERSION = "slice3.v1"
-STABLE_TREATY_REGISTRY = {
-    ("CN", "NL"): REPO_ROOT / "data" / "treaties" / "cn-nl.v3.json",
-    ("CN", "SG"): REPO_ROOT / "data" / "treaties" / "cn-sg.v3.json",
-}
-LLM_GENERATED_TREATY_REGISTRY = {
-    ("CN", "NL"): REPO_ROOT / "data" / "treaties" / "cn-nl.v3.generated.from-llm.json",
-}
-DATA_PATH = STABLE_TREATY_REGISTRY[("CN", "NL")]
-LLM_GENERATED_DATA_PATH = LLM_GENERATED_TREATY_REGISTRY[("CN", "NL")]
-NORMAL_CONFIDENCE_THRESHOLD = 0.95
-AUTO_CONCLUSION_CONFIDENCE_THRESHOLD = 0.80
-SUPPORTED_SCOPE_EXAMPLES_BY_PAIR = {
-    ("CN", "NL"): [
-        "中国居民企业向荷兰公司支付股息",
-        "中国居民企业向荷兰银行支付利息",
-        "中国居民企业向荷兰公司支付特许权使用费",
-    ],
-    ("CN", "SG"): [
-        "中国居民企业向新加坡公司支付股息",
-        "中国居民企业向新加坡银行支付利息",
-        "中国居民企业向新加坡公司支付特许权使用费",
-    ],
-}
-TREATY_DISPLAY_NAMES_ZH = {
-    ("CN", "NL"): "中国-荷兰税收协定",
-    ("CN", "SG"): "中国-新加坡税收协定",
-}
-PAIR_LABELS_EN = {
-    ("CN", "NL"): "China-Netherlands",
-    ("CN", "SG"): "China-Singapore",
-}
-REVIEW_CHECKLISTS = {
-    "royalties": [
-        "Confirm the payment is actually for the use of, or right to use, qualifying intellectual property.",
-        "Confirm the recipient is the beneficial owner of the royalty income.",
-        "Check the underlying contract, invoice, and payment flow for factual consistency.",
-    ],
-    "dividends": [
-        "Confirm the payment is legally characterized as a dividend rather than another return.",
-        "Confirm the recipient is the beneficial owner of the dividend income.",
-        "Check shareholding facts and supporting corporate records before relying on the treaty rate.",
-    ],
-    "interest": [
-        "Confirm the payment is legally characterized as interest under the financing arrangement.",
-        "Confirm the recipient is the beneficial owner of the interest income.",
-        "Check the loan agreement, interest calculation, and payment records for consistency.",
-    ],
-}
-KEY_MISSING_FACTS = {
-    "royalties": [
-        "Whether the payment is truly for qualifying intellectual property use.",
-        "Whether the recipient is the beneficial owner of the royalty income.",
-        "Whether the contract and payment flow support treaty characterization.",
-    ],
-    "dividends": [
-        "Whether the payment is legally a dividend rather than another type of return.",
-        "Whether the recipient is the beneficial owner of the dividend income.",
-        "Whether shareholding facts support relying on the treaty position.",
-    ],
-    "interest": [
-        "Whether the payment is legally characterized as interest under the financing arrangement.",
-        "Whether the recipient is the beneficial owner of the interest income.",
-        "Whether the lending documents and payment records support the treaty characterization.",
-    ],
-}
-TRANSACTION_KEYWORDS = {
-    "royalties": [
-        "特许权使用费",
-        "软件许可费",
-        "软件授权费",
-        "技术授权费",
-        "品牌费",
-    ],
-    "dividends": ["股息"],
-    "interest": ["利息"],
-}
-TRANSACTION_LABELS_ZH = {
-    "dividends": "股息",
-    "interest": "利息",
-    "royalties": "特许权使用费",
-}
-COUNTRY_FOOTPRINTS = {
-    "CN": [
-        "中国",
-        "中国居民企业",
-        "中国公司",
-        "China",
-        "Chinese",
-        "PRC",
-        "People's Republic of China",
-        "Peoples Republic of China",
-        "北京",
-        "Beijing",
-    ],
-    "NL": [
-        "荷兰",
-        "荷兰公司",
-        "Netherlands",
-        "The Netherlands",
-        "Holland",
-        "Dutch",
-        "阿姆斯特丹",
-        "Amsterdam",
-    ],
-    "SG": [
-        "新加坡",
-        "新加坡公司",
-        "Singapore",
-        "Singaporean",
-        "新加坡银行",
-        "Singapore bank",
-        "Singapore company",
-    ],
-    "US": ["美国", "美国公司", "United States", "USA", "Washington", "华盛顿"],
-}
-BOUNDARY_NOTE = (
-    "This is a first-pass treaty pre-review based on limited scenario facts. "
-    "Final eligibility still depends on additional facts, documents, and analysis "
-    "outside the current review scope."
+from app.providers import (
+    DATA_PATH,
+    LLM_GENERATED_DATA_PATH,
+    LLM_GENERATED_TREATY_REGISTRY,
+    STABLE_TREATY_REGISTRY,
+    build_supported_pair_list_text,
+    build_treaty_display_name,
+    canonical_country_pair,
+    get_supported_scope_examples,
+    get_treaty_registry,
+    is_pair_available_in_data_source,
+    is_supported_stable_pair,
+    normalize_data_source,
+    resolve_data_path,
 )
-STATE_LABELS_ZH = {
-    "pre_review_complete": "预审完成",
-    "can_be_completed": "可补全",
-    "partial_review": "预审部分完成",
-    "needs_human_intervention": "需要人工介入",
-    "out_of_scope": "不在支持范围",
-}
-FACT_VALUE_LABELS = {
-    "direct_holding_confirmed": "Direct holding confirmed",
-    "direct_holding_threshold_met": "Direct holding is at least 25%",
-    "direct_holding_percentage": "Direct holding percentage (as of payment date)",
-    "payment_date": "Dividend payment date",
-    "holding_period_months": "Continuous holding period (months)",
-    "pe_effectively_connected": "Dividend effectively connected with a China PE / fixed base",
-    "beneficial_owner_confirmed": "Beneficial owner status separately confirmed",
-    "holding_structure_is_direct": "Holding structure is direct (no intermediate entity)",
-    "mli_ppt_risk_flag": "MLI PPT risk assessment performed",
-    "interest_character_confirmed": "Interest characterization separately confirmed",
-    "beneficial_owner_status": "Beneficial owner status separately confirmed",
-    "lending_documents_consistent": "Loan documents and payment records support the interest characterization",
-    "royalty_character_confirmed": "Qualifying IP royalty characterization separately confirmed",
-    "contract_payment_flow_consistent": "Contract, invoice, and payment flow support the royalty characterization",
-}
-HANDOFF_RECOMMENDED_ROUTE_BY_STATE = {
-    "pre_review_complete": "standard_review",
-    "can_be_completed": "complete_facts_then_rerun",
-    "partial_review": "manual_review",
-    "needs_human_intervention": "manual_review",
-    "out_of_scope": "out_of_scope_rewrite",
-}
-HANDOFF_NOTE = "This is a bounded pre-review output, not a final tax opinion."
-DIVIDEND_FACT_KEYS = (
-    "direct_holding_percentage",
-    "payment_date",
-    "holding_period_months",
-    "direct_holding_confirmed",
-    "direct_holding_threshold_met",
-    "beneficial_owner_confirmed",
-    "pe_effectively_connected",
-    "holding_structure_is_direct",
-    "mli_ppt_risk_flag",
-)
-DIVIDEND_RAW_FACT_KEYS = (
-    "direct_holding_percentage",
-    "payment_date",
-    "holding_period_months",
-)
-# @deprecated bridge fields kept for Slice 3 compatibility only. They are
-# superseded by direct_holding_percentage and will be removed in Slice 4.
-DIVIDEND_DEPRECATED_BRIDGE_FACT_KEYS = (
-    "direct_holding_confirmed",
-    "direct_holding_threshold_met",
-)
-DIVIDEND_SELECT_FACT_KEYS = (
-    "beneficial_owner_confirmed",
-    "pe_effectively_connected",
-    "holding_structure_is_direct",
-    "mli_ppt_risk_flag",
-    *DIVIDEND_DEPRECATED_BRIDGE_FACT_KEYS,
-)
-GUIDED_FACT_CONFIG = {
-    "dividends": list(DIVIDEND_FACT_KEYS),
-    "interest": [
-        "interest_character_confirmed",
-        "beneficial_owner_status",
-        "lending_documents_consistent",
-    ],
-    "royalties": [
-        "royalty_character_confirmed",
-        "beneficial_owner_status",
-        "contract_payment_flow_consistent",
-    ],
-}
 
 
 def _normalize_guided_fact_value(value: object) -> str | None:
@@ -633,7 +475,7 @@ def normalize_guided_input(guided_input: dict) -> dict:
 
 
 def filter_guided_facts_for_income_type(facts: dict, income_type: str) -> dict:
-    allowed = GUIDED_FACT_CONFIG.get(income_type, [])
+    allowed = BACKEND_GUIDED_FACT_CONFIG.get(income_type, [])
     filtered: dict[str, str] = {}
     for key, value in facts.items():
         if key not in allowed:

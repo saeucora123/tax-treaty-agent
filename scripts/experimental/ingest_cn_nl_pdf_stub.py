@@ -5,6 +5,11 @@ import json
 import sys
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS_PATH = REPO_ROOT / "scripts"
+if str(SCRIPTS_PATH) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_PATH))
+
 from extract_pdf_text_stub import extract_pdf_text, write_text
 from ingest_cn_nl_raw_text_stub import (
     build_error_report,
@@ -12,7 +17,7 @@ from ingest_cn_nl_raw_text_stub import (
     extract_document_id,
     write_report,
 )
-from build_cn_nl_dataset import (
+from build_treaty_dataset import (
     SourceValidationError,
     build_dataset,
     validate_source_payload,
@@ -20,8 +25,6 @@ from build_cn_nl_dataset import (
 )
 from parse_cn_nl_raw_text_stub import RawParseError, parse_raw_text, write_payload
 
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT_PATH = REPO_ROOT / "data" / "raw_documents" / "cn-nl-text.pdf"
 DEFAULT_RAW_TEXT_OUTPUT_PATH = REPO_ROOT / "data" / "raw_documents" / "cn-nl-extracted.txt"
 DEFAULT_PARSED_OUTPUT_PATH = (

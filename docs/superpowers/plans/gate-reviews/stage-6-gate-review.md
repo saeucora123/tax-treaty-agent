@@ -28,8 +28,8 @@ Completed so far:
 In progress:
 
 Next up:
-- Remove the remaining independent fact_inputs path in Slice 2 after guided-input adoption is stable
-- Deepen the CN-NL dividend lane inside the new wizard-first contract without weakening treaty-version, paragraph-reference, or fact-based MLI prompt stability
+- Continue physically decomposing backend/app/service.py along the new contract/provider/dividend boundaries without changing runtime behavior
+- Plan Slice 4 removal of deprecated dividend bridge fields after all fixtures and replay packs migrate to raw-fact inputs
 
 Current blockers:
 <!-- STAGE_6_PROGRESS:END -->

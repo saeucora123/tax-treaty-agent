@@ -2,9 +2,10 @@
   "last_updated": "2026-03-17",
   "current_focus": [
     "cross_cutting_infrastructure",
-    "post_stage_6_slice_1"
+    "post_stage_6_hardening",
+    "test_data_pipeline_productization"
   ],
-  "global_note": "Execution control is installed. Stage 1, Stage 2, Stage 3, Stage 3.5, Stage 4, Stage 5, and Stage 6 remain complete, and the first post-Stage-6 slice is now live: guided input is the primary path, free-text is explicitly legacy, response versioning is formalized, and BO/conflict workflow signals now survive into handoff output without weakening the closed source-chain contract.",
+  "global_note": "Execution control is installed. Stage 1, Stage 2, Stage 3, Stage 3.5, Stage 4, Stage 5, and Stage 6 remain complete. The post-Stage-6 hardening track now includes contract cleanup plus a completed test/data pipeline productization slice: public analyze requests no longer expose data_source, llm_generated moved behind /internal/analyze, frontend guided-fact types/config generate from a backend contract source, runtime tests are split by public/dividend/internal/handoff boundaries, and ingestion now exposes formal build_treaty_dataset and run_source_ingest CLIs while raw/PDF/catalog stub scripts remain isolated under scripts/experimental.",
   "stages": {
     "stage_1": {
       "status_summary": "Stage 1 has passed gate with a deterministic 70-case evidence pack, zero Critical/Major/Minor overreach in the fixed suite, and whitepaper-backed metrics plus System Behavior Commitments.",
@@ -170,8 +171,8 @@
       ],
       "in_progress_items": [],
       "next_items": [
-        "Remove the remaining independent fact_inputs path in Slice 2 after guided-input adoption is stable",
-        "Deepen the CN-NL dividend lane inside the new wizard-first contract without weakening treaty-version, paragraph-reference, or fact-based MLI prompt stability"
+        "Continue physically decomposing backend/app/service.py along the new contract/provider/dividend boundaries without changing runtime behavior",
+        "Plan Slice 4 removal of deprecated dividend bridge fields after all fixtures and replay packs migrate to raw-fact inputs"
       ],
       "blocking_items": [],
       "targets": [

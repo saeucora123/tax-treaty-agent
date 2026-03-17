@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INPUT_PATH = REPO_ROOT / "data" / "raw_documents" / "cn-nl-article12.stub.txt"
 DEFAULT_OUTPUT_PATH = REPO_ROOT / "data" / "source_documents" / "cn-nl-article12.parsed.json"
 ARTICLE_HEADING_PATTERN = re.compile(r"^Article\s+(\d+)\s+(.+)$")

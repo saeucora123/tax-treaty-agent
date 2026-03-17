@@ -12,7 +12,7 @@ SCRIPTS_PATH = REPO_ROOT / "scripts"
 if str(SCRIPTS_PATH) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_PATH))
 
-import build_cn_nl_dataset as dataset_builder  # noqa: E402
+import build_treaty_dataset as dataset_builder  # noqa: E402
 
 
 class FakeHTTPResponse:

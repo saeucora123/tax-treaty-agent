@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCRIPT_PATH = REPO_ROOT / "scripts" / "build_cn_nl_dataset.py"
+SCRIPT_PATH = REPO_ROOT / "scripts" / "build_treaty_dataset.py"
 CN_SG_SOURCE_PATH = REPO_ROOT / "data" / "source_documents" / "cn-sg-main-treaty.json"
 
 

@@ -165,7 +165,7 @@ def test_supports_reverse_direction_sg_to_cn_case():
 
 def test_returns_controlled_unavailable_data_source_for_cn_sg_llm_generated_request():
     response = client.post(
-        "/analyze",
+        "/internal/analyze",
         json={
             "scenario": "中国居民企业向新加坡公司支付特许权使用费",
             "data_source": "llm_generated",

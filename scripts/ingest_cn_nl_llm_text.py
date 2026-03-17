@@ -16,7 +16,7 @@ from app.llm_document_extractor import (  # noqa: E402
     extract_source_payload_from_text,
     load_config_from_env,
 )
-from build_cn_nl_dataset import (  # noqa: E402
+from build_treaty_dataset import (  # noqa: E402
     SourceValidationError,
     build_dataset,
     validate_source_payload,
