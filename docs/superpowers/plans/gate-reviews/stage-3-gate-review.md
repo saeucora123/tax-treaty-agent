@@ -9,7 +9,7 @@ Decision owner: `project execution control`
 ## Current Progress Snapshot
 
 <!-- STAGE_3_PROGRESS:START -->
-Last synced: `2026-03-17`
+Last synced: `2026-03-18`
 Status summary: Stage 3 has passed gate with live five-state backend/frontend wiring, explicit trigger evidence, a documented CN-SG pressure test, and unchanged Stage 1 guardrails.
 Current checkpoint: Stage 3 is complete and the project has advanced to Stage 3.5 user calibration preparation.
 

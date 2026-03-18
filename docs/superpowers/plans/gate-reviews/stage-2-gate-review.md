@@ -9,7 +9,7 @@ Decision owner: `project owner + user-approved execution route`
 ## Current Progress Snapshot
 
 <!-- STAGE_2_PROGRESS:START -->
-Last synced: `2026-03-17`
+Last synced: `2026-03-18`
 Status summary: Stage 2 has passed gate: the CN-SG stable pilot pair is live, the onboarding evidence pack is complete, and the recorded G2.4 threshold confirms architecture reuse without CN-SG-specific online-engine branching.
 Current checkpoint: Stage 2 gate is now PASS with CN-SG validation 10/10, Stage 1 regression 70/70, Stage 4 precision 16/16, backend tests 48/48 across analyze + Stage 2 suites, and frontend tests 16/16 while API request shape remains unchanged.
 

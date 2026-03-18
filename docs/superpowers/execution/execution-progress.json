@@ -1,11 +1,12 @@
 {
-  "last_updated": "2026-03-17",
+  "last_updated": "2026-03-18",
   "current_focus": [
     "cross_cutting_infrastructure",
     "post_stage_6_hardening",
-    "test_data_pipeline_productization"
+    "test_data_pipeline_productization",
+    "public_credibility_repair_pack"
   ],
-  "global_note": "Execution control is installed. Stage 1, Stage 2, Stage 3, Stage 3.5, Stage 4, Stage 5, and Stage 6 remain complete. The post-Stage-6 hardening track now includes contract cleanup plus a completed test/data pipeline productization slice: public analyze requests no longer expose data_source, llm_generated moved behind /internal/analyze, frontend guided-fact types/config generate from a backend contract source, runtime tests are split by public/dividend/internal/handoff boundaries, and ingestion now exposes formal build_treaty_dataset and run_source_ingest CLIs while raw/PDF/catalog stub scripts remain isolated under scripts/experimental.",
+  "global_note": "Execution control is installed. Stage 1, Stage 2, Stage 3, Stage 3.5, Stage 4, Stage 5, and Stage 6 remain complete. The post-Stage-6 hardening track now includes contract cleanup, a completed test/data pipeline productization slice, and a public credibility repair pack: public analyze requests no longer expose data_source, llm_generated moved behind /internal/analyze, frontend guided-fact types/config generate from a backend contract source, runtime tests are split by public/dividend/internal/handoff boundaries, ingestion exposes formal build_treaty_dataset and run_source_ingest CLIs, and the repo now has a proof-first README, public smoke helper, public demo assets, docs guide, and bilingual v0.1.0 release notes while raw/PDF/catalog stub scripts remain isolated under scripts/experimental.",
   "stages": {
     "stage_1": {
       "status_summary": "Stage 1 has passed gate with a deterministic 70-case evidence pack, zero Critical/Major/Minor overreach in the fixed suite, and whitepaper-backed metrics plus System Behavior Commitments.",
