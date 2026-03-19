@@ -22,3 +22,24 @@ def test_public_product_page_exists_with_expert_facing_tax_copy() -> None:
     assert "Cross-border treaty pre-screening for international tax teams" in html
     assert "Start with a faster first-pass review" in html
     assert "This tool does not replace a final tax opinion" in html
+
+
+def test_public_product_page_exposes_language_toggle() -> None:
+    site_index = ROOT / "docs" / "index.html"
+    html = site_index.read_text(encoding="utf-8")
+    script = (ROOT / "docs" / "site.js").read_text(encoding="utf-8")
+
+    assert "中文" in html
+    assert "EN" in html
+    assert "lang-switch" in html
+    assert "跨境税收协定预审工具" in script
+
+
+def test_public_product_page_script_supports_language_preference_persistence() -> None:
+    site_script = ROOT / "docs" / "site.js"
+    script = site_script.read_text(encoding="utf-8")
+
+    assert "localStorage" in script
+    assert "navigator.language" in script
+    assert "zh" in script
+    assert "en" in script

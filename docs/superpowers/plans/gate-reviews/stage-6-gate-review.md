@@ -31,6 +31,7 @@ Completed so far:
 - CN-KR completed the first initial_onboarding path: source build, baseline-aware compile, reviewer JSON review, approval, promotion, and public runtime support
 - The frontend now exposes an internal reviewer workspace behind ?internal=onboarding for source build, compile, review, approve, and promote actions
 - The repo now ships an expert-facing GitHub Pages product overview at the site root, with the README top section rewritten to introduce the product directly to international tax specialists
+- The GitHub Pages product overview now supports a persistent Chinese/English language switch so tax-domain visitors can read the site in their preferred language without changing the product layout
 
 In progress:
 

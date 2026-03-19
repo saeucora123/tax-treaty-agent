@@ -21,77 +21,107 @@
     <div class="page-shell">
       <header class="topbar">
         <a class="brand" href="https://github.com/saeucora123/tax-treaty-agent">Tax Treaty Agent</a>
-        <nav class="topnav" aria-label="Primary">
-          <a href="#workflow">How it works</a>
-          <a href="#coverage">Coverage</a>
-          <a href="#limits">Boundaries</a>
-          <a class="nav-cta" href="https://github.com/saeucora123/tax-treaty-agent">View repository</a>
-        </nav>
+        <div class="topbar-actions">
+          <nav class="topnav" aria-label="Primary">
+            <a href="#workflow" data-i18n="navWorkflow">How it works</a>
+            <a href="#coverage" data-i18n="navCoverage">Coverage</a>
+            <a href="#limits" data-i18n="navLimits">Boundaries</a>
+            <a
+              class="nav-cta"
+              href="https://github.com/saeucora123/tax-treaty-agent"
+              data-i18n="navRepo"
+            >
+              View repository
+            </a>
+          </nav>
+          <div class="language-switch" role="group" aria-label="Language switch">
+            <button type="button" class="lang-switch" data-lang-toggle="zh">中文</button>
+            <button type="button" class="lang-switch" data-lang-toggle="en">EN</button>
+          </div>
+        </div>
       </header>
 
       <main>
         <section class="hero">
           <div class="hero-copy reveal">
-            <div class="eyebrow">For international tax teams</div>
-            <h1>Cross-border treaty pre-screening for international tax teams</h1>
-            <p class="hero-lead">
+            <div class="eyebrow" data-i18n="heroEyebrow">For international tax teams</div>
+            <h1 data-i18n="heroTitle">Cross-border treaty pre-screening for international tax teams</h1>
+            <p class="hero-lead" data-i18n="heroLead">
               Start with a faster first-pass review before full legal or tax analysis. The tool
               guides key facts, narrows to the treaty lane in scope, and returns a structured handoff
               for the next reviewer.
             </p>
-            <p class="hero-sub">
+            <p class="hero-sub" data-i18n="heroSub">
               It is designed to save time at the front of the workflow, not to replace a final tax opinion.
             </p>
             <div class="hero-actions">
-              <a class="primary-button" href="https://github.com/saeucora123/tax-treaty-agent">Open GitHub repository</a>
-              <a class="secondary-link" href="#coverage">See supported coverage</a>
+              <a
+                class="primary-button"
+                href="https://github.com/saeucora123/tax-treaty-agent"
+                data-i18n="heroPrimary"
+              >
+                Open GitHub repository
+              </a>
+              <a class="secondary-link" href="#coverage" data-i18n="heroSecondary">See supported coverage</a>
             </div>
             <div class="hero-chips" aria-label="Product summary">
-              <span>3 treaty pairs</span>
-              <span>Dividends, interest, royalties</span>
-              <span>Guided review first</span>
-              <span>Human-reviewed handoff</span>
+              <span data-i18n="chipPairs">3 treaty pairs</span>
+              <span data-i18n="chipIncome">Dividends, interest, royalties</span>
+              <span data-i18n="chipGuided">Guided review first</span>
+              <span data-i18n="chipHandoff">Human-reviewed handoff</span>
             </div>
           </div>
           <div class="hero-stage reveal reveal-delay">
             <div class="glow glow-one"></div>
             <div class="glow glow-two"></div>
             <div class="device-card card-primary floating">
-              <div class="card-label">Guided facts</div>
-              <img src="./site-assets/guided-facts-panel.png" alt="Guided fact collection panel" />
+              <div class="card-label" data-i18n="cardGuided">Guided facts</div>
+              <img
+                src="./site-assets/guided-facts-panel.png"
+                alt="Guided fact collection panel"
+                data-i18n-alt="altGuidedFacts"
+              />
             </div>
             <div class="device-card card-secondary floating-delayed">
-              <div class="card-label">Structured review output</div>
-              <img src="./site-assets/review-result-panel.png" alt="Structured treaty review output" />
+              <div class="card-label" data-i18n="cardReview">Structured review output</div>
+              <img
+                src="./site-assets/review-result-panel.png"
+                alt="Structured treaty review output"
+                data-i18n-alt="altReviewOutput"
+              />
             </div>
             <div class="device-card card-tertiary floating-slow">
-              <div class="card-label">Workflow handoff</div>
-              <img src="./site-assets/workflow-handoff-panel.png" alt="Workflow handoff summary" />
+              <div class="card-label" data-i18n="cardHandoff">Workflow handoff</div>
+              <img
+                src="./site-assets/workflow-handoff-panel.png"
+                alt="Workflow handoff summary"
+                data-i18n-alt="altWorkflowHandoff"
+              />
             </div>
           </div>
         </section>
 
         <section class="value-strip reveal">
           <article>
-            <span class="value-kicker">Save analyst time</span>
-            <h2>Move faster through the first-pass review</h2>
-            <p>
+            <span class="value-kicker" data-i18n="valueKicker1">Save analyst time</span>
+            <h2 data-i18n="valueTitle1">Move faster through the first-pass review</h2>
+            <p data-i18n="valueBody1">
               Instead of starting every case from a blank document, the tool gathers the key treaty facts,
               narrows the review lane, and returns a structured package for follow-up work.
             </p>
           </article>
           <article>
-            <span class="value-kicker">Stay conservative</span>
-            <h2>Terminate on missing critical facts instead of guessing</h2>
-            <p>
+            <span class="value-kicker" data-i18n="valueKicker2">Stay conservative</span>
+            <h2 data-i18n="valueTitle2">Terminate on missing critical facts instead of guessing</h2>
+            <p data-i18n="valueBody2">
               Unsupported or ambiguous cases are surfaced explicitly. The workflow is designed to help teams
               avoid accidental overreach in high-stakes tax scenarios.
             </p>
           </article>
           <article>
-            <span class="value-kicker">Keep the chain visible</span>
-            <h2>Carry the review forward with traceable handoff detail</h2>
-            <p>
+            <span class="value-kicker" data-i18n="valueKicker3">Keep the chain visible</span>
+            <h2 data-i18n="valueTitle3">Carry the review forward with traceable handoff detail</h2>
+            <p data-i18n="valueBody3">
               Results are packaged with treaty lane references, review signals, and workflow-ready notes so
               the next reviewer does not have to reconstruct the first pass from scratch.
             </p>
@@ -100,9 +130,9 @@
 
         <section id="workflow" class="story-section">
           <div class="section-copy reveal">
-            <div class="eyebrow">How it works</div>
-            <h2>Three steps, built for the way tax teams already work</h2>
-            <p>
+            <div class="eyebrow" data-i18n="workflowEyebrow">How it works</div>
+            <h2 data-i18n="workflowTitle">Three steps, built for the way tax teams already work</h2>
+            <p data-i18n="workflowIntro">
               The product is not an open-ended chatbot. It is a bounded pre-screening workflow that helps the
               first reviewer organize facts quickly and hand the case forward cleanly.
             </p>
@@ -110,24 +140,24 @@
           <div class="workflow-grid">
             <article class="workflow-card reveal">
               <span class="step-index">01</span>
-              <h3>Collect the facts that actually matter</h3>
-              <p>
+              <h3 data-i18n="workflowStep1Title">Collect the facts that actually matter</h3>
+              <p data-i18n="workflowStep1Body">
                 The guided path asks for the facts needed to place the payment in the right treaty branch, such
                 as payment type, treaty pair, ownership status, and dividend-specific thresholds where relevant.
               </p>
             </article>
             <article class="workflow-card reveal reveal-delay">
               <span class="step-index">02</span>
-              <h3>Narrow to the treaty lane in scope</h3>
-              <p>
+              <h3 data-i18n="workflowStep2Title">Narrow to the treaty lane in scope</h3>
+              <p data-i18n="workflowStep2Body">
                 The engine uses structured treaty data and conservative rule logic to determine whether the
                 case stays in scope, needs more facts, or should be rejected as unsupported.
               </p>
             </article>
             <article class="workflow-card reveal reveal-delay-2">
               <span class="step-index">03</span>
-              <h3>Return a review package, not just an answer</h3>
-              <p>
+              <h3 data-i18n="workflowStep3Title">Return a review package, not just an answer</h3>
+              <p data-i18n="workflowStep3Body">
                 Outputs include the pre-review state, next actions, source-aware references, and handoff notes
                 for the human reviewer who takes the case further.
               </p>
@@ -137,27 +167,31 @@
 
         <section class="showcase-section">
           <div class="showcase-visual reveal">
-            <img src="./site-assets/hero-cover.png" alt="Tax Treaty Agent product overview" />
+            <img
+              src="./site-assets/hero-cover.png"
+              alt="Tax Treaty Agent product overview"
+              data-i18n-alt="altProductOverview"
+            />
           </div>
           <div class="showcase-copy reveal reveal-delay">
-            <div class="eyebrow">What the team receives</div>
-            <h2>A pre-screening output that is ready to discuss internally</h2>
+            <div class="eyebrow" data-i18n="showcaseEyebrow">What the team receives</div>
+            <h2 data-i18n="showcaseTitle">A pre-screening output that is ready to discuss internally</h2>
             <ul class="feature-list">
               <li>
-                <strong>Guided fact summary</strong>
-                <span>So reviewers can see what was declared before they rely on the narrowed branch.</span>
+                <strong data-i18n="feature1Title">Guided fact summary</strong>
+                <span data-i18n="feature1Body">So reviewers can see what was declared before they rely on the narrowed branch.</span>
               </li>
               <li>
-                <strong>Structured review state</strong>
-                <span>So the team can distinguish supported, incomplete, and out-of-scope scenarios quickly.</span>
+                <strong data-i18n="feature2Title">Structured review state</strong>
+                <span data-i18n="feature2Body">So the team can distinguish supported, incomplete, and out-of-scope scenarios quickly.</span>
               </li>
               <li>
-                <strong>Workflow handoff package</strong>
-                <span>So downstream reviewers do not need to re-interpret the first pass from scratch.</span>
+                <strong data-i18n="feature3Title">Workflow handoff package</strong>
+                <span data-i18n="feature3Body">So downstream reviewers do not need to re-interpret the first pass from scratch.</span>
               </li>
               <li>
-                <strong>Review signals</strong>
-                <span>So BO, MLI/PPT, short holding period, and conflict prompts remain visible without pretending to be final determinations.</span>
+                <strong data-i18n="feature4Title">Review signals</strong>
+                <span data-i18n="feature4Body">So BO, MLI/PPT, short holding period, and conflict prompts remain visible without pretending to be final determinations.</span>
               </li>
             </ul>
           </div>
@@ -165,66 +199,66 @@
 
         <section id="coverage" class="coverage-section">
           <div class="section-copy reveal">
-            <div class="eyebrow">Current coverage</div>
-            <h2>Deliberately narrow, because trust matters more than breadth</h2>
-            <p>
+            <div class="eyebrow" data-i18n="coverageEyebrow">Current coverage</div>
+            <h2 data-i18n="coverageTitle">Deliberately narrow, because trust matters more than breadth</h2>
+            <p data-i18n="coverageIntro">
               The product focuses on a bounded set of treaty pairs and income types so the review path remains
               auditable and conservative.
             </p>
           </div>
           <div class="coverage-grid">
             <article class="coverage-card reveal">
-              <h3>China – Netherlands</h3>
-              <p>Dividends, interest, royalties</p>
+              <h3 data-i18n="coveragePair1Title">China – Netherlands</h3>
+              <p data-i18n="coveragePairIncome">Dividends, interest, royalties</p>
             </article>
             <article class="coverage-card reveal reveal-delay">
-              <h3>China – Singapore</h3>
-              <p>Dividends, interest, royalties</p>
+              <h3 data-i18n="coveragePair2Title">China – Singapore</h3>
+              <p data-i18n="coveragePairIncome">Dividends, interest, royalties</p>
             </article>
             <article class="coverage-card reveal reveal-delay-2">
-              <h3>China – Korea</h3>
-              <p>Dividends, interest, royalties</p>
+              <h3 data-i18n="coveragePair3Title">China – Korea</h3>
+              <p data-i18n="coveragePairIncome">Dividends, interest, royalties</p>
             </article>
           </div>
         </section>
 
         <section id="limits" class="limits-section">
           <div class="section-copy reveal">
-            <div class="eyebrow">Boundaries</div>
-            <h2>This tool does not replace a final tax opinion</h2>
-            <p>
+            <div class="eyebrow" data-i18n="limitsEyebrow">Boundaries</div>
+            <h2 data-i18n="limitsTitle">This tool does not replace a final tax opinion</h2>
+            <p data-i18n="limitsIntro">
               It helps teams move faster through the front of the workflow, but it does not automate the final
               legal judgment.
             </p>
           </div>
           <div class="limits-grid">
             <article class="limit-card reveal">
-              <h3>Not a final determination</h3>
-              <p>The output is a first-pass pre-review, not a substitute for legal, tax, or internal approval.</p>
+              <h3 data-i18n="limit1Title">Not a final determination</h3>
+              <p data-i18n="limit1Body">The output is a first-pass pre-review, not a substitute for legal, tax, or internal approval.</p>
             </article>
             <article class="limit-card reveal reveal-delay">
-              <h3>MLI/PPT stays a review signal</h3>
-              <p>The tool surfaces these items for human follow-up instead of pretending to resolve them automatically.</p>
+              <h3 data-i18n="limit2Title">MLI/PPT stays a review signal</h3>
+              <p data-i18n="limit2Body">The tool surfaces these items for human follow-up instead of pretending to resolve them automatically.</p>
             </article>
             <article class="limit-card reveal reveal-delay-2">
-              <h3>Unsupported scope is rejected</h3>
-              <p>When a case falls outside the supported treaty pairs or lanes, the workflow says so directly.</p>
+              <h3 data-i18n="limit3Title">Unsupported scope is rejected</h3>
+              <p data-i18n="limit3Body">When a case falls outside the supported treaty pairs or lanes, the workflow says so directly.</p>
             </article>
           </div>
         </section>
 
         <section class="footer-cta reveal">
           <div>
-            <div class="eyebrow">Next step</div>
-            <h2>Use GitHub as the audit trail. Use the product page to explain the product.</h2>
-            <p>
+            <div class="eyebrow" data-i18n="footerEyebrow">Next step</div>
+            <h2 data-i18n="footerTitle">Use GitHub as the audit trail. Use the product page to explain the product.</h2>
+            <p data-i18n="footerBody">
               The repository keeps the implementation and evidence pack. This overview page is here to help
               non-technical reviewers understand what the product is for before they open the code.
             </p>
           </div>
           <div class="footer-actions">
-            <a class="primary-button" href="https://github.com/saeucora123/tax-treaty-agent">Open repository</a>
-            <a class="secondary-link" href="https://github.com/saeucora123/tax-treaty-agent#readme">Read the README</a>
+            <a class="primary-button" href="https://github.com/saeucora123/tax-treaty-agent" data-i18n="footerPrimary">Open repository</a>
+            <a class="secondary-link" href="https://github.com/saeucora123/tax-treaty-agent#readme" data-i18n="footerSecondary">Read the README</a>
           </div>
         </section>
       </main>
