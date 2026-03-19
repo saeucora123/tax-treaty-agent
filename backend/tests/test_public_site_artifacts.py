@@ -43,3 +43,15 @@ def test_public_product_page_script_supports_language_preference_persistence() -
     assert "navigator.language" in script
     assert "zh" in script
     assert "en" in script
+
+
+def test_public_product_page_has_dedicated_chinese_typography_rules() -> None:
+    site_index = ROOT / "docs" / "index.html"
+    site_css = ROOT / "docs" / "site.css"
+
+    html = site_index.read_text(encoding="utf-8")
+    css = site_css.read_text(encoding="utf-8")
+
+    assert "Noto+Sans+SC" in html
+    assert ':lang(zh-CN)' in css
+    assert '"Noto Sans SC"' in css

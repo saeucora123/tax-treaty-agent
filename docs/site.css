@@ -12,6 +12,9 @@
   --radius-xl: 36px;
   --radius-lg: 26px;
   --radius-md: 18px;
+  --font-body: "Manrope", system-ui, sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-zh-sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
 * {
@@ -24,7 +27,7 @@ html {
 
 body {
   margin: 0;
-  font-family: "Manrope", system-ui, sans-serif;
+  font-family: var(--font-body);
   color: var(--text);
   background:
     radial-gradient(circle at 15% 18%, rgba(236, 210, 164, 0.45), transparent 28%),
@@ -158,7 +161,7 @@ a {
 .showcase-copy h2,
 .footer-cta h2 {
   margin: 0;
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-display);
   font-weight: 700;
   line-height: 0.98;
   letter-spacing: -0.04em;
@@ -503,6 +506,71 @@ a {
 .reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+html:lang(zh-CN) body {
+  font-family: var(--font-zh-sans);
+}
+
+html:lang(zh-CN) .brand,
+html:lang(zh-CN) .topnav,
+html:lang(zh-CN) .lang-switch,
+html:lang(zh-CN) .primary-button,
+html:lang(zh-CN) .secondary-link,
+html:lang(zh-CN) .hero-chips span,
+html:lang(zh-CN) .card-label,
+html:lang(zh-CN) .value-kicker,
+html:lang(zh-CN) .step-index,
+html:lang(zh-CN) .coverage-card p {
+  font-family: var(--font-zh-sans);
+}
+
+html:lang(zh-CN) .eyebrow {
+  font-family: var(--font-zh-sans);
+  font-size: 0.86rem;
+  letter-spacing: 0.09em;
+}
+
+html:lang(zh-CN) .hero h1,
+html:lang(zh-CN) .section-copy h2,
+html:lang(zh-CN) .value-strip h2,
+html:lang(zh-CN) .showcase-copy h2,
+html:lang(zh-CN) .footer-cta h2,
+html:lang(zh-CN) .workflow-card h3,
+html:lang(zh-CN) .coverage-card h3,
+html:lang(zh-CN) .limit-card h3,
+html:lang(zh-CN) .feature-list strong {
+  font-family: var(--font-zh-sans);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+html:lang(zh-CN) .hero h1 {
+  line-height: 1.08;
+  font-size: clamp(3.1rem, 5.6vw, 5.2rem);
+  max-width: 9ch;
+}
+
+html:lang(zh-CN) .section-copy h2,
+html:lang(zh-CN) .showcase-copy h2,
+html:lang(zh-CN) .footer-cta h2 {
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+}
+
+html:lang(zh-CN) .hero-lead,
+html:lang(zh-CN) .hero-sub,
+html:lang(zh-CN) .section-copy p,
+html:lang(zh-CN) .value-strip p,
+html:lang(zh-CN) .showcase-copy p,
+html:lang(zh-CN) .limit-card p,
+html:lang(zh-CN) .workflow-card p,
+html:lang(zh-CN) .coverage-card p,
+html:lang(zh-CN) .footer-cta p,
+html:lang(zh-CN) .feature-list span {
+  font-family: var(--font-zh-sans);
+  line-height: 1.78;
+  letter-spacing: 0.01em;
 }
 
 @media (prefers-reduced-motion: reduce) {

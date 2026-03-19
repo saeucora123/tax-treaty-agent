@@ -32,6 +32,7 @@ Completed so far:
 - The frontend now exposes an internal reviewer workspace behind ?internal=onboarding for source build, compile, review, approve, and promote actions
 - The repo now ships an expert-facing GitHub Pages product overview at the site root, with the README top section rewritten to introduce the product directly to international tax specialists
 - The GitHub Pages product overview now supports a persistent Chinese/English language switch so tax-domain visitors can read the site in their preferred language without changing the product layout
+- The Chinese version of the GitHub Pages product overview now uses dedicated Noto Sans SC typography and zh-CN-specific spacing rules so the page reads like one coherent product surface instead of a mixed fallback stack
 
 In progress:
 
