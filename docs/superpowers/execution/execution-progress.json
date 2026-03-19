@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-03-18",
+  "last_updated": "2026-03-19",
   "current_focus": [
     "cross_cutting_infrastructure",
     "post_stage_6_hardening",
@@ -9,9 +9,10 @@
     "cn_nl_shadow_rebuild_proof",
     "oecd_baseline_delta_extraction",
     "cn_kr_initial_onboarding_public_support",
-    "internal_onboarding_reviewer_workspace"
+    "internal_onboarding_reviewer_workspace",
+    "expert_facing_github_pages_overview"
   ],
-  "global_note": "Execution control is installed. Stage 1, Stage 2, Stage 3, Stage 3.5, Stage 4, Stage 5, and Stage 6 remain complete. The post-Stage-6 hardening track now includes contract cleanup, a completed test/data pipeline productization slice, a public credibility repair pack, and a manifest-driven LLM treaty compiler lane: public analyze requests no longer expose data_source, llm_generated moved behind /internal/analyze, frontend guided-fact types/config generate from a backend contract source, runtime tests are split by public/dividend/internal/handoff boundaries, ingestion now exposes formal build_treaty_dataset and manifest-driven run_source_ingest CLIs, the repo has an internal reviewer workspace under ?internal=onboarding, CN-SG and CN-NL both pass shadow re-onboarding under the same compile/review/promote contract, CN-SG and CN-NL both pass thin-baseline OECD delta proofs, and CN-KR has completed the first initial_onboarding path from official raw/PDF inputs through reviewer approval into public runtime support.",
+  "global_note": "Execution control is installed. Stage 1, Stage 2, Stage 3, Stage 3.5, Stage 4, Stage 5, and Stage 6 remain complete. The post-Stage-6 hardening track now includes contract cleanup, a completed test/data pipeline productization slice, a public credibility repair pack, a manifest-driven LLM treaty compiler lane, and an expert-facing GitHub Pages overview: public analyze requests no longer expose data_source, llm_generated moved behind /internal/analyze, frontend guided-fact types/config generate from a backend contract source, runtime tests are split by public/dividend/internal/handoff boundaries, ingestion now exposes formal build_treaty_dataset and manifest-driven run_source_ingest CLIs, the repo has an internal reviewer workspace under ?internal=onboarding, CN-SG and CN-NL both pass shadow re-onboarding under the same compile/review/promote contract, CN-SG and CN-NL both pass thin-baseline OECD delta proofs, CN-KR has completed the first initial_onboarding path from official raw/PDF inputs through reviewer approval into public runtime support, and the repo now ships a non-technical product overview at the GitHub Pages root while the README top-level narrative is optimized for international tax specialists rather than only developers.",
   "stages": {
     "stage_1": {
       "status_summary": "Stage 1 has passed gate with a deterministic 70-case evidence pack, zero Critical/Major/Minor overreach in the fixed suite, and whitepaper-backed metrics plus System Behavior Commitments.",
@@ -162,7 +163,7 @@
     },
     "stage_6": {
       "status_summary": "Stage 6 has passed gate: the system now exposes treaty-version notes, paragraph-level excerpts, working-paper lineage, and fact-based MLI/PPT prompts across three supported treaty pairs and all three supported income types.",
-      "current_checkpoint": "Stage 6 gate remains PASS, and the post-Stage-6 hardening track now includes dual-pair baseline-aware OECD delta proofing, a formal source-build entrypoint, an internal reviewer workspace, and the first completed initial_onboarding promotion of CN-KR into public runtime support.",
+      "current_checkpoint": "Stage 6 gate remains PASS, and the post-Stage-6 hardening track now includes dual-pair baseline-aware OECD delta proofing, a formal source-build entrypoint, an internal reviewer workspace, the first completed initial_onboarding promotion of CN-KR into public runtime support, and a live GitHub Pages product overview for non-technical tax-domain visitors.",
       "completed_items": [
         "Stage 6 target narrowed from generic controlled expansion to source chain closure",
         "CN-SG dividends truth-check corrected the runtime branch from 7% / 12% to 5% / 10%",
@@ -179,7 +180,8 @@
         "CN-NL now also passes a live baseline-aware OECD delta proof with canonical-pass review under the same strict gate",
         "Formal source-build now supports pair-level manifests and official raw/PDF inputs through run_source_ingest --manifest",
         "CN-KR completed the first initial_onboarding path: source build, baseline-aware compile, reviewer JSON review, approval, promotion, and public runtime support",
-        "The frontend now exposes an internal reviewer workspace behind ?internal=onboarding for source build, compile, review, approve, and promote actions"
+        "The frontend now exposes an internal reviewer workspace behind ?internal=onboarding for source build, compile, review, approve, and promote actions",
+        "The repo now ships an expert-facing GitHub Pages product overview at the site root, with the README top section rewritten to introduce the product directly to international tax specialists"
       ],
       "in_progress_items": [],
       "next_items": [

@@ -9,9 +9,9 @@ Decision owner: `project owner + user-approved execution route`
 ## Current Progress Snapshot
 
 <!-- STAGE_6_PROGRESS:START -->
-Last synced: `2026-03-18`
+Last synced: `2026-03-19`
 Status summary: Stage 6 has passed gate: the system now exposes treaty-version notes, paragraph-level excerpts, working-paper lineage, and fact-based MLI/PPT prompts across three supported treaty pairs and all three supported income types.
-Current checkpoint: Stage 6 gate remains PASS, and the post-Stage-6 hardening track now includes dual-pair baseline-aware OECD delta proofing, a formal source-build entrypoint, an internal reviewer workspace, and the first completed initial_onboarding promotion of CN-KR into public runtime support.
+Current checkpoint: Stage 6 gate remains PASS, and the post-Stage-6 hardening track now includes dual-pair baseline-aware OECD delta proofing, a formal source-build entrypoint, an internal reviewer workspace, the first completed initial_onboarding promotion of CN-KR into public runtime support, and a live GitHub Pages product overview for non-technical tax-domain visitors.
 
 Completed so far:
 - Stage 6 target narrowed from generic controlled expansion to source chain closure
@@ -30,6 +30,7 @@ Completed so far:
 - Formal source-build now supports pair-level manifests and official raw/PDF inputs through run_source_ingest --manifest
 - CN-KR completed the first initial_onboarding path: source build, baseline-aware compile, reviewer JSON review, approval, promotion, and public runtime support
 - The frontend now exposes an internal reviewer workspace behind ?internal=onboarding for source build, compile, review, approve, and promote actions
+- The repo now ships an expert-facing GitHub Pages product overview at the site root, with the README top section rewritten to introduce the product directly to international tax specialists
 
 In progress:
 
