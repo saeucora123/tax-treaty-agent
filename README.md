@@ -4,7 +4,11 @@
 
 An international tax treaty pre-screening tool for cross-border payment scenarios. It currently supports China–Netherlands, China–Singapore, and China–Korea dividend, interest, and royalty lanes using structured treaty data, conservative rule logic, and workflow-ready handoff output.
 
-![Tax Treaty Agent guided demo](assets/tax-treaty-agent-guided-demo.gif)
+![Tax Treaty Agent product cover](assets/tax-treaty-agent-demo.png)
+
+[Watch extended guided demo (26s)](assets/tax-treaty-agent-guided-demo-extended.gif)
+
+![Tax Treaty Agent guided workflow preview](assets/tax-treaty-agent-guided-demo.gif)
 
 ## Quick Proof / 快速验证
 
