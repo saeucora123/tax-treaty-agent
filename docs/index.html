@@ -24,6 +24,7 @@
         <div class="topbar-actions">
           <nav class="topnav" aria-label="Primary">
             <a href="#workflow" data-i18n="navWorkflow">How it works</a>
+            <a href="#onboarding" data-i18n="navOnboarding">New treaty onboarding</a>
             <a href="#coverage" data-i18n="navCoverage">Coverage</a>
             <a href="#limits" data-i18n="navLimits">Boundaries</a>
             <a
@@ -194,6 +195,45 @@
                 <span data-i18n="feature4Body">So BO, MLI/PPT, short holding period, and conflict prompts remain visible without pretending to be final determinations.</span>
               </li>
             </ul>
+          </div>
+        </section>
+
+        <section id="onboarding" class="story-section">
+          <div class="section-copy reveal">
+            <div class="eyebrow" data-i18n="onboardingEyebrow">How new treaties are onboarded</div>
+            <h2 data-i18n="onboardingTitle">A human-reviewed compiler replaces manual treaty-to-rule coding from scratch</h2>
+            <p data-i18n="onboardingIntro">
+              New treaty lanes are compiled offline from governed source documents. The compiler compares bilateral
+              Articles 10 to 12 against the OECD reference, writes structured candidates, and only promotes a
+              reviewed dataset into runtime after explicit approval.
+            </p>
+          </div>
+          <div class="workflow-grid">
+            <article class="workflow-card reveal">
+              <span class="step-index">01</span>
+              <h3 data-i18n="onboardingStep1Title">Baseline-aware delta extraction</h3>
+              <p data-i18n="onboardingStep1Body">
+                The authoring pipeline compares the bilateral treaty against the OECD Model 2017 reference for
+                Articles 10, 11, and 12, then emits delta artifacts together with a full runtime candidate dataset.
+              </p>
+            </article>
+            <article class="workflow-card reveal reveal-delay">
+              <span class="step-index">02</span>
+              <h3 data-i18n="onboardingStep2Title">Human review remains the gate</h3>
+              <p data-i18n="onboardingStep2Body">
+                Compile output does not go live automatically. Review, approval, and promotion remain explicit
+                workflow steps so tax-domain judgment stays human-controlled.
+              </p>
+            </article>
+            <article class="workflow-card reveal reveal-delay-2">
+              <span class="step-index">03</span>
+              <h3 data-i18n="onboardingStep3Title">Single controlled CN-KR pilot has measured timing evidence</h3>
+              <p data-i18n="onboardingStep3Body">
+                The first real onboarding pilot recorded a 26-second reviewer session and a 10m45s repo-internal
+                source-build-to-promote elapsed time on governed official inputs. This is measured pilot evidence,
+                not a guaranteed onboarding SLA.
+              </p>
+            </article>
           </div>
         </section>
 

@@ -1,0 +1,29 @@
+{
+  "pair_id": "cn-kr",
+  "mode": "initial_onboarding",
+  "manifest_path": "D:\\AI_Projects\\first agent\\data\\onboarding\\manifests\\cn-kr.initial-oecd.json",
+  "run_type": "measured_pilot",
+  "source_build_started_at_utc": "2026-03-19T06:41:43.731176+00:00",
+  "source_build_completed_at_utc": "2026-03-19T06:44:06.223662+00:00",
+  "compile_started_at_utc": "2026-03-19T06:48:40.803092+00:00",
+  "compile_completed_at_utc": "2026-03-19T06:50:35.778547+00:00",
+  "review_session_started_at_utc": "2026-03-19T06:51:53.622379+00:00",
+  "review_completed_at_utc": "2026-03-19T06:52:12.327729+00:00",
+  "approved_at_utc": "2026-03-19T06:52:19.714067+00:00",
+  "promoted_at_utc": "2026-03-19T06:52:29.485198+00:00",
+  "durations": {
+    "source_build_seconds": 142,
+    "compile_seconds": 114,
+    "review_seconds": 26,
+    "approve_seconds": 0,
+    "promote_seconds": 0,
+    "end_to_end_seconds": 645
+  },
+  "review_session": {
+    "status": "completed",
+    "reviewer_name": "Codex Reviewer",
+    "note": "Approved after measured reviewer validation pass on the clean CN-KR onboarding pilot (sequential replay)."
+  },
+  "wall_clock_note": "Single controlled pilot. Reviewer elapsed time is measured from the explicit start-review action to approval.",
+  "environment_note": "Measured inside the local repository workflow using governed official source inputs."
+}

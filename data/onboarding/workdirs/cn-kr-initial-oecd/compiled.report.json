@@ -2,23 +2,24 @@
   "status": "ok",
   "article_count": 3,
   "paragraph_count": 16,
-  "rule_count": 14,
-  "unresolved_item_count": 15,
+  "rule_count": 5,
+  "unresolved_item_count": 12,
   "unresolved_items": [
+    {
+      "paragraph_id": "art10-p1",
+      "reason": "no_rule_candidates"
+    },
     {
       "paragraph_id": "art10-p3",
       "reason": "no_rule_candidates"
     },
     {
       "paragraph_id": "art10-p4",
-      "rule_id": "cn-kr-art10-p4-r1",
-      "reason": "unknown_direction"
+      "reason": "no_rule_candidates"
     },
     {
-      "paragraph_id": "art10-p4",
-      "rule_id": "cn-kr-art10-p4-r1",
-      "reason": "low_confidence",
-      "extraction_confidence": 0.85
+      "paragraph_id": "art11-p1",
+      "reason": "no_rule_candidates"
     },
     {
       "paragraph_id": "art11-p4",
@@ -26,36 +27,19 @@
     },
     {
       "paragraph_id": "art11-p5",
-      "rule_id": "cn-kr-art11-p5-r1",
-      "reason": "unknown_direction"
-    },
-    {
-      "paragraph_id": "art11-p5",
-      "rule_id": "cn-kr-art11-p5-r1",
-      "reason": "low_confidence",
-      "extraction_confidence": 0.85
+      "reason": "no_rule_candidates"
     },
     {
       "paragraph_id": "art11-p6",
-      "rule_id": "cn-kr-art11-p6-r1",
-      "reason": "unknown_direction"
-    },
-    {
-      "paragraph_id": "art11-p6",
-      "rule_id": "cn-kr-art11-p6-r1",
-      "reason": "low_confidence",
-      "extraction_confidence": 0.8
+      "reason": "no_rule_candidates"
     },
     {
       "paragraph_id": "art11-p7",
-      "rule_id": "cn-kr-art11-p7-r1",
-      "reason": "unknown_direction"
+      "reason": "no_rule_candidates"
     },
     {
-      "paragraph_id": "art11-p7",
-      "rule_id": "cn-kr-art11-p7-r1",
-      "reason": "low_confidence",
-      "extraction_confidence": 0.8
+      "paragraph_id": "art12-p1",
+      "reason": "no_rule_candidates"
     },
     {
       "paragraph_id": "art12-p3",
@@ -63,25 +47,11 @@
     },
     {
       "paragraph_id": "art12-p4",
-      "rule_id": "cn-kr-art12-p4-r1",
-      "reason": "unknown_direction"
-    },
-    {
-      "paragraph_id": "art12-p4",
-      "rule_id": "cn-kr-art12-p4-r1",
-      "reason": "low_confidence",
-      "extraction_confidence": 0.85
+      "reason": "no_rule_candidates"
     },
     {
       "paragraph_id": "art12-p5",
-      "rule_id": "cn-kr-art12-p5-r1",
-      "reason": "unknown_direction"
-    },
-    {
-      "paragraph_id": "art12-p5",
-      "rule_id": "cn-kr-art12-p5-r1",
-      "reason": "low_confidence",
-      "extraction_confidence": 0.8
+      "reason": "no_rule_candidates"
     }
   ]
 }

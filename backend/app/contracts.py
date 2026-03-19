@@ -45,3 +45,8 @@ class InternalOnboardingReviewRequest(InternalOnboardingManifestRequest):
 class InternalOnboardingApproveRequest(InternalOnboardingManifestRequest):
     reviewer_name: str
     note: str = ""
+
+
+class InternalOnboardingStartReviewRequest(InternalOnboardingManifestRequest):
+    reviewer_name: str
+    note: str = ""

@@ -129,7 +129,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Default tax rate for other cases."
+              "review_reason": "Default tax rate for dividends."
             }
           ]
         },
@@ -197,7 +197,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Excepts cases where other articles (e.g., business profits) apply."
+              "review_reason": "Excludes cases where dividends are effectively connected to a business presence."
             }
           ]
         }
@@ -208,7 +208,7 @@
       "article_title": "INTEREST",
       "article_label": "Article 11",
       "income_type": "interest",
-      "summary": "Article 11 covers taxation of interest income between Contracting States, including tax rates, exemptions for government entities, definitions, and special rules for permanent establishments and related parties.",
+      "summary": "Article 11 governs the taxation of interest income between Contracting States, including tax rates, exemptions for government entities, definitions, and rules for determining the source of interest.",
       "article_notes": [],
       "paragraphs": [
         {
@@ -244,7 +244,7 @@
                 "This paragraph does not by itself state a reduced withholding cap."
               ],
               "human_review_required": true,
-              "review_reason": "Standard residence-based taxation right."
+              "review_reason": "Standard treaty provision granting taxation rights to the resident's state."
             }
           ]
         },
@@ -267,7 +267,7 @@
           "extracted_rules": [
             {
               "rule_id": "cn-kr-art11-p2-r1",
-              "rule_type": "source_taxation_limit",
+              "rule_type": "tax_rate_limit",
               "rate": "N/A",
               "direction": "payer_to_payee",
               "candidate_rank": 1,
@@ -278,7 +278,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Limits source state taxation to 10% for beneficial owners."
+              "review_reason": "Limits source state taxation to 10% if beneficial ownership conditions are met."
             }
           ]
         },
@@ -312,7 +312,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Full exemption for specified government-related interest."
+              "review_reason": "Provides full exemption for specified government-related interest."
             }
           ]
         },
@@ -346,7 +346,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Defines 'interest' for the purposes of the article."
+              "review_reason": "Defines the scope of 'interest' for treaty purposes."
             }
           ]
         },
@@ -371,7 +371,7 @@
               "rule_id": "cn-kr-art11-p5-r1",
               "rule_type": "exception",
               "rate": "N/A",
-              "direction": "unknown",
+              "direction": "bidirectional",
               "candidate_rank": 1,
               "is_primary_candidate": true,
               "extraction_confidence": 0.96,
@@ -380,7 +380,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Overrides Article 11 if interest is attributable to a PE/fixed base."
+              "review_reason": "Overrides Article 11 if interest is attributable to a PE/fixed base, referring to business profits articles."
             }
           ]
         },
@@ -397,7 +397,7 @@
               "source_kind": "article_paragraph",
               "text_quality": "clean",
               "normalization_status": "verbatim",
-              "text": "Interest shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the interest, whether he is a resident of a Contracting State or not, has in a Contracting State a permanent establishment or a fixed base in connection with which the indebtedness on which the interest is paid was incurred, and such interest is borne by such permanent establishment or fixed base, then such interest shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated."
+              "text": "Interest shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the interest, whether he is a resident of a Contracting State or not, connection with which the indebtedness on which the interest is paid was incurred, and such interest is borne by such permanent establishment or fixed base, then such interest shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated."
             }
           ],
           "extracted_rules": [
@@ -414,7 +414,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Rules for deeming where interest arises."
+              "review_reason": "Rules for determining the source of interest for treaty application."
             }
           ]
         },
@@ -437,7 +437,7 @@
           "extracted_rules": [
             {
               "rule_id": "cn-kr-art11-p7-r1",
-              "rule_type": "anti_abuse",
+              "rule_type": "arm's_length",
               "rate": "N/A",
               "direction": "bidirectional",
               "candidate_rank": 1,
@@ -448,7 +448,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Limits application to arm's length interest amounts."
+              "review_reason": "Limits treaty benefits to arm's length interest amounts in cases of special relationships."
             }
           ]
         }
@@ -459,7 +459,7 @@
       "article_title": "ROYALTIES",
       "article_label": "Article 12",
       "income_type": "royalties",
-      "summary": "Article 12 covers taxation of royalty income between Contracting States, including tax rates, definitions, and rules for permanent establishments.",
+      "summary": "Article 12 governs the taxation of royalty income between Contracting States, including tax rates, definitions, and rules for determining the source of royalties.",
       "article_notes": [],
       "paragraphs": [
         {
@@ -495,7 +495,7 @@
                 "This paragraph does not by itself state a reduced withholding cap."
               ],
               "human_review_required": true,
-              "review_reason": "Standard residence-based taxation right."
+              "review_reason": "Standard treaty provision granting taxation rights to the resident's state."
             }
           ]
         },
@@ -518,7 +518,7 @@
           "extracted_rules": [
             {
               "rule_id": "cn-kr-art12-p2-r1",
-              "rule_type": "source_taxation_limit",
+              "rule_type": "tax_rate_limit",
               "rate": "N/A",
               "direction": "payer_to_payee",
               "candidate_rank": 1,
@@ -529,7 +529,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Limits source state taxation to 10% for beneficial owners."
+              "review_reason": "Limits source state taxation to 10% if beneficial ownership conditions are met."
             }
           ]
         },
@@ -563,7 +563,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Defines 'royalties' for the purposes of the article."
+              "review_reason": "Defines the scope of 'royalties' for treaty purposes."
             }
           ]
         },
@@ -588,7 +588,7 @@
               "rule_id": "cn-kr-art12-p4-r1",
               "rule_type": "exception",
               "rate": "N/A",
-              "direction": "unknown",
+              "direction": "bidirectional",
               "candidate_rank": 1,
               "is_primary_candidate": true,
               "extraction_confidence": 0.96,
@@ -597,7 +597,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Overrides Article 12 if royalties are attributable to a PE/fixed base."
+              "review_reason": "Overrides Article 12 if royalties are attributable to a PE/fixed base, referring to business profits articles."
             }
           ]
         },
@@ -614,7 +614,7 @@
               "source_kind": "article_paragraph",
               "text_quality": "clean",
               "normalization_status": "verbatim",
-              "text": "Royalties shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the royalties, whether he is a resident of a Contracting State or not, has in a Contracting State a permanent establishment or a fixed base in connection with which the liability to pay the royalties was incurred, and such royalties are borne by such permanent establishment or fixed base, then such royalties shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated."
+              "text": "Royalties shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the royalties, whether he is a resident of a Contracting State or not, connection with which the liability to pay the royalties was incurred, and such royalties are borne by such permanent establishment or fixed base, then such royalties shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated."
             }
           ],
           "extracted_rules": [
@@ -631,7 +631,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Rules for deeming where royalties arise."
+              "review_reason": "Rules for determining the source of royalties for treaty application."
             }
           ]
         }

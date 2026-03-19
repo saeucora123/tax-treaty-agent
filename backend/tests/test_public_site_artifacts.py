@@ -11,6 +11,8 @@ def test_readme_links_to_public_product_overview() -> None:
 
     assert "Open product overview" in readme
     assert "https://saeucora123.github.io/tax-treaty-agent/" in readme
+    assert "Treaty Onboarding Compiler / 协定接入编译器" in readme
+    assert "single controlled CN-KR pilot" in readme
 
 
 def test_public_product_page_exists_with_expert_facing_tax_copy() -> None:
@@ -22,6 +24,7 @@ def test_public_product_page_exists_with_expert_facing_tax_copy() -> None:
     assert "Cross-border treaty pre-screening for international tax teams" in html
     assert "Start with a faster first-pass review" in html
     assert "This tool does not replace a final tax opinion" in html
+    assert "How new treaties are onboarded" in html
 
 
 def test_public_product_page_exposes_language_toggle() -> None:

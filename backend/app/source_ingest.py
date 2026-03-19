@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 import sys
 
@@ -210,6 +211,9 @@ def build_report(
     *,
     results: list[dict],
     missing_target_articles: list[str],
+    started_at_utc: str,
+    completed_at_utc: str,
+    duration_seconds: int,
 ) -> dict:
     paragraph_count = 0
     rule_count = 0
@@ -221,6 +225,9 @@ def build_report(
     return {
         "status": "ok" if not missing_target_articles else "error",
         "pair_id": manifest["pair_id"],
+        "started_at_utc": started_at_utc,
+        "completed_at_utc": completed_at_utc,
+        "duration_seconds": duration_seconds,
         "source_count": len(results),
         "article_count": len(merged_payload["parsed_articles"]),
         "paragraph_count": paragraph_count,
@@ -271,6 +278,7 @@ def build_source_entry_payload(entry: dict, *, jurisdictions: list[str]) -> tupl
 
 
 def run_source_build(manifest_path: Path) -> dict:
+    started_at = datetime.now(timezone.utc)
     manifest_path = manifest_path.resolve()
     manifest = load_json(manifest_path)
     validate_manifest(manifest)
@@ -332,11 +340,15 @@ def run_source_build(manifest_path: Path) -> dict:
         base_dir=manifest_dir,
     )
     write_json(output_source_document, merged_payload)
+    completed_at = datetime.now(timezone.utc)
     report = build_report(
         manifest,
         merged_payload,
         results=results,
         missing_target_articles=missing_target_articles,
+        started_at_utc=started_at.isoformat(),
+        completed_at_utc=completed_at.isoformat(),
+        duration_seconds=max(0, int((completed_at - started_at).total_seconds())),
     )
     write_json(build_report_output, report)
     return report

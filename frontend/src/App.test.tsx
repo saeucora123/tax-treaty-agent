@@ -2673,6 +2673,14 @@ test("renders the internal onboarding workspace when query-param mode is enabled
         },
         approval: { status: null, record: null },
         promotion: { status: null, record: null },
+        timing: {
+          status: "active_review_session",
+          review_session_active: true,
+          durations: {
+            review_seconds: 245,
+            end_to_end_seconds: 1280,
+          },
+        },
         reviewed_source: {
           path: "D:/repo/data/onboarding/workdirs/cn-kr-initial-oecd/reviewed.source.json",
           content: "{\"pair\":\"cn-kr\"}",
@@ -2685,10 +2693,14 @@ test("renders the internal onboarding workspace when query-param mode is enabled
   expect(await screen.findByText(/internal onboarding workspace/i)).toBeInTheDocument();
   expect(screen.getByLabelText(/onboarding manifest/i)).toBeInTheDocument();
   expect(screen.getByText(/compiled delta summary/i)).toBeInTheDocument();
+  expect(screen.getByText(/timing summary/i)).toBeInTheDocument();
+  expect(screen.getByText(/active_review_session/i)).toBeInTheDocument();
+  expect(screen.getByText(/245/)).toBeInTheDocument();
   expect(screen.getByText(/review diff summary/i)).toBeInTheDocument();
   expect(screen.getByLabelText(/reviewed\.source\.json editor/i)).toHaveValue(
     "{\"pair\":\"cn-kr\"}",
   );
+  expect(screen.getByRole("button", { name: /start review session/i })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: /run source build/i })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: /run compile/i })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: /run review/i })).toBeInTheDocument();
@@ -2744,6 +2756,45 @@ test("internal onboarding workspace submits edited review JSON and approval payl
         review: { status: null, report: null, diff: null },
         approval: { status: null, record: null },
         promotion: { status: null, record: null },
+        timing: {
+          status: "not_started",
+          review_session_active: false,
+          durations: { review_seconds: null, end_to_end_seconds: null },
+        },
+        reviewed_source: {
+          path: "D:/repo/data/onboarding/workdirs/cn-kr-initial-oecd/reviewed.source.json",
+          content: "{\"initial\":true}",
+        },
+      }),
+    })
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        manifest: {
+          manifest_path: "D:/repo/data/onboarding/manifests/cn-kr.initial-oecd.json",
+          pair_id: "cn-kr",
+          mode: "initial_onboarding",
+          jurisdictions: ["CN", "KR"],
+          target_articles: ["10", "11", "12"],
+          baseline_enabled: true,
+          source_build_manifest_path:
+            "D:/repo/data/source_documents/manifests/cn-kr-main-treaty.build.json",
+          source_build_available: true,
+          source_documents: ["D:/repo/data/source_documents/cn-kr-main-treaty.json"],
+          promotion_target_dataset: "D:/repo/data/treaties/cn-kr.v3.json",
+          baseline_reference:
+            "D:/repo/data/onboarding/baselines/oecd-model-2017.articles10-12.reference.json",
+        },
+        source_build: { available: true, manifest_path: "D:/repo/x", report: null, status: null },
+        compile: { status: null, report: null, delta_report: null, delta_analysis: [] },
+        review: { status: null, report: null, diff: null },
+        approval: { status: null, record: null },
+        promotion: { status: null, record: null },
+        timing: {
+          status: "active_review_session",
+          review_session_active: true,
+          durations: { review_seconds: null, end_to_end_seconds: null },
+        },
         reviewed_source: {
           path: "D:/repo/data/onboarding/workdirs/cn-kr-initial-oecd/reviewed.source.json",
           content: "{\"initial\":true}",
@@ -2773,6 +2824,11 @@ test("internal onboarding workspace submits edited review JSON and approval payl
         review: { status: "ready_for_approval", report: { status: "ready_for_approval" }, diff: null },
         approval: { status: null, record: null },
         promotion: { status: null, record: null },
+        timing: {
+          status: "active_review_session",
+          review_session_active: true,
+          durations: { review_seconds: 245, end_to_end_seconds: null },
+        },
         reviewed_source: {
           path: "D:/repo/data/onboarding/workdirs/cn-kr-initial-oecd/reviewed.source.json",
           content: "{\"edited\":true}",
@@ -2802,6 +2858,11 @@ test("internal onboarding workspace submits edited review JSON and approval payl
         review: { status: "ready_for_approval", report: { status: "ready_for_approval" }, diff: null },
         approval: { status: "approved", record: { reviewer_name: "Codex Reviewer" } },
         promotion: { status: null, record: null },
+        timing: {
+          status: "approved",
+          review_session_active: false,
+          durations: { review_seconds: 245, end_to_end_seconds: null },
+        },
         reviewed_source: {
           path: "D:/repo/data/onboarding/workdirs/cn-kr-initial-oecd/reviewed.source.json",
           content: "{\"edited\":true}",
@@ -2811,6 +2872,22 @@ test("internal onboarding workspace submits edited review JSON and approval payl
 
   render(<App />);
 
+  await user.click(await screen.findByRole("button", { name: /start review session/i }));
+
+  await waitFor(() => {
+    expect(globalThis.fetch).toHaveBeenNthCalledWith(
+      3,
+      "/api/internal/onboarding/start-review",
+      expect.objectContaining({
+        body: JSON.stringify({
+          manifest: "D:/repo/data/onboarding/manifests/cn-kr.initial-oecd.json",
+          reviewer_name: "Codex Reviewer",
+          note: "Approved after reviewer workspace check.",
+        }),
+      }),
+    );
+  });
+
   const editor = await screen.findByLabelText(/reviewed\.source\.json editor/i);
   await user.clear(editor);
   await user.paste("{\"edited\":true}");
@@ -2818,7 +2895,7 @@ test("internal onboarding workspace submits edited review JSON and approval payl
 
   await waitFor(() => {
     expect(globalThis.fetch).toHaveBeenNthCalledWith(
-      3,
+      4,
       "/api/internal/onboarding/review",
       expect.objectContaining({
         body: JSON.stringify({
@@ -2833,7 +2910,7 @@ test("internal onboarding workspace submits edited review JSON and approval payl
 
   await waitFor(() => {
     expect(globalThis.fetch).toHaveBeenNthCalledWith(
-      4,
+      5,
       "/api/internal/onboarding/approve",
       expect.objectContaining({
         body: JSON.stringify({

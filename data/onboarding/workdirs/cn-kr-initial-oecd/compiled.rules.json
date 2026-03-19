@@ -9,18 +9,7 @@
           "paragraph_number": "1",
           "source_reference": "Article 10(1)",
           "text": "Dividends paid by a company which is a resident of a Contracting State to a resident of the other Contracting State may be taxed in that other Contracting State.",
-          "rules": [
-            {
-              "rule_type": "residence_taxation",
-              "rate": "0%",
-              "direction": "bidirectional",
-              "conditions": [
-                "Dividends paid by a resident company of one Contracting State to a resident of the other Contracting State"
-              ],
-              "review_reason": "General residence taxation right",
-              "extraction_confidence": 0.9
-            }
-          ]
+          "rules": []
         },
         {
           "paragraph_number": "2",
@@ -32,21 +21,19 @@
               "rate": "5%",
               "direction": "payer_to_payee",
               "conditions": [
-                "Beneficial owner is a company (not partnership)",
-                "Company holds directly at least 25% of capital of paying company"
+                "The beneficial owner is a company (other than a partnership) that holds directly at least 25% of the capital of the company paying the dividends."
               ],
-              "review_reason": "Reduced rate for qualifying corporate holdings",
-              "extraction_confidence": 0.95
+              "review_reason": "No 365-day holding period specified.",
+              "extraction_confidence": 0.9
             },
             {
               "rule_type": "withholding_rate",
               "rate": "10%",
               "direction": "payer_to_payee",
               "conditions": [
-                "Beneficial owner of dividends",
-                "All other cases not covered by 5% rate"
+                "The beneficial owner is the beneficial owner of the dividends and does not meet the conditions for the 5% rate."
               ],
-              "review_reason": "General withholding rate for dividends",
+              "review_reason": "General rate differs from baseline.",
               "extraction_confidence": 0.95
             }
           ]
@@ -61,20 +48,7 @@
           "paragraph_number": "4",
           "source_reference": "Article 10(4)",
           "text": "The provisions of paragraphs 1 and 2 shall not apply if the beneficial owner of the dividends, being a resident of a Contracting State, carries on business in the other Contracting State of which the company paying the dividends is a resident, through a permanent establishment situated therein, or performs in that other Contracting State independent personal services from a fixed base situated therein, and the holding in respect of which the dividends are paid is effectively connected with such permanent establishment or fixed base. In such case, the provisions of Article 7 or Article 14, as the case may be, shall apply.",
-          "rules": [
-            {
-              "rule_type": "pe_override",
-              "rate": "0%",
-              "direction": "unknown",
-              "conditions": [
-                "Beneficial owner resident in one Contracting State",
-                "Carries on business through PE in other Contracting State",
-                "Dividends effectively connected with PE"
-              ],
-              "review_reason": "Permanent establishment override to business profits article",
-              "extraction_confidence": 0.85
-            }
-          ]
+          "rules": []
         }
       ]
     },
@@ -87,19 +61,7 @@
           "paragraph_number": "1",
           "source_reference": "1995 United Nations - Treaty Series, Article 11, Paragraph 1",
           "text": "Interest arising in a Contracting State and paid to a resident of the other Contracting State may be taxed in that other Contracting State.",
-          "rules": [
-            {
-              "rule_type": "residence_taxation",
-              "rate": "0%",
-              "direction": "bidirectional",
-              "conditions": [
-                "Interest arising in one Contracting State",
-                "Paid to resident of other Contracting State"
-              ],
-              "review_reason": "General residence taxation right",
-              "extraction_confidence": 0.9
-            }
-          ]
+          "rules": []
         },
         {
           "paragraph_number": "2",
@@ -111,10 +73,9 @@
               "rate": "10%",
               "direction": "payer_to_payee",
               "conditions": [
-                "Beneficial owner of interest",
-                "Interest arises in Contracting State"
+                "The recipient is the beneficial owner of the interest."
               ],
-              "review_reason": "General interest withholding cap",
+              "review_reason": "Matches baseline rate.",
               "extraction_confidence": 0.95
             }
           ]
@@ -129,10 +90,9 @@
               "rate": "0%",
               "direction": "payer_to_payee",
               "conditions": [
-                "Interest derived by government/central bank/governmental financial institution of other Contracting State",
-                "Or interest on debt-claims guaranteed/financed by such entities"
+                "Interest is derived by the Government, local authorities, central bank, or financial institutions performing governmental functions of the other Contracting State, or by residents with respect to debt-claims guaranteed or indirectly financed by such entities."
               ],
-              "review_reason": "Government interest exemption",
+              "review_reason": "Specific exemption for governmental and related entities.",
               "extraction_confidence": 0.9
             }
           ]
@@ -147,56 +107,19 @@
           "paragraph_number": "5",
           "source_reference": "1995 United Nations - Treaty Series, Article 11, Paragraph 5",
           "text": "The provisions of paragraphs 1, 2 and 3 shall not apply if the beneficial owner of the interest, being a resident of a Contracting State, carries on business in the other Contracting State in which the interest arises, through a permanent establishment situated therein, or performs in that other Contracting State independent personal services from a fixed base situated therein, and the debt-claims in respect of which the interest is paid is effectively connected with such permanent establishment or fixed base. In such case the provisions of Article 7 or Article 14, as the case may be, shall apply.",
-          "rules": [
-            {
-              "rule_type": "pe_override",
-              "rate": "0%",
-              "direction": "unknown",
-              "conditions": [
-                "Beneficial owner resident in one Contracting State",
-                "Carries on business through PE in other Contracting State",
-                "Interest effectively connected with PE"
-              ],
-              "review_reason": "Permanent establishment override to business profits article",
-              "extraction_confidence": 0.85
-            }
-          ]
+          "rules": []
         },
         {
           "paragraph_number": "6",
           "source_reference": "1995 United Nations - Treaty Series, Article 11, Paragraph 6",
-          "text": "Interest shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the interest, whether he is a resident of a Contracting State or not, has in a Contracting State a permanent establishment or a fixed base in connection with which the indebtedness on which the interest is paid was incurred, and such interest is borne by such permanent establishment or fixed base, then such interest shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated.",
-          "rules": [
-            {
-              "rule_type": "source_rule",
-              "rate": "0%",
-              "direction": "unknown",
-              "conditions": [
-                "Interest deemed to arise where payer is government/local authority/resident",
-                "Or where PE/fixed base bears the interest"
-              ],
-              "review_reason": "Source determination rule",
-              "extraction_confidence": 0.8
-            }
-          ]
+          "text": "Interest shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the interest, whether he is a resident of a Contracting State or not, connection with which the indebtedness on which the interest is paid was incurred, and such interest is borne by such permanent establishment or fixed base, then such interest shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated.",
+          "rules": []
         },
         {
           "paragraph_number": "7",
           "source_reference": "1995 United Nations - Treaty Series, Article 11, Paragraph 7",
           "text": "Where, by reason of a special relationship between the payer and the beneficial owner or between both of them and some other person, the amount of the interest, having regard to the debt-claims for which it is paid, exceeds the amount which would have been agreed upon by the payer and the beneficial owner in the absence of such relationship, the provisions of this Article shall apply only to the last-mentioned amount. In such case, the excess part of the payments shall remain taxable according to the laws of each Contracting State, due regard being had to the other provisions of this Agreement.",
-          "rules": [
-            {
-              "rule_type": "arm_length_override",
-              "rate": "0%",
-              "direction": "unknown",
-              "conditions": [
-                "Special relationship between payer and beneficial owner",
-                "Interest exceeds arm's length amount"
-              ],
-              "review_reason": "Arm's length principle application",
-              "extraction_confidence": 0.8
-            }
-          ]
+          "rules": []
         }
       ]
     },
@@ -209,19 +132,7 @@
           "paragraph_number": "1",
           "source_reference": "1995 United Nations - Treaty Series, Article 12, Paragraph 1",
           "text": "Royalties arising in a Contracting State and paid to a resident of the other Contracting State may be taxed in that other Contracting State.",
-          "rules": [
-            {
-              "rule_type": "residence_taxation",
-              "rate": "0%",
-              "direction": "bidirectional",
-              "conditions": [
-                "Royalties arising in one Contracting State",
-                "Paid to resident of other Contracting State"
-              ],
-              "review_reason": "General residence taxation right",
-              "extraction_confidence": 0.9
-            }
-          ]
+          "rules": []
         },
         {
           "paragraph_number": "2",
@@ -233,10 +144,9 @@
               "rate": "10%",
               "direction": "payer_to_payee",
               "conditions": [
-                "Beneficial owner of royalties",
-                "Royalties arise in Contracting State"
+                "The recipient is the beneficial owner of the royalties."
               ],
-              "review_reason": "Royalty withholding cap",
+              "review_reason": "Source-state taxation allowed with cap, differs from baseline exclusive residence taxation.",
               "extraction_confidence": 0.95
             }
           ]
@@ -251,38 +161,13 @@
           "paragraph_number": "4",
           "source_reference": "1995 United Nations - Treaty Series, Article 12, Paragraph 4",
           "text": "The provisions of paragraphs 1 and 2 shall not apply if the beneficial owner of the royalties, being a resident of a Contracting State, carries on business in the other Contracting State in which the royalties arise, through a permanent establishment situated therein, or performs in that other Contracting State independent personal services from a fixed base situated therein, and the right or property in respect of which the royalties are paid is effectively connected with such permanent establishment or fixed base. In such case, the provisions of Article 7 or Article 14, as the case may be, shall apply.",
-          "rules": [
-            {
-              "rule_type": "pe_override",
-              "rate": "0%",
-              "direction": "unknown",
-              "conditions": [
-                "Beneficial owner resident in one Contracting State",
-                "Carries on business through PE in other Contracting State",
-                "Royalties effectively connected with PE"
-              ],
-              "review_reason": "Permanent establishment override to business profits article",
-              "extraction_confidence": 0.85
-            }
-          ]
+          "rules": []
         },
         {
           "paragraph_number": "5",
           "source_reference": "1995 United Nations - Treaty Series, Article 12, Paragraph 5",
-          "text": "Royalties shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the royalties, whether he is a resident of a Contracting State or not, has in a Contracting State a permanent establishment or a fixed base in connection with which the liability to pay the royalties was incurred, and such royalties are borne by such permanent establishment or fixed base, then such royalties shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated.",
-          "rules": [
-            {
-              "rule_type": "source_rule",
-              "rate": "0%",
-              "direction": "unknown",
-              "conditions": [
-                "Royalties deemed to arise where payer is government/local authority/resident",
-                "Or where PE/fixed base bears the royalties"
-              ],
-              "review_reason": "Source determination rule",
-              "extraction_confidence": 0.8
-            }
-          ]
+          "text": "Royalties shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the royalties, whether he is a resident of a Contracting State or not, connection with which the liability to pay the royalties was incurred, and such royalties are borne by such permanent establishment or fixed base, then such royalties shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated.",
+          "rules": []
         }
       ]
     }
@@ -291,40 +176,30 @@
     {
       "article_number": "10",
       "income_type": "dividends",
-      "baseline_reference": "OECD Model 2017 Article 10(2)(a)",
+      "baseline_reference": "OECD Model 2017 Article 10(2)(a) and 10(2)(b)",
       "bilateral_reference": "Article 10(2)",
       "delta_type": "rate_changed",
-      "summary": "Bilateral treaty has 10% general dividend rate vs OECD 15%, and 5% rate for 25% holdings without 365-day holding period requirement",
+      "summary": "The bilateral treaty has a 10% general rate for dividends, compared to the OECD baseline of 15%. The reduced rate for direct corporate holdings is 5% in both, but the bilateral treaty lacks the 365-day holding period condition.",
       "materiality": "high",
       "reviewer_attention": "required"
-    },
-    {
-      "article_number": "10",
-      "income_type": "dividends",
-      "baseline_reference": "OECD Model 2017 Article 10(2)(b)",
-      "bilateral_reference": "Article 10(2)",
-      "delta_type": "rate_changed",
-      "summary": "General dividend rate is 10% vs OECD 15%",
-      "materiality": "medium",
-      "reviewer_attention": "recommended"
     },
     {
       "article_number": "11",
       "income_type": "interest",
       "baseline_reference": "OECD Model 2017 Article 11(2)",
-      "bilateral_reference": "Article 11(2)",
-      "delta_type": "scope_note",
-      "summary": "Both have 10% interest withholding rate",
-      "materiality": "low",
-      "reviewer_attention": "optional"
+      "bilateral_reference": "Article 11(2) and 11(3)",
+      "delta_type": "branch_added",
+      "summary": "The bilateral treaty includes an exemption for interest derived by governmental entities and related debt-claims, which is not present in the OECD baseline. The general withholding rate of 10% matches the baseline.",
+      "materiality": "medium",
+      "reviewer_attention": "recommended"
     },
     {
       "article_number": "12",
       "income_type": "royalties",
       "baseline_reference": "OECD Model 2017 Article 12(1)",
-      "bilateral_reference": "Article 12(1-2)",
+      "bilateral_reference": "Article 12(2)",
       "delta_type": "scope_note",
-      "summary": "Bilateral treaty allows source taxation with 10% cap vs OECD exclusive residence taxation",
+      "summary": "The bilateral treaty allows source-state taxation of royalties with a 10% cap, whereas the OECD baseline provides exclusive residence-state taxation (0% source-state rate).",
       "materiality": "high",
       "reviewer_attention": "required"
     }

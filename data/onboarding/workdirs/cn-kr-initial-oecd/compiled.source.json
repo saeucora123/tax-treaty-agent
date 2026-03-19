@@ -62,25 +62,7 @@
               "text": "Dividends paid by a company which is a resident of a Contracting State to a resident of the other Contracting State may be taxed in that other Contracting State."
             }
           ],
-          "extracted_rules": [
-            {
-              "rule_id": "cn-kr-art10-p1-r1",
-              "rule_type": "residence_taxation",
-              "rate": "0%",
-              "direction": "bidirectional",
-              "candidate_rank": 1,
-              "is_primary_candidate": true,
-              "extraction_confidence": 0.9,
-              "derived_from_segments": [
-                "art10-p1-s1"
-              ],
-              "conditions": [
-                "Dividends paid by a resident company of one Contracting State to a resident of the other Contracting State"
-              ],
-              "human_review_required": true,
-              "review_reason": "General residence taxation right"
-            }
-          ]
+          "extracted_rules": []
         },
         {
           "paragraph_id": "art10-p2",
@@ -106,16 +88,15 @@
               "direction": "payer_to_payee",
               "candidate_rank": 1,
               "is_primary_candidate": true,
-              "extraction_confidence": 0.95,
+              "extraction_confidence": 0.9,
               "derived_from_segments": [
                 "art10-p2-s1"
               ],
               "conditions": [
-                "Beneficial owner is a company (not partnership)",
-                "Company holds directly at least 25% of capital of paying company"
+                "The beneficial owner is a company (other than a partnership) that holds directly at least 25% of the capital of the company paying the dividends."
               ],
               "human_review_required": true,
-              "review_reason": "Reduced rate for qualifying corporate holdings"
+              "review_reason": "No 365-day holding period specified."
             },
             {
               "rule_id": "cn-kr-art10-p2-r2",
@@ -129,11 +110,10 @@
                 "art10-p2-s1"
               ],
               "conditions": [
-                "Beneficial owner of dividends",
-                "All other cases not covered by 5% rate"
+                "The beneficial owner is the beneficial owner of the dividends and does not meet the conditions for the 5% rate."
               ],
               "human_review_required": true,
-              "review_reason": "General withholding rate for dividends"
+              "review_reason": "General rate differs from baseline."
             }
           ]
         },
@@ -171,27 +151,7 @@
               "text": "The provisions of paragraphs 1 and 2 shall not apply if the beneficial owner of the dividends, being a resident of a Contracting State, carries on business in the other Contracting State of which the company paying the dividends is a resident, through a permanent establishment situated therein, or performs in that other Contracting State independent personal services from a fixed base situated therein, and the holding in respect of which the dividends are paid is effectively connected with such permanent establishment or fixed base. In such case, the provisions of Article 7 or Article 14, as the case may be, shall apply."
             }
           ],
-          "extracted_rules": [
-            {
-              "rule_id": "cn-kr-art10-p4-r1",
-              "rule_type": "pe_override",
-              "rate": "0%",
-              "direction": "unknown",
-              "candidate_rank": 1,
-              "is_primary_candidate": true,
-              "extraction_confidence": 0.85,
-              "derived_from_segments": [
-                "art10-p4-s1"
-              ],
-              "conditions": [
-                "Beneficial owner resident in one Contracting State",
-                "Carries on business through PE in other Contracting State",
-                "Dividends effectively connected with PE"
-              ],
-              "human_review_required": true,
-              "review_reason": "Permanent establishment override to business profits article"
-            }
-          ]
+          "extracted_rules": []
         }
       ]
     },
@@ -200,7 +160,7 @@
       "article_title": "INTEREST",
       "article_label": "Article 11",
       "income_type": "interest",
-      "summary": "Article 11 covers taxation of interest income between Contracting States, including tax rates, exemptions for government entities, definitions, and special rules for permanent establishments and related parties.",
+      "summary": "Article 11 governs the taxation of interest income between Contracting States, including tax rates, exemptions for government entities, definitions, and rules for determining the source of interest.",
       "article_notes": [],
       "paragraphs": [
         {
@@ -219,26 +179,7 @@
               "text": "Interest arising in a Contracting State and paid to a resident of the other Contracting State may be taxed in that other Contracting State."
             }
           ],
-          "extracted_rules": [
-            {
-              "rule_id": "cn-kr-art11-p1-r1",
-              "rule_type": "residence_taxation",
-              "rate": "0%",
-              "direction": "bidirectional",
-              "candidate_rank": 1,
-              "is_primary_candidate": true,
-              "extraction_confidence": 0.9,
-              "derived_from_segments": [
-                "art11-p1-s1"
-              ],
-              "conditions": [
-                "Interest arising in one Contracting State",
-                "Paid to resident of other Contracting State"
-              ],
-              "human_review_required": true,
-              "review_reason": "General residence taxation right"
-            }
-          ]
+          "extracted_rules": []
         },
         {
           "paragraph_id": "art11-p2",
@@ -269,11 +210,10 @@
                 "art11-p2-s1"
               ],
               "conditions": [
-                "Beneficial owner of interest",
-                "Interest arises in Contracting State"
+                "The recipient is the beneficial owner of the interest."
               ],
               "human_review_required": true,
-              "review_reason": "General interest withholding cap"
+              "review_reason": "Matches baseline rate."
             }
           ]
         },
@@ -306,11 +246,10 @@
                 "art11-p3-s1"
               ],
               "conditions": [
-                "Interest derived by government/central bank/governmental financial institution of other Contracting State",
-                "Or interest on debt-claims guaranteed/financed by such entities"
+                "Interest is derived by the Government, local authorities, central bank, or financial institutions performing governmental functions of the other Contracting State, or by residents with respect to debt-claims guaranteed or indirectly financed by such entities."
               ],
               "human_review_required": true,
-              "review_reason": "Government interest exemption"
+              "review_reason": "Specific exemption for governmental and related entities."
             }
           ]
         },
@@ -348,27 +287,7 @@
               "text": "The provisions of paragraphs 1, 2 and 3 shall not apply if the beneficial owner of the interest, being a resident of a Contracting State, carries on business in the other Contracting State in which the interest arises, through a permanent establishment situated therein, or performs in that other Contracting State independent personal services from a fixed base situated therein, and the debt-claims in respect of which the interest is paid is effectively connected with such permanent establishment or fixed base. In such case the provisions of Article 7 or Article 14, as the case may be, shall apply."
             }
           ],
-          "extracted_rules": [
-            {
-              "rule_id": "cn-kr-art11-p5-r1",
-              "rule_type": "pe_override",
-              "rate": "0%",
-              "direction": "unknown",
-              "candidate_rank": 1,
-              "is_primary_candidate": true,
-              "extraction_confidence": 0.85,
-              "derived_from_segments": [
-                "art11-p5-s1"
-              ],
-              "conditions": [
-                "Beneficial owner resident in one Contracting State",
-                "Carries on business through PE in other Contracting State",
-                "Interest effectively connected with PE"
-              ],
-              "human_review_required": true,
-              "review_reason": "Permanent establishment override to business profits article"
-            }
-          ]
+          "extracted_rules": []
         },
         {
           "paragraph_id": "art11-p6",
@@ -383,29 +302,10 @@
               "source_kind": "article_paragraph",
               "text_quality": "clean",
               "normalization_status": "verbatim",
-              "text": "Interest shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the interest, whether he is a resident of a Contracting State or not, has in a Contracting State a permanent establishment or a fixed base in connection with which the indebtedness on which the interest is paid was incurred, and such interest is borne by such permanent establishment or fixed base, then such interest shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated."
+              "text": "Interest shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the interest, whether he is a resident of a Contracting State or not, connection with which the indebtedness on which the interest is paid was incurred, and such interest is borne by such permanent establishment or fixed base, then such interest shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated."
             }
           ],
-          "extracted_rules": [
-            {
-              "rule_id": "cn-kr-art11-p6-r1",
-              "rule_type": "source_rule",
-              "rate": "0%",
-              "direction": "unknown",
-              "candidate_rank": 1,
-              "is_primary_candidate": true,
-              "extraction_confidence": 0.8,
-              "derived_from_segments": [
-                "art11-p6-s1"
-              ],
-              "conditions": [
-                "Interest deemed to arise where payer is government/local authority/resident",
-                "Or where PE/fixed base bears the interest"
-              ],
-              "human_review_required": true,
-              "review_reason": "Source determination rule"
-            }
-          ]
+          "extracted_rules": []
         },
         {
           "paragraph_id": "art11-p7",
@@ -423,26 +323,7 @@
               "text": "Where, by reason of a special relationship between the payer and the beneficial owner or between both of them and some other person, the amount of the interest, having regard to the debt-claims for which it is paid, exceeds the amount which would have been agreed upon by the payer and the beneficial owner in the absence of such relationship, the provisions of this Article shall apply only to the last-mentioned amount. In such case, the excess part of the payments shall remain taxable according to the laws of each Contracting State, due regard being had to the other provisions of this Agreement."
             }
           ],
-          "extracted_rules": [
-            {
-              "rule_id": "cn-kr-art11-p7-r1",
-              "rule_type": "arm_length_override",
-              "rate": "0%",
-              "direction": "unknown",
-              "candidate_rank": 1,
-              "is_primary_candidate": true,
-              "extraction_confidence": 0.8,
-              "derived_from_segments": [
-                "art11-p7-s1"
-              ],
-              "conditions": [
-                "Special relationship between payer and beneficial owner",
-                "Interest exceeds arm's length amount"
-              ],
-              "human_review_required": true,
-              "review_reason": "Arm's length principle application"
-            }
-          ]
+          "extracted_rules": []
         }
       ]
     },
@@ -451,7 +332,7 @@
       "article_title": "ROYALTIES",
       "article_label": "Article 12",
       "income_type": "royalties",
-      "summary": "Article 12 covers taxation of royalty income between Contracting States, including tax rates, definitions, and rules for permanent establishments.",
+      "summary": "Article 12 governs the taxation of royalty income between Contracting States, including tax rates, definitions, and rules for determining the source of royalties.",
       "article_notes": [],
       "paragraphs": [
         {
@@ -470,26 +351,7 @@
               "text": "Royalties arising in a Contracting State and paid to a resident of the other Contracting State may be taxed in that other Contracting State."
             }
           ],
-          "extracted_rules": [
-            {
-              "rule_id": "cn-kr-art12-p1-r1",
-              "rule_type": "residence_taxation",
-              "rate": "0%",
-              "direction": "bidirectional",
-              "candidate_rank": 1,
-              "is_primary_candidate": true,
-              "extraction_confidence": 0.9,
-              "derived_from_segments": [
-                "art12-p1-s1"
-              ],
-              "conditions": [
-                "Royalties arising in one Contracting State",
-                "Paid to resident of other Contracting State"
-              ],
-              "human_review_required": true,
-              "review_reason": "General residence taxation right"
-            }
-          ]
+          "extracted_rules": []
         },
         {
           "paragraph_id": "art12-p2",
@@ -520,11 +382,10 @@
                 "art12-p2-s1"
               ],
               "conditions": [
-                "Beneficial owner of royalties",
-                "Royalties arise in Contracting State"
+                "The recipient is the beneficial owner of the royalties."
               ],
               "human_review_required": true,
-              "review_reason": "Royalty withholding cap"
+              "review_reason": "Source-state taxation allowed with cap, differs from baseline exclusive residence taxation."
             }
           ]
         },
@@ -562,27 +423,7 @@
               "text": "The provisions of paragraphs 1 and 2 shall not apply if the beneficial owner of the royalties, being a resident of a Contracting State, carries on business in the other Contracting State in which the royalties arise, through a permanent establishment situated therein, or performs in that other Contracting State independent personal services from a fixed base situated therein, and the right or property in respect of which the royalties are paid is effectively connected with such permanent establishment or fixed base. In such case, the provisions of Article 7 or Article 14, as the case may be, shall apply."
             }
           ],
-          "extracted_rules": [
-            {
-              "rule_id": "cn-kr-art12-p4-r1",
-              "rule_type": "pe_override",
-              "rate": "0%",
-              "direction": "unknown",
-              "candidate_rank": 1,
-              "is_primary_candidate": true,
-              "extraction_confidence": 0.85,
-              "derived_from_segments": [
-                "art12-p4-s1"
-              ],
-              "conditions": [
-                "Beneficial owner resident in one Contracting State",
-                "Carries on business through PE in other Contracting State",
-                "Royalties effectively connected with PE"
-              ],
-              "human_review_required": true,
-              "review_reason": "Permanent establishment override to business profits article"
-            }
-          ]
+          "extracted_rules": []
         },
         {
           "paragraph_id": "art12-p5",
@@ -597,29 +438,10 @@
               "source_kind": "article_paragraph",
               "text_quality": "clean",
               "normalization_status": "verbatim",
-              "text": "Royalties shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the royalties, whether he is a resident of a Contracting State or not, has in a Contracting State a permanent establishment or a fixed base in connection with which the liability to pay the royalties was incurred, and such royalties are borne by such permanent establishment or fixed base, then such royalties shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated."
+              "text": "Royalties shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the royalties, whether he is a resident of a Contracting State or not, connection with which the liability to pay the royalties was incurred, and such royalties are borne by such permanent establishment or fixed base, then such royalties shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated."
             }
           ],
-          "extracted_rules": [
-            {
-              "rule_id": "cn-kr-art12-p5-r1",
-              "rule_type": "source_rule",
-              "rate": "0%",
-              "direction": "unknown",
-              "candidate_rank": 1,
-              "is_primary_candidate": true,
-              "extraction_confidence": 0.8,
-              "derived_from_segments": [
-                "art12-p5-s1"
-              ],
-              "conditions": [
-                "Royalties deemed to arise where payer is government/local authority/resident",
-                "Or where PE/fixed base bears the royalties"
-              ],
-              "human_review_required": true,
-              "review_reason": "Source determination rule"
-            }
-          ]
+          "extracted_rules": []
         }
       ]
     }

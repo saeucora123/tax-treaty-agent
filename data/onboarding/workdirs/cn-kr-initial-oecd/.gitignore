@@ -10,5 +10,6 @@
 !review.report.json
 !review.diff.json
 !reviewed.dataset.json
+!timing.record.json
 !approval.record.json
 !promotion.record.json

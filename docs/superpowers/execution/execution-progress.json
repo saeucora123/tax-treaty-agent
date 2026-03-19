@@ -10,9 +10,10 @@
     "oecd_baseline_delta_extraction",
     "cn_kr_initial_onboarding_public_support",
     "internal_onboarding_reviewer_workspace",
-    "expert_facing_github_pages_overview"
+    "expert_facing_github_pages_overview",
+    "reviewer_elapsed_time_evidence"
   ],
-  "global_note": "Execution control is installed. Stage 1, Stage 2, Stage 3, Stage 3.5, Stage 4, Stage 5, and Stage 6 remain complete. The post-Stage-6 hardening track now includes contract cleanup, a completed test/data pipeline productization slice, a public credibility repair pack, a manifest-driven LLM treaty compiler lane, and an expert-facing GitHub Pages overview: public analyze requests no longer expose data_source, llm_generated moved behind /internal/analyze, frontend guided-fact types/config generate from a backend contract source, runtime tests are split by public/dividend/internal/handoff boundaries, ingestion now exposes formal build_treaty_dataset and manifest-driven run_source_ingest CLIs, the repo has an internal reviewer workspace under ?internal=onboarding, CN-SG and CN-NL both pass shadow re-onboarding under the same compile/review/promote contract, CN-SG and CN-NL both pass thin-baseline OECD delta proofs, CN-KR has completed the first initial_onboarding path from official raw/PDF inputs through reviewer approval into public runtime support, and the repo now ships a non-technical product overview at the GitHub Pages root with persisted Chinese/English language switching plus dedicated Chinese typography tuning while the README top-level narrative is optimized for international tax specialists rather than only developers.",
+  "global_note": "Execution control is installed. Stage 1, Stage 2, Stage 3, Stage 3.5, Stage 4, Stage 5, and Stage 6 remain complete. The post-Stage-6 hardening track now includes contract cleanup, a completed test/data pipeline productization slice, a public credibility repair pack, a manifest-driven LLM treaty compiler lane, and an expert-facing GitHub Pages overview: public analyze requests no longer expose data_source, llm_generated moved behind /internal/analyze, frontend guided-fact types/config generate from a backend contract source, runtime tests are split by public/dividend/internal/handoff boundaries, ingestion now exposes formal build_treaty_dataset and manifest-driven run_source_ingest CLIs, the repo has an internal reviewer workspace under ?internal=onboarding, CN-SG and CN-NL both pass shadow re-onboarding under the same compile/review/promote contract, CN-SG and CN-NL both pass thin-baseline OECD delta proofs, CN-KR has completed the first initial_onboarding path from official raw/PDF inputs through reviewer approval into public runtime support, and the repo now ships a non-technical product overview at the GitHub Pages root with persisted Chinese/English language switching plus dedicated Chinese typography tuning while the README top-level narrative is optimized for international tax specialists rather than only developers. A single controlled CN-KR measured pilot now records machine-written reviewer elapsed time and repo-internal end-to-end onboarding elapsed time, so the onboarding-cost story is backed by explicit timing evidence rather than architecture inference alone.",
   "stages": {
     "stage_1": {
       "status_summary": "Stage 1 has passed gate with a deterministic 70-case evidence pack, zero Critical/Major/Minor overreach in the fixed suite, and whitepaper-backed metrics plus System Behavior Commitments.",
@@ -162,8 +163,8 @@
       ]
     },
     "stage_6": {
-      "status_summary": "Stage 6 has passed gate: the system now exposes treaty-version notes, paragraph-level excerpts, working-paper lineage, and fact-based MLI/PPT prompts across three supported treaty pairs and all three supported income types.",
-      "current_checkpoint": "Stage 6 gate remains PASS, and the post-Stage-6 hardening track now includes dual-pair baseline-aware OECD delta proofing, a formal source-build entrypoint, an internal reviewer workspace, the first completed initial_onboarding promotion of CN-KR into public runtime support, and a live GitHub Pages product overview for non-technical tax-domain visitors.",
+      "status_summary": "Stage 6 has passed gate: the system now exposes treaty-version notes, paragraph-level excerpts, working-paper lineage, and fact-based MLI/PPT prompts across three supported treaty pairs and all three supported income types, and the first real new-pair onboarding now has measured timing evidence.",
+      "current_checkpoint": "Stage 6 gate remains PASS, and the post-Stage-6 hardening track now includes dual-pair baseline-aware OECD delta proofing, a formal source-build entrypoint, an internal reviewer workspace, the first completed initial_onboarding promotion of CN-KR into public runtime support, a measured CN-KR timing proof for reviewer-only and end-to-end onboarding elapsed time, and a live GitHub Pages product overview for non-technical tax-domain visitors.",
       "completed_items": [
         "Stage 6 target narrowed from generic controlled expansion to source chain closure",
         "CN-SG dividends truth-check corrected the runtime branch from 7% / 12% to 5% / 10%",
@@ -183,11 +184,11 @@
         "The frontend now exposes an internal reviewer workspace behind ?internal=onboarding for source build, compile, review, approve, and promote actions",
         "The repo now ships an expert-facing GitHub Pages product overview at the site root, with the README top section rewritten to introduce the product directly to international tax specialists",
         "The GitHub Pages product overview now supports a persistent Chinese/English language switch so tax-domain visitors can read the site in their preferred language without changing the product layout",
-        "The Chinese version of the GitHub Pages product overview now uses dedicated Noto Sans SC typography and zh-CN-specific spacing rules so the page reads like one coherent product surface instead of a mixed fallback stack"
+        "The Chinese version of the GitHub Pages product overview now uses dedicated Noto Sans SC typography and zh-CN-specific spacing rules so the page reads like one coherent product surface instead of a mixed fallback stack",
+        "A single controlled CN-KR measured pilot now records reviewer-only elapsed time and repo-internal end-to-end onboarding elapsed time in a formal timing.record.json artifact with a matching stage-6 evidence note"
       ],
       "in_progress_items": [],
       "next_items": [
-        "Record end-to-end reviewer elapsed-time evidence so the onboarding cost-reduction claim is backed by measured process time instead of architecture inference alone",
         "Continue physically decomposing backend/app/service.py along the new contract/provider/dividend boundaries without changing runtime behavior",
         "Plan Slice 4 removal of deprecated dividend bridge fields after all fixtures and replay packs migrate to raw-fact inputs",
         "Decide whether the next onboarding-compiler slice should deepen the OECD reference artifact or improve reviewer diff ergonomics before broader treaty expansion"

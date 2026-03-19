@@ -6,6 +6,7 @@ from app.contracts import (
     InternalOnboardingApproveRequest,
     InternalOnboardingManifestRequest,
     InternalOnboardingReviewRequest,
+    InternalOnboardingStartReviewRequest,
 )
 from app.guided_facts import build_guided_fact_contract
 from app.service import analyze_scenario
@@ -23,6 +24,7 @@ from app.treaty_onboarding import (
     run_review,
     run_source_build_for_manifest,
     save_reviewed_source_json,
+    start_review_session,
 )
 
 
@@ -109,6 +111,21 @@ def run_internal_onboarding_review(
         if request.reviewed_source_json is not None:
             save_reviewed_source_json(request.manifest, request.reviewed_source_json)
         run_review(request.manifest)
+        return build_workspace(request.manifest)
+    except (TreatyOnboardingError, ManifestValidationError, ReviewGateError) as error:
+        _raise_internal_onboarding_error(error)
+
+
+@app.post("/internal/onboarding/start-review")
+def run_internal_onboarding_start_review(
+    request: InternalOnboardingStartReviewRequest,
+) -> dict[str, object]:
+    try:
+        start_review_session(
+            request.manifest,
+            reviewer_name=request.reviewer_name,
+            note=request.note,
+        )
         return build_workspace(request.manifest)
     except (TreatyOnboardingError, ManifestValidationError, ReviewGateError) as error:
         _raise_internal_onboarding_error(error)

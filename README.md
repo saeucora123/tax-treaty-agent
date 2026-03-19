@@ -107,6 +107,26 @@ Coverage is intentionally narrow. The point of the project is not broad treaty c
 - **Wizard-first guided input**: the primary path is a type-specific fact collection flow, not open-ended chat.
 - **Workflow-ready handoff**: outputs include machine-readable handoff payloads, BO precheck, and review/conflict signals instead of a bare answer.
 
+## Treaty Onboarding Compiler / 协定接入编译器
+
+### 中文
+
+- 新协定并不是靠程序员和税务专家手工逐条把 PDF 翻译成运行时规则。repo 现在已经包含一个 **human-reviewed offline LLM treaty-onboarding compiler**，用受控 source document 生成结构化规则草稿，再走 `compile -> review -> approve -> promote` 的正式流程。
+- 这个编译器已经接入 **OECD baseline-aware delta extraction**：离线编译阶段会把双边协定与 OECD Model 2017 Articles 10/11/12 做差分分析，同时仍然产出完整 runtime dataset，而不是让线上引擎去吃 patch 链。
+- 当前证据里有一条 **single controlled CN-KR pilot**。在受控官方来源输入下，repo 记录到了：
+  - reviewer-only elapsed time：`26 seconds`
+  - repo-internal end-to-end elapsed time（`source build -> promote`）：`10m45s`
+- 这条 timing evidence 证明的是流程已经可测、可复核、可落地；**它不是普遍 SLA，也不代表所有新协定都能稳定在相同时间内完成接入**。本次 measured run 还包含一次 live provider retry gap，详细限定见 stage-6 evidence。
+
+### English
+
+- New treaty lanes are no longer onboarded only by manually translating treaty PDFs into runtime rules. The repo now includes a **human-reviewed offline LLM treaty-onboarding compiler** that turns governed source documents into structured rule candidates and routes them through a formal `compile -> review -> approve -> promote` workflow.
+- The compiler is already **OECD baseline-aware**: bilateral Articles 10/11/12 are compared against the OECD Model 2017 reference during offline authoring, while the runtime still receives a complete full dataset rather than a patch chain.
+- The current evidence pack includes a **single controlled CN-KR pilot** using governed official source inputs. The measured run recorded:
+  - reviewer-only elapsed time: `26 seconds`
+  - repo-internal end-to-end elapsed time (`source build -> promote`): `10m45s`
+- This timing evidence shows that the onboarding workflow is measurable and reviewable. It is **not** a blanket SLA and should not be read as proof that every future treaty pair will onboard in the same time window. The measured run also included one live provider retry gap before the final successful compile; the caveat is documented in the stage-6 evidence pack.
+
 ## Known Limits / 当前边界
 
 ### 中文

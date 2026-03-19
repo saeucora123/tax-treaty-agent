@@ -6,6 +6,7 @@ const translations = {
     pageDescription:
       "面向国际税务团队的跨境税收协定预审工具，帮助团队更快完成第一轮筛查，再进入正式法律或税务分析。",
     navWorkflow: "工作方式",
+    navOnboarding: "协定接入",
     navCoverage: "当前支持",
     navLimits: "使用边界",
     navRepo: "查看代码仓库",
@@ -59,6 +60,19 @@ const translations = {
     feature3Body: "让下游审核人无需从头重新理解第一轮预审过程。",
     feature4Title: "复核信号",
     feature4Body: "让 BO、MLI/PPT、短持有期和冲突提示保持可见，但不假装替代最终判断。",
+    onboardingEyebrow: "新协定如何接入",
+    onboardingTitle: "不再从零手工写规则，而是走人工把关的协定编译流程",
+    onboardingIntro:
+      "新协定路径现在通过受控 source document 离线编译进入系统。编译器会把双边协定的第 10、11、12 条与 OECD 基准做差分分析，生成结构化候选结果，只有在人工 review 和 approval 之后才会 promote 到 runtime。",
+    onboardingStep1Title: "先做 baseline-aware delta extraction",
+    onboardingStep1Body:
+      "离线 authoring 流水线会把双边协定与 OECD Model 2017 Articles 10/11/12 做对照，输出 delta artifacts，同时仍然生成完整的 runtime candidate dataset，而不是让线上引擎去处理 patch 链。",
+    onboardingStep2Title: "人工复核仍然是硬门槛",
+    onboardingStep2Body:
+      "编译结果不会自动上线。review、approval、promote 仍是明确的工作流步骤，确保最终税务判断继续由人类控制，而不是交给模型自动决定。",
+    onboardingStep3Title: "单次受控 CN-KR pilot 已留下实测耗时证据",
+    onboardingStep3Body:
+      "第一次真实 onboarding pilot 在受控官方来源输入下记录到了 `26 seconds` 的 reviewer session 和 `10m45s` 的 repo 内部 `source build -> promote` 总耗时。这是单次实测证据，不是对所有新协定的通用 SLA 承诺。",
     coverageEyebrow: "当前支持范围",
     coverageTitle: "故意保持收敛，因为可信度比广度更重要",
     coverageIntro:
@@ -93,6 +107,7 @@ const translations = {
     pageDescription:
       "Cross-border treaty pre-screening for international tax teams. Start with a faster first-pass review before full legal or tax analysis.",
     navWorkflow: "How it works",
+    navOnboarding: "New treaty onboarding",
     navCoverage: "Coverage",
     navLimits: "Boundaries",
     navRepo: "View repository",
@@ -147,6 +162,19 @@ const translations = {
     feature4Title: "Review signals",
     feature4Body:
       "So BO, MLI/PPT, short holding period, and conflict prompts remain visible without pretending to be final determinations.",
+    onboardingEyebrow: "How new treaties are onboarded",
+    onboardingTitle: "A human-reviewed compiler replaces manual treaty-to-rule coding from scratch",
+    onboardingIntro:
+      "New treaty lanes are compiled offline from governed source documents. The compiler compares bilateral Articles 10 to 12 against the OECD reference, writes structured candidates, and only promotes a reviewed dataset into runtime after explicit approval.",
+    onboardingStep1Title: "Baseline-aware delta extraction",
+    onboardingStep1Body:
+      "The authoring pipeline compares the bilateral treaty against the OECD Model 2017 reference for Articles 10, 11, and 12, then emits delta artifacts together with a full runtime candidate dataset.",
+    onboardingStep2Title: "Human review remains the gate",
+    onboardingStep2Body:
+      "Compile output does not go live automatically. Review, approval, and promotion remain explicit workflow steps so tax-domain judgment stays human-controlled.",
+    onboardingStep3Title: "Single controlled CN-KR pilot has measured timing evidence",
+    onboardingStep3Body:
+      "The first real onboarding pilot recorded a 26-second reviewer session and a 10m45s repo-internal source-build-to-promote elapsed time on governed official inputs. This is measured pilot evidence, not a guaranteed onboarding SLA.",
     coverageEyebrow: "Current coverage",
     coverageTitle: "Deliberately narrow, because trust matters more than breadth",
     coverageIntro:

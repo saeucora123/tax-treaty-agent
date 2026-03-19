@@ -71,6 +71,7 @@ CANONICAL_LIST_SORT_KEYS = (
     "document_id",
     "source_id",
 )
+TIMING_RECORD_FILENAME = "timing.record.json"
 
 
 class TreatyOnboardingError(RuntimeError):
@@ -113,6 +114,177 @@ def read_json(path: Path) -> dict[str, Any]:
 def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def now_utc_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def parse_utc_iso(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value)
+    except ValueError:
+        return None
+
+
+def calculate_duration_seconds(started_at: str | None, completed_at: str | None) -> int | None:
+    started = parse_utc_iso(started_at)
+    completed = parse_utc_iso(completed_at)
+    if started is None or completed is None:
+        return None
+    return max(0, int((completed - started).total_seconds()))
+
+
+def timing_record_path(manifest: dict[str, Any]) -> Path:
+    return Path(manifest["work_dir"]) / TIMING_RECORD_FILENAME
+
+
+def build_default_timing_record(manifest: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "pair_id": manifest["pair_id"],
+        "mode": manifest["mode"],
+        "manifest_path": manifest["manifest_path"],
+        "run_type": "measured_pilot",
+        "source_build_started_at_utc": None,
+        "source_build_completed_at_utc": None,
+        "compile_started_at_utc": None,
+        "compile_completed_at_utc": None,
+        "review_session_started_at_utc": None,
+        "review_completed_at_utc": None,
+        "approved_at_utc": None,
+        "promoted_at_utc": None,
+        "durations": {
+            "source_build_seconds": None,
+            "compile_seconds": None,
+            "review_seconds": None,
+            "approve_seconds": None,
+            "promote_seconds": None,
+            "end_to_end_seconds": None,
+        },
+        "review_session": {
+            "status": "not_started",
+            "reviewer_name": None,
+            "note": "",
+        },
+        "wall_clock_note": (
+            "Single controlled pilot. Reviewer elapsed time is measured from the explicit "
+            "start-review action to approval."
+        ),
+        "environment_note": (
+            "Measured inside the local repository workflow using governed official source inputs."
+        ),
+    }
+
+
+def resolve_source_build_report_path(manifest: dict[str, Any]) -> Path | None:
+    source_build_manifest_path = resolve_source_build_manifest_path(manifest)
+    if not source_build_manifest_path.exists():
+        return None
+    try:
+        source_build_manifest = read_json(source_build_manifest_path)
+        return resolve_manifest_path(
+            source_build_manifest_path.parent,
+            source_build_manifest["build_report_output"],
+        )
+    except (KeyError, json.JSONDecodeError):
+        return None
+
+
+def merge_source_build_timing_from_report(
+    manifest: dict[str, Any],
+    timing_record: dict[str, Any],
+) -> dict[str, Any]:
+    report_path = resolve_source_build_report_path(manifest)
+    if report_path is None or not report_path.exists():
+        return timing_record
+    report = read_json(report_path)
+    started_at = report.get("started_at_utc")
+    completed_at = report.get("completed_at_utc")
+    duration_seconds = report.get("duration_seconds")
+    if started_at:
+        timing_record["source_build_started_at_utc"] = started_at
+    if completed_at:
+        timing_record["source_build_completed_at_utc"] = completed_at
+    if duration_seconds is not None:
+        timing_record["durations"]["source_build_seconds"] = duration_seconds
+    return timing_record
+
+
+def load_timing_record(manifest: dict[str, Any]) -> dict[str, Any]:
+    path = timing_record_path(manifest)
+    if path.exists():
+        timing_record = read_json(path)
+    else:
+        timing_record = build_default_timing_record(manifest)
+
+    timing_record.setdefault("durations", {})
+    for key in (
+        "source_build_seconds",
+        "compile_seconds",
+        "review_seconds",
+        "approve_seconds",
+        "promote_seconds",
+        "end_to_end_seconds",
+    ):
+        timing_record["durations"].setdefault(key, None)
+
+    timing_record.setdefault("review_session", {})
+    timing_record["review_session"].setdefault("status", "not_started")
+    timing_record["review_session"].setdefault("reviewer_name", None)
+    timing_record["review_session"].setdefault("note", "")
+    timing_record.setdefault("run_type", "measured_pilot")
+    timing_record.setdefault("wall_clock_note", build_default_timing_record(manifest)["wall_clock_note"])
+    timing_record.setdefault("environment_note", build_default_timing_record(manifest)["environment_note"])
+    timing_record = merge_source_build_timing_from_report(manifest, timing_record)
+    return timing_record
+
+
+def save_timing_record(manifest: dict[str, Any], timing_record: dict[str, Any]) -> dict[str, Any]:
+    write_json(timing_record_path(manifest), timing_record)
+    return timing_record
+
+
+def derive_end_to_end_seconds(timing_record: dict[str, Any]) -> int | None:
+    return calculate_duration_seconds(
+        timing_record.get("source_build_started_at_utc"),
+        timing_record.get("promoted_at_utc"),
+    )
+
+
+def build_timing_summary(timing_record: dict[str, Any] | None) -> dict[str, Any]:
+    if timing_record is None:
+        return {
+            "status": "not_started",
+            "review_session_active": False,
+            "durations": {
+                "review_seconds": None,
+                "end_to_end_seconds": None,
+            },
+            "record": None,
+        }
+
+    review_session = timing_record.get("review_session", {})
+    if timing_record.get("promoted_at_utc"):
+        status = "promoted"
+    elif review_session.get("status") == "completed":
+        status = "approved"
+    elif review_session.get("status") == "active":
+        status = "active_review_session"
+    elif timing_record.get("compile_completed_at_utc"):
+        status = "awaiting_review_session"
+    elif timing_record.get("source_build_completed_at_utc"):
+        status = "source_build_complete"
+    else:
+        status = "not_started"
+
+    return {
+        "status": status,
+        "review_session_active": review_session.get("status") == "active",
+        "durations": timing_record.get("durations", {}),
+        "record": timing_record,
+    }
 
 
 def load_manifest(manifest_path: Path | str) -> dict[str, Any]:
@@ -817,6 +989,24 @@ def collect_mismatch_paths(left: Any, right: Any, path: str = "$") -> list[str]:
 def run_compile(manifest_path: Path | str) -> dict[str, Any]:
     manifest = load_manifest(manifest_path)
     work_dir = Path(manifest["work_dir"])
+    timing_record = load_timing_record(manifest)
+    timing_record["compile_started_at_utc"] = now_utc_iso()
+    timing_record["compile_completed_at_utc"] = None
+    timing_record["review_session_started_at_utc"] = None
+    timing_record["review_completed_at_utc"] = None
+    timing_record["approved_at_utc"] = None
+    timing_record["promoted_at_utc"] = None
+    timing_record["durations"]["compile_seconds"] = None
+    timing_record["durations"]["review_seconds"] = None
+    timing_record["durations"]["approve_seconds"] = None
+    timing_record["durations"]["promote_seconds"] = None
+    timing_record["durations"]["end_to_end_seconds"] = None
+    timing_record["review_session"] = {
+        "status": "not_started",
+        "reviewer_name": None,
+        "note": "",
+    }
+    save_timing_record(manifest, timing_record)
     source_payload = read_json(Path(manifest["source_documents"][0]))
     compilation_units = extract_compilation_units(source_payload, manifest["target_articles"])
     baseline_reference = None
@@ -847,6 +1037,13 @@ def run_compile(manifest_path: Path | str) -> dict[str, Any]:
         compiled_delta_report = build_delta_report(compiled_delta)
         write_json(work_dir / "compiled.delta.json", compiled_delta)
         write_json(work_dir / "compiled.delta.report.json", compiled_delta_report)
+    timing_record = load_timing_record(manifest)
+    timing_record["compile_completed_at_utc"] = now_utc_iso()
+    timing_record["durations"]["compile_seconds"] = calculate_duration_seconds(
+        timing_record.get("compile_started_at_utc"),
+        timing_record.get("compile_completed_at_utc"),
+    )
+    save_timing_record(manifest, timing_record)
     return compiled_report
 
 
@@ -892,6 +1089,9 @@ def run_review(manifest_path: Path | str) -> dict[str, Any]:
         }
         write_json(work_dir / "review.diff.json", review_diff)
         write_json(work_dir / "review.report.json", review_report)
+        timing_record = load_timing_record(manifest)
+        timing_record["review_completed_at_utc"] = now_utc_iso()
+        save_timing_record(manifest, timing_record)
         return review_report
 
     reference_dataset = read_json(Path(manifest["stable_reference_dataset"]))
@@ -910,7 +1110,34 @@ def run_review(manifest_path: Path | str) -> dict[str, Any]:
         "mismatch_paths": mismatch_paths,
     }
     write_json(work_dir / "review.report.json", review_report)
+    timing_record = load_timing_record(manifest)
+    timing_record["review_completed_at_utc"] = now_utc_iso()
+    save_timing_record(manifest, timing_record)
     return review_report
+
+
+def start_review_session(
+    manifest_path: Path | str,
+    *,
+    reviewer_name: str,
+    note: str = "",
+) -> dict[str, Any]:
+    manifest = load_manifest(manifest_path)
+    if manifest["mode"] != "initial_onboarding":
+        raise ReviewGateError("Start review session is only supported for initial_onboarding manifests.")
+
+    timing_record = load_timing_record(manifest)
+    timing_record["review_session_started_at_utc"] = now_utc_iso()
+    timing_record["review_session"] = {
+        "status": "active",
+        "reviewer_name": reviewer_name,
+        "note": note,
+    }
+    save_timing_record(manifest, timing_record)
+    return {
+        **timing_record,
+        "timing_record_path": str(timing_record_path(manifest)),
+    }
 
 
 def build_initial_review_diff(
@@ -990,6 +1217,20 @@ def run_approve(
         "approved_at_utc": datetime.now(timezone.utc).isoformat(),
     }
     write_json(work_dir / "approval.record.json", approval_record)
+    timing_record = load_timing_record(manifest)
+    timing_record["review_completed_at_utc"] = timing_record.get("review_completed_at_utc") or approval_record["approved_at_utc"]
+    timing_record["approved_at_utc"] = approval_record["approved_at_utc"]
+    timing_record["durations"]["review_seconds"] = calculate_duration_seconds(
+        timing_record.get("review_session_started_at_utc"),
+        timing_record.get("approved_at_utc"),
+    )
+    timing_record["durations"]["approve_seconds"] = 0
+    timing_record["review_session"] = {
+        "status": "completed",
+        "reviewer_name": reviewer_name,
+        "note": note,
+    }
+    save_timing_record(manifest, timing_record)
     return approval_record
 
 
@@ -1032,6 +1273,11 @@ def run_promote(manifest_path: Path | str) -> dict[str, Any]:
     else:
         promotion_record["approval_record_path"] = str(work_dir / "approval.record.json")
     write_json(work_dir / "promotion.record.json", promotion_record)
+    timing_record = load_timing_record(manifest)
+    timing_record["promoted_at_utc"] = promotion_record["promoted_at_utc"]
+    timing_record["durations"]["promote_seconds"] = 0
+    timing_record["durations"]["end_to_end_seconds"] = derive_end_to_end_seconds(timing_record)
+    save_timing_record(manifest, timing_record)
     return promotion_record
 
 
@@ -1076,7 +1322,13 @@ def run_source_build_for_manifest(manifest_path: Path | str) -> dict[str, Any]:
         )
     from app import source_ingest
 
-    return source_ingest.run_source_build(source_build_manifest_path)
+    report = source_ingest.run_source_build(source_build_manifest_path)
+    timing_record = load_timing_record(manifest)
+    timing_record["source_build_started_at_utc"] = report.get("started_at_utc")
+    timing_record["source_build_completed_at_utc"] = report.get("completed_at_utc")
+    timing_record["durations"]["source_build_seconds"] = report.get("duration_seconds")
+    save_timing_record(manifest, timing_record)
+    return report
 
 
 def save_reviewed_source_json(manifest_path: Path | str, reviewed_source_json: str) -> Path:
@@ -1137,6 +1389,11 @@ def build_workspace(manifest_path: Path | str) -> dict[str, Any]:
         if (work_dir / "promotion.record.json").exists()
         else None
     )
+    timing_record = (
+        load_timing_record(manifest)
+        if timing_record_path(manifest).exists() or resolve_source_build_report_path(manifest) is not None
+        else None
+    )
 
     return {
         "manifest": {
@@ -1170,6 +1427,7 @@ def build_workspace(manifest_path: Path | str) -> dict[str, Any]:
             "status": None if promotion_record is None else promotion_record.get("status"),
             "record": promotion_record,
         },
+        "timing": build_timing_summary(timing_record),
         "reviewed_source": {
             "path": str(reviewed_source_path),
             "content": reviewed_source_content,

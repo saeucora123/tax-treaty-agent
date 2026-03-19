@@ -9,40 +9,30 @@
     {
       "article_number": "10",
       "income_type": "dividends",
-      "baseline_reference": "OECD Model 2017 Article 10(2)(a)",
+      "baseline_reference": "OECD Model 2017 Article 10(2)(a) and 10(2)(b)",
       "bilateral_reference": "Article 10(2)",
       "delta_type": "rate_changed",
-      "summary": "Bilateral treaty has 10% general dividend rate vs OECD 15%, and 5% rate for 25% holdings without 365-day holding period requirement",
+      "summary": "The bilateral treaty has a 10% general rate for dividends, compared to the OECD baseline of 15%. The reduced rate for direct corporate holdings is 5% in both, but the bilateral treaty lacks the 365-day holding period condition.",
       "materiality": "high",
       "reviewer_attention": "required"
-    },
-    {
-      "article_number": "10",
-      "income_type": "dividends",
-      "baseline_reference": "OECD Model 2017 Article 10(2)(b)",
-      "bilateral_reference": "Article 10(2)",
-      "delta_type": "rate_changed",
-      "summary": "General dividend rate is 10% vs OECD 15%",
-      "materiality": "medium",
-      "reviewer_attention": "recommended"
     },
     {
       "article_number": "11",
       "income_type": "interest",
       "baseline_reference": "OECD Model 2017 Article 11(2)",
-      "bilateral_reference": "Article 11(2)",
-      "delta_type": "scope_note",
-      "summary": "Both have 10% interest withholding rate",
-      "materiality": "low",
-      "reviewer_attention": "optional"
+      "bilateral_reference": "Article 11(2) and 11(3)",
+      "delta_type": "branch_added",
+      "summary": "The bilateral treaty includes an exemption for interest derived by governmental entities and related debt-claims, which is not present in the OECD baseline. The general withholding rate of 10% matches the baseline.",
+      "materiality": "medium",
+      "reviewer_attention": "recommended"
     },
     {
       "article_number": "12",
       "income_type": "royalties",
       "baseline_reference": "OECD Model 2017 Article 12(1)",
-      "bilateral_reference": "Article 12(1-2)",
+      "bilateral_reference": "Article 12(2)",
       "delta_type": "scope_note",
-      "summary": "Bilateral treaty allows source taxation with 10% cap vs OECD exclusive residence taxation",
+      "summary": "The bilateral treaty allows source-state taxation of royalties with a 10% cap, whereas the OECD baseline provides exclusive residence-state taxation (0% source-state rate).",
       "materiality": "high",
       "reviewer_attention": "required"
     }

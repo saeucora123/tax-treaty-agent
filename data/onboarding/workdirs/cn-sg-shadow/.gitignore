@@ -1,3 +1,4 @@
 *
 !.gitignore
 !reviewed.source.json
+!timing.record.json

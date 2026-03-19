@@ -18,6 +18,7 @@ from app.treaty_onboarding import (  # noqa: E402
     run_compile,
     run_promote,
     run_review,
+    start_review_session,
 )
 
 
@@ -38,6 +39,25 @@ def parse_args() -> argparse.Namespace:
             default=DEFAULT_MANIFEST_PATH,
             help="Path to the treaty onboarding manifest JSON.",
         )
+    start_review_parser = subparsers.add_parser("start-review")
+    start_review_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_MANIFEST_PATH,
+        help="Path to the treaty onboarding manifest JSON.",
+    )
+    start_review_parser.add_argument(
+        "--reviewer",
+        type=str,
+        required=True,
+        help="Reviewer name to record in timing.record.json.",
+    )
+    start_review_parser.add_argument(
+        "--note",
+        type=str,
+        default="",
+        help="Optional timing/session note.",
+    )
     approve_parser = subparsers.add_parser("approve")
     approve_parser.add_argument(
         "--manifest",
@@ -91,6 +111,18 @@ def main() -> int:
                 return 0
             print(f"Review status: {report['status']}", file=sys.stderr)
             return 1
+
+        if args.command == "start-review":
+            record = start_review_session(
+                args.manifest,
+                reviewer_name=args.reviewer,
+                note=args.note,
+            )
+            print(
+                "Start review status: "
+                f"{record['review_session']['status']} (reviewer={record['review_session']['reviewer_name']})"
+            )
+            return 0
 
         if args.command == "approve":
             record = run_approve(

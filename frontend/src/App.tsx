@@ -97,6 +97,15 @@ type OnboardingWorkspace = {
     status: string | null;
     record: Record<string, unknown> | null;
   };
+  timing: {
+    status: string | null;
+    review_session_active: boolean;
+    durations: {
+      review_seconds: number | null;
+      end_to_end_seconds: number | null;
+    };
+    record?: Record<string, unknown> | null;
+  };
   reviewed_source: {
     path: string;
     content: string | null;
@@ -122,6 +131,13 @@ function isInternalOnboardingMode() {
 
 function formatWorkspaceStatus(status?: string | null) {
   return status ?? "not_run";
+}
+
+function formatTimingSeconds(seconds?: number | null) {
+  if (seconds === null || seconds === undefined) {
+    return "not_measured";
+  }
+  return `${seconds}s`;
 }
 
 function InternalOnboardingWorkspace() {
@@ -273,6 +289,18 @@ function InternalOnboardingWorkspace() {
                 </div>
               )}
 
+              <div className="record-row">
+                <div className="row-label">Timing summary</div>
+                <div className="row-value">
+                  <ul className="formal-list">
+                    <li>Status: {workspace.timing.status ?? "not_started"}</li>
+                    <li>Review session active: {workspace.timing.review_session_active ? "yes" : "no"}</li>
+                    <li>Reviewer elapsed: {formatTimingSeconds(workspace.timing.durations.review_seconds)}</li>
+                    <li>End-to-end elapsed: {formatTimingSeconds(workspace.timing.durations.end_to_end_seconds)}</li>
+                  </ul>
+                </div>
+              </div>
+
               {workspace.review.diff && (
                 <div className="record-row">
                   <div className="row-label">Review diff summary</div>
@@ -344,6 +372,20 @@ function InternalOnboardingWorkspace() {
               </div>
 
               <div className="action-row">
+                <button
+                  type="button"
+                  className="btn-seal"
+                  disabled={isLoading || !selectedManifest}
+                  onClick={() =>
+                    void runWorkspaceAction("/api/internal/onboarding/start-review", {
+                      manifest: selectedManifest,
+                      reviewer_name: reviewerName,
+                      note: approvalNote,
+                    })
+                  }
+                >
+                  Start Review Session
+                </button>
                 <button
                   type="button"
                   className="btn-seal"

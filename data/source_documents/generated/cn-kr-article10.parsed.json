@@ -102,7 +102,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Default tax rate for other cases."
+              "review_reason": "Default tax rate for dividends."
             }
           ]
         },
@@ -170,7 +170,7 @@
               ],
               "conditions": [],
               "human_review_required": true,
-              "review_reason": "Excepts cases where other articles (e.g., business profits) apply."
+              "review_reason": "Excludes cases where dividends are effectively connected to a business presence."
             }
           ]
         }

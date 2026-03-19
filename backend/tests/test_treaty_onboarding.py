@@ -1,5 +1,6 @@
 import json
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -896,6 +897,165 @@ def test_initial_onboarding_review_approve_promote_round_trip(tmp_path: Path, mo
     promotion_record = treaty_onboarding.run_promote(manifest_path)
     assert promotion_record["status"] == "promoted"
     assert Path(manifest["promotion_target_dataset"]).exists()
+
+
+def test_initial_onboarding_start_review_session_writes_timing_record(tmp_path: Path):
+    source_payload = build_cn_kr_source_payload()
+    source_path = tmp_path / "cn-kr-main-treaty.json"
+    baseline_path = tmp_path / "baseline.reference.json"
+    manifest_path = tmp_path / "cn-kr.initial-oecd.json"
+    write_json(source_path, source_payload)
+    write_json(baseline_path, build_baseline_reference_payload())
+    write_json(manifest_path, build_initial_manifest_payload(tmp_path))
+
+    timing_record = treaty_onboarding.start_review_session(
+        manifest_path,
+        reviewer_name="Timing Reviewer",
+        note="Measured pilot started.",
+    )
+
+    timing_path = Path(timing_record["timing_record_path"])
+    assert timing_path.exists()
+    stored_record = load_json(timing_path)
+    assert stored_record["pair_id"] == "cn-kr"
+    assert stored_record["mode"] == "initial_onboarding"
+    assert stored_record["run_type"] == "measured_pilot"
+    assert stored_record["review_session"]["reviewer_name"] == "Timing Reviewer"
+    assert stored_record["review_session"]["status"] == "active"
+    assert stored_record["review_session_started_at_utc"]
+
+
+def test_initial_onboarding_approve_updates_reviewer_elapsed_timing(tmp_path: Path):
+    source_payload = build_cn_kr_source_payload()
+    source_path = tmp_path / "cn-kr-main-treaty.json"
+    baseline_path = tmp_path / "baseline.reference.json"
+    manifest_path = tmp_path / "cn-kr.initial-oecd.json"
+    write_json(source_path, source_payload)
+    write_json(baseline_path, build_baseline_reference_payload())
+    write_json(manifest_path, build_initial_manifest_payload(tmp_path))
+
+    manifest = treaty_onboarding.load_manifest(manifest_path)
+    work_dir = Path(manifest["work_dir"])
+    write_json(
+        work_dir / "review.report.json",
+        {
+            "status": "ready_for_approval",
+        },
+    )
+    started_at = datetime.now(timezone.utc) - timedelta(seconds=5)
+    write_json(
+        work_dir / "timing.record.json",
+        {
+            "pair_id": "cn-kr",
+            "mode": "initial_onboarding",
+            "manifest_path": str(manifest_path.resolve()),
+            "run_type": "measured_pilot",
+            "review_session_started_at_utc": started_at.isoformat(),
+            "review_session": {
+                "status": "active",
+                "reviewer_name": "Timing Reviewer",
+                "note": "Measured pilot started.",
+            },
+            "durations": {},
+        },
+    )
+
+    treaty_onboarding.run_approve(
+        manifest_path,
+        reviewer_name="Timing Reviewer",
+        note="Approved after measured review.",
+    )
+
+    timing_record = load_json(work_dir / "timing.record.json")
+    assert timing_record["approved_at_utc"]
+    assert timing_record["review_completed_at_utc"]
+    assert timing_record["durations"]["review_seconds"] >= 5
+    assert timing_record["review_session"]["status"] == "completed"
+
+
+def test_initial_onboarding_promote_updates_end_to_end_elapsed_time(tmp_path: Path):
+    source_payload = build_cn_kr_source_payload()
+    source_path = tmp_path / "cn-kr-main-treaty.json"
+    baseline_path = tmp_path / "baseline.reference.json"
+    manifest_path = tmp_path / "cn-kr.initial-oecd.json"
+    write_json(source_path, source_payload)
+    write_json(baseline_path, build_baseline_reference_payload())
+    write_json(manifest_path, build_initial_manifest_payload(tmp_path))
+
+    manifest = treaty_onboarding.load_manifest(manifest_path)
+    work_dir = Path(manifest["work_dir"])
+    reviewed_dataset_path = work_dir / "reviewed.dataset.json"
+    write_json(reviewed_dataset_path, {"treaty": {"pair_id": "cn-kr"}, "articles": []})
+    write_json(
+        work_dir / "review.report.json",
+        {
+            "status": "ready_for_approval",
+        },
+    )
+    write_json(
+        work_dir / "approval.record.json",
+        {
+            "status": "approved",
+        },
+    )
+    source_build_started_at = datetime.now(timezone.utc) - timedelta(seconds=12)
+    write_json(
+        work_dir / "timing.record.json",
+        {
+            "pair_id": "cn-kr",
+            "mode": "initial_onboarding",
+            "manifest_path": str(manifest_path.resolve()),
+            "run_type": "measured_pilot",
+            "source_build_started_at_utc": source_build_started_at.isoformat(),
+            "durations": {},
+        },
+    )
+
+    promotion_record = treaty_onboarding.run_promote(manifest_path)
+
+    timing_record = load_json(work_dir / "timing.record.json")
+    assert promotion_record["status"] == "promoted"
+    assert timing_record["promoted_at_utc"]
+    assert timing_record["durations"]["end_to_end_seconds"] >= 12
+
+
+def test_build_workspace_returns_timing_summary_for_initial_onboarding(tmp_path: Path):
+    source_payload = build_cn_kr_source_payload()
+    source_path = tmp_path / "cn-kr-main-treaty.json"
+    baseline_path = tmp_path / "baseline.reference.json"
+    manifest_path = tmp_path / "cn-kr.initial-oecd.json"
+    write_json(source_path, source_payload)
+    write_json(baseline_path, build_baseline_reference_payload())
+    write_json(manifest_path, build_initial_manifest_payload(tmp_path))
+
+    manifest = treaty_onboarding.load_manifest(manifest_path)
+    work_dir = Path(manifest["work_dir"])
+    write_json(
+        work_dir / "timing.record.json",
+        {
+            "pair_id": "cn-kr",
+            "mode": "initial_onboarding",
+            "manifest_path": str(manifest_path.resolve()),
+            "run_type": "measured_pilot",
+            "review_session_started_at_utc": "2026-03-19T00:00:00+00:00",
+            "durations": {
+                "review_seconds": 245,
+                "end_to_end_seconds": 1280,
+            },
+            "review_session": {
+                "status": "active",
+                "reviewer_name": "Timing Reviewer",
+                "note": "Measured pilot started.",
+            },
+        },
+    )
+
+    workspace = treaty_onboarding.build_workspace(manifest_path)
+
+    assert workspace["timing"]["status"] == "active_review_session"
+    assert workspace["timing"]["durations"]["review_seconds"] == 245
+    assert workspace["timing"]["durations"]["end_to_end_seconds"] == 1280
+    assert workspace["timing"]["review_session_active"] is True
 
 
 def write_manifest(tmp_path: Path, pair_id: str = "cn-sg", include_baseline: bool = False) -> Path:
