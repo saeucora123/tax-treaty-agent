@@ -19,6 +19,70 @@ An international tax treaty pre-screening tool for cross-border payment scenario
 - 在关键事实缺失时停止猜测、转入人工复核
 - 把结果、风险点和后续动作整理给下一位复核者
 
+## Trusted AI Workflow / 可信 AI 工作流
+
+### 中文
+
+这个项目最适合被理解为一个 **international tax pre-review workflow**，而不是一个试图自动给出最终税务意见的“税务自动化产品”。
+
+- **前台价值**：帮助国际税团队更快完成第一轮筛查，先把案件放进正确的协定路径，再决定是否进入更重的人工作业。
+- **后台壁垒**：repo 已经包含一个 **human-reviewed treaty onboarding compiler**，支持受控 source build、OECD baseline-aware delta extraction，以及 `compile -> review -> approve -> promote` 的正式接入流程。
+
+### English
+
+The project is best understood as a **trusted AI workflow for international tax pre-review**, not as an automated tax opinion engine.
+
+- **Front-of-workflow value**: help tax teams move faster through the first-pass screening step before heavier legal or tax review begins.
+- **Back-of-workflow moat**: the repo already includes a **human-reviewed treaty onboarding compiler** with governed source build, OECD baseline-aware delta extraction, and a formal `compile -> review -> approve -> promote` path.
+
+## Public Evidence Layer / 对外证据层
+
+### Measured Pilot Summary / 单次实测摘要
+
+- Pair: `CN-KR`
+- Evidence type: `single controlled pilot`
+- Reviewer elapsed time: `26 seconds`
+- Repo-internal end-to-end elapsed time (`source build -> promote`): `10m45s`
+- Caveat: this measured run included one live provider retry gap before the final successful compile, so it is an auditable real-world workflow measurement, not an optimized lower bound
+
+Primary evidence:
+- [2026-03-19-cn-kr-reviewer-elapsed-time-proof.md](D:/AI_Projects/first%20agent/docs/superpowers/research/stage-6-evidence/2026-03-19-cn-kr-reviewer-elapsed-time-proof.md)
+
+### Onboarding Proof Matrix / 接入证明矩阵
+
+| Proof lane | Status | What it proves |
+|---|---|---|
+| `CN-SG` shadow rebuild | Green | Existing pair can be rebuilt through manifest-driven compile/review/promote |
+| `CN-NL` shadow rebuild | Green | The same offline compiler contract holds on a second existing pair |
+| `CN-SG` OECD delta proof | Green | Thin-baseline delta extraction works without changing runtime schema |
+| `CN-NL` OECD delta proof | Green | Baseline-aware delta proof is robust across a second pair |
+| `CN-KR` initial onboarding | Green | A real new pair can move from governed source build through review/approval into public runtime support |
+
+### Regression / Replay Snapshot / 回归与重放快照
+
+As of `2026-03-19`:
+- `python -m pytest backend/tests/` -> `199 passed, 27 warnings`
+- `cd frontend && npm test -- --run src/App.test.tsx` -> `20 passed`
+- `python -m pytest backend/tests/test_public_site_artifacts.py -q` -> `5 passed`
+- `cd frontend && npm run build` -> passed
+
+## Implemented today / 当前已实现
+
+- Source-anchored treaty pre-screening for `China – Netherlands`, `China – Singapore`, and `China – Korea`
+- Guided fact collection for dividends, interest, and royalties
+- Conservative refusal and workflow-ready handoff
+- Human-reviewed offline treaty onboarding compiler
+- OECD baseline-aware delta extraction in offline authoring
+- Measured timing evidence for one real `CN-KR` onboarding pilot
+
+## Not claimed / 当前不宣称
+
+- That the product replaces final legal or tax review
+- That `MLI/PPT` is automatically resolved in runtime
+- That every new treaty pair will onboard in the same measured time window
+- That human review can be removed from the onboarding workflow
+- That the current measured pilot should be read as a universal SLA
+
 ## Quick Proof / 快速验证
 
 ### 中文
@@ -49,6 +113,10 @@ An international tax treaty pre-screening tool for cross-border payment scenario
 - smoke script 返回 `2/2 checks passed`
 - guided dividend 示例返回 `Article 10`、`5%`、`standard_review`
 - out-of-scope 示例返回 `unsupported_country_pair`
+
+说明：
+- 这个 smoke path 证明的是公开 runtime 可以跑通，不是 repo 全部证据的总和
+- 更完整的接入与治理证据请看上面的 `Public Evidence Layer / 对外证据层`
 
 ### English
 

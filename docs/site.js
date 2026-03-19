@@ -7,11 +7,12 @@ const translations = {
       "面向国际税务团队的跨境税收协定预审工具，帮助团队更快完成第一轮筛查，再进入正式法律或税务分析。",
     navWorkflow: "工作方式",
     navOnboarding: "协定接入",
+    navEvidence: "证据层",
     navCoverage: "当前支持",
     navLimits: "使用边界",
     navRepo: "查看代码仓库",
     heroEyebrow: "面向国际税务团队",
-    heroTitle: "帮助国际税团队更快完成跨境税收协定预审",
+    heroTitle: "面向国际税预审的可信 AI 工作流",
     heroLead:
       "先更快完成第一轮筛查，再进入正式法律或税务分析。这个工具会引导关键事实、收束到当前支持的协定路径，并输出一个可直接交接给下一位审核人的结构化结果。",
     heroSub:
@@ -73,6 +74,29 @@ const translations = {
     onboardingStep3Title: "单次受控 CN-KR pilot 已留下实测耗时证据",
     onboardingStep3Body:
       "第一次真实 onboarding pilot 在受控官方来源输入下记录到了 `26 seconds` 的 reviewer session 和 `10m45s` 的 repo 内部 `source build -> promote` 总耗时。这是单次实测证据，不是对所有新协定的通用 SLA 承诺。",
+    evidenceEyebrow: "对外证据层",
+    evidenceTitle: "把公共证明单独摆出来，而不是让故事替代证据",
+    evidenceIntro:
+      "这里对外强调的是已经被 repo 证明的内容：单次实测摘要、协定接入证明矩阵，以及回归/重放快照。目标是清楚说明当前已经实现了什么，同时避免把 repo 还没证明的能力提前写成事实。",
+    evidenceCard1Title: "单次实测摘要",
+    evidenceCard1Body:
+      "一条受控 `CN-KR` onboarding pilot 已经留下机器时间戳证据：reviewer session 为 `26 seconds`，repo 内部 `source build -> promote` 总耗时为 `10m45s`。",
+    evidenceCard2Title: "接入证明矩阵",
+    evidenceCard2Body:
+      "编译器路径不再只在一个样例上成立。`CN-SG` 和 `CN-NL` 都已经通过 shadow rebuild 与 OECD delta proof，`CN-KR` 则完成了第一次真实 initial onboarding。",
+    evidenceCard3Title: "回归与重放快照",
+    evidenceCard3Body:
+      "公开 runtime、onboarding workflow 和产品页本身都受回归测试保护，所以外部叙事不是只靠截图，而是能回到实际测试结果上。",
+    claimsEyebrow: "已实现与未宣称",
+    claimsTitle: "把已经做成的讲清楚，也把还没宣称的边界讲清楚",
+    claimsIntro:
+      "这个产品的可信度来自两件事：真正做成的能力，以及明确承认还没有自动解决的问题。",
+    claimsLeftTitle: "当前已实现",
+    claimsLeftBody:
+      "基于来源的协定预审、引导式事实采集、可交接的 workflow handoff、人工复核的协定接入编译器、OECD baseline-aware delta extraction，以及一次带 timing evidence 的 `CN-KR` 实测 onboarding。",
+    claimsRightTitle: "当前不宣称",
+    claimsRightBody:
+      "不宣称最终税务意见、不宣称自动解决 `MLI/PPT`、不宣称通用 onboarding SLA，也不宣称所有未来协定都能在同样时间窗口内完成接入。",
     coverageEyebrow: "当前支持范围",
     coverageTitle: "故意保持收敛，因为可信度比广度更重要",
     coverageIntro:
@@ -108,11 +132,12 @@ const translations = {
       "Cross-border treaty pre-screening for international tax teams. Start with a faster first-pass review before full legal or tax analysis.",
     navWorkflow: "How it works",
     navOnboarding: "New treaty onboarding",
+    navEvidence: "Evidence",
     navCoverage: "Coverage",
     navLimits: "Boundaries",
     navRepo: "View repository",
     heroEyebrow: "For international tax teams",
-    heroTitle: "Cross-border treaty pre-screening for international tax teams",
+    heroTitle: "Trusted AI workflow for international tax pre-review",
     heroLead:
       "Start with a faster first-pass review before full legal or tax analysis. The tool guides key facts, narrows to the treaty lane in scope, and returns a structured handoff for the next reviewer.",
     heroSub:
@@ -175,6 +200,29 @@ const translations = {
     onboardingStep3Title: "Single controlled CN-KR pilot has measured timing evidence",
     onboardingStep3Body:
       "The first real onboarding pilot recorded a 26-second reviewer session and a 10m45s repo-internal source-build-to-promote elapsed time on governed official inputs. This is measured pilot evidence, not a guaranteed onboarding SLA.",
+    evidenceEyebrow: "Public evidence layer",
+    evidenceTitle: "Public proof is separated from product claims",
+    evidenceIntro:
+      "The public story is backed by concrete evidence artifacts: a measured pilot summary, a treaty onboarding proof matrix, and a regression snapshot. The goal is to show what is already implemented without claiming more than the repo has actually proven.",
+    evidenceCard1Title: "Measured pilot summary",
+    evidenceCard1Body:
+      "A single controlled CN-KR onboarding pilot has machine-written timing evidence: a 26-second reviewer session and a 10m45s repo-internal source-build-to-promote elapsed time.",
+    evidenceCard2Title: "Onboarding proof matrix",
+    evidenceCard2Body:
+      "The compiler path is no longer proven on one toy case only. CN-SG and CN-NL both pass shadow rebuilds and OECD delta proofs, and CN-KR completes a real initial onboarding path.",
+    evidenceCard3Title: "Regression and replay snapshot",
+    evidenceCard3Body:
+      "Public runtime, onboarding workflow, and product-site assertions all sit under replayable tests, so the external narrative is anchored to real regression outputs rather than screenshots alone.",
+    claimsEyebrow: "Implemented vs not claimed",
+    claimsTitle: "Show what is real, and say out loud what is still not claimed",
+    claimsIntro:
+      "This product is stronger when it is explicit about both its current capability and its current limits.",
+    claimsLeftTitle: "Implemented today",
+    claimsLeftBody:
+      "Source-anchored treaty pre-screening, guided fact collection, workflow-ready handoff, a human-reviewed onboarding compiler, OECD baseline-aware delta extraction, and a measured CN-KR pilot.",
+    claimsRightTitle: "Not claimed",
+    claimsRightBody:
+      "No final tax opinion, no automatic MLI/PPT override, no guaranteed onboarding SLA, and no claim that future treaty pairs will always complete inside the same measured window.",
     coverageEyebrow: "Current coverage",
     coverageTitle: "Deliberately narrow, because trust matters more than breadth",
     coverageIntro:

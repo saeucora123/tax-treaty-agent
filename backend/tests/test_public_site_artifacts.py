@@ -13,6 +13,9 @@ def test_readme_links_to_public_product_overview() -> None:
     assert "https://saeucora123.github.io/tax-treaty-agent/" in readme
     assert "Treaty Onboarding Compiler / 协定接入编译器" in readme
     assert "single controlled CN-KR pilot" in readme
+    assert "Trusted AI Workflow / 可信 AI 工作流" in readme
+    assert "Implemented today / 当前已实现" in readme
+    assert "Not claimed / 当前不宣称" in readme
 
 
 def test_public_product_page_exists_with_expert_facing_tax_copy() -> None:
@@ -25,6 +28,8 @@ def test_public_product_page_exists_with_expert_facing_tax_copy() -> None:
     assert "Start with a faster first-pass review" in html
     assert "This tool does not replace a final tax opinion" in html
     assert "How new treaties are onboarded" in html
+    assert "Public evidence layer" in html
+    assert "Implemented today" in html
 
 
 def test_public_product_page_exposes_language_toggle() -> None:
