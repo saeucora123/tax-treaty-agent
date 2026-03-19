@@ -1,0 +1,135 @@
+{
+  "parsed_articles": [
+    {
+      "article_number": "10",
+      "article_title": "Dividends",
+      "income_type": "dividends",
+      "paragraphs": [
+        {
+          "paragraph_number": "2b",
+          "source_reference": "Article 10(2)(b)",
+          "text": "In all other cases, the tax charged in the State of source shall not exceed 10 per cent of the gross amount of the dividends.",
+          "rules": [
+            {
+              "rule_type": "withholding_rate_limit",
+              "rate": "10%",
+              "direction": "payer_to_payee",
+              "conditions": [
+                "All other dividend cases not covered by reduced-rate conditions"
+              ],
+              "review_reason": "Rate differs from OECD baseline (15%)",
+              "extraction_confidence": 0.95
+            }
+          ]
+        },
+        {
+          "paragraph_number": "2a",
+          "source_reference": "Article 10(2)(a)",
+          "text": "However, such dividends may also be taxed in the State of source, but the tax so charged shall not exceed 5 per cent of the gross amount of the dividends if the beneficial owner is a company which holds directly at least 25 per cent of the capital of the company paying the dividends.",
+          "rules": [
+            {
+              "rule_type": "withholding_rate_limit",
+              "rate": "5%",
+              "direction": "payer_to_payee",
+              "conditions": [
+                "The beneficial owner is a company that holds directly at least 25% of the capital of the paying company"
+              ],
+              "review_reason": "Missing 365-day holding period requirement compared to OECD baseline",
+              "extraction_confidence": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "11",
+      "article_title": "Interest",
+      "income_type": "interest",
+      "paragraphs": [
+        {
+          "paragraph_number": "2",
+          "source_reference": "Article 11(2)",
+          "text": "However, such interest may also be taxed in the Contracting State in which it arises and according to the laws of that State, but if the beneficial owner of the interest is a resident of the other Contracting State, the tax so charged shall not exceed 10 per cent of the gross amount of the interest.",
+          "rules": [
+            {
+              "rule_type": "withholding_rate_limit",
+              "rate": "10%",
+              "direction": "payer_to_payee",
+              "conditions": [
+                "The beneficial owner of the interest is a resident of the other Contracting State"
+              ],
+              "review_reason": "Matches OECD baseline rate",
+              "extraction_confidence": 0.98
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "12",
+      "article_title": "Royalties",
+      "income_type": "royalties",
+      "paragraphs": [
+        {
+          "paragraph_number": "2",
+          "source_reference": "Article 12(2)",
+          "text": "However, such royalties may also be taxed in the Contracting State in which they arise, and according to the laws of that State, but if the beneficial owner of the royalties is a resident of the other Contracting State, the tax so charged shall not exceed 10 per cent of the gross amount of the royalties.",
+          "rules": [
+            {
+              "rule_type": "withholding_rate_limit",
+              "rate": "10%",
+              "direction": "payer_to_payee",
+              "conditions": [
+                "The beneficial owner of the royalties is a resident of the other Contracting State"
+              ],
+              "review_reason": "Creates source-state taxation right with cap, whereas OECD baseline has exclusive residence taxation",
+              "extraction_confidence": 0.95
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "delta_analysis": [
+    {
+      "article_number": "10",
+      "income_type": "dividends",
+      "baseline_reference": "OECD Model 2017 Article 10(2)(b)",
+      "bilateral_reference": "Article 10(2)(b)",
+      "delta_type": "rate_changed",
+      "summary": "General dividend withholding rate is 10% in bilateral treaty vs 15% in OECD baseline",
+      "materiality": "high",
+      "reviewer_attention": "yes"
+    },
+    {
+      "article_number": "10",
+      "income_type": "dividends",
+      "baseline_reference": "OECD Model 2017 Article 10(2)(a)",
+      "bilateral_reference": "Article 10(2)(a)",
+      "delta_type": "condition_changed",
+      "summary": "Bilateral treaty omits 365-day holding period requirement for 5% reduced dividend rate",
+      "materiality": "medium",
+      "reviewer_attention": "yes"
+    },
+    {
+      "article_number": "11",
+      "income_type": "interest",
+      "baseline_reference": "OECD Model 2017 Article 11(2)",
+      "bilateral_reference": "Article 11(2)",
+      "delta_type": "scope_note",
+      "summary": "Interest withholding rate and conditions match OECD baseline (10% with beneficial owner residence condition)",
+      "materiality": "low",
+      "reviewer_attention": "no"
+    },
+    {
+      "article_number": "12",
+      "income_type": "royalties",
+      "baseline_reference": "OECD Model 2017 Article 12(1)",
+      "bilateral_reference": "Article 12(2)",
+      "delta_type": "scope_note",
+      "summary": "Bilateral treaty allows source-state taxation with 10% cap, while OECD baseline provides exclusive residence taxation",
+      "materiality": "high",
+      "reviewer_attention": "yes"
+    }
+  ]
+}

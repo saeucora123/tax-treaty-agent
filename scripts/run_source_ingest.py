@@ -5,10 +5,14 @@ import json
 import sys
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+BACKEND_PATH = REPO_ROOT / "backend"
+if str(BACKEND_PATH) not in sys.path:
+    sys.path.insert(0, str(BACKEND_PATH))
+
+from app import source_ingest as formal_source_ingest
 from experimental import ingest_source_catalog_stub as experimental
 
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CATALOG_PATH = REPO_ROOT / "data" / "source_documents" / "source-catalog.stub.json"
 DEFAULT_SUMMARY_OUTPUT_PATH = REPO_ROOT / "data" / "treaties" / "source-catalog.summary.json"
 
@@ -16,6 +20,11 @@ DEFAULT_SUMMARY_OUTPUT_PATH = REPO_ROOT / "data" / "treaties" / "source-catalog.
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run the supported source-ingest pipeline against a catalog or manifest."
+    )
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        help="Input pair-level source-build manifest path.",
     )
     parser.add_argument(
         "--catalog",
@@ -34,6 +43,25 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    if args.manifest is not None:
+        try:
+            report = formal_source_ingest.run_source_build(args.manifest)
+        except (
+            OSError,
+            ValueError,
+            KeyError,
+            json.JSONDecodeError,
+            formal_source_ingest.SourceBuildError,
+        ) as error:
+            print(str(error), file=sys.stderr)
+            return 1
+        print(
+            "Completed source-build manifest: "
+            f"{report['article_count']} articles, "
+            f"missing_target_articles={len(report['missing_target_articles'])}"
+        )
+        return 0 if report["status"] == "ok" else 1
+
     try:
         catalog = experimental.load_catalog(args.catalog)
         source_entries = catalog["sources"]

@@ -1,0 +1,269 @@
+{
+  "treaty": {
+    "treaty_id": "cn-kr",
+    "jurisdictions": [
+      "CN",
+      "KR"
+    ],
+    "title": "China-Korea Tax Treaty",
+    "version": "v3",
+    "source_type": "manual_structured_from_official_text",
+    "source_documents": [
+      {
+        "document_id": "cn-kr-main-treaty",
+        "title": "China-Korea Tax Treaty",
+        "document_type": "treaty_text"
+      }
+    ],
+    "notes": [
+      "First public runtime dataset promoted from the CN-KR onboarding pilot.",
+      "Articles 10 to 12 are anchored to official English treaty text and bounded review signals rather than free-form model recall."
+    ],
+    "source_trace": {
+      "treaty_full_name": "Agreement between the Government of the People's Republic of China and the Government of the Republic of Korea for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+      "version_note": "1994 agreement reflected in the official treaty text published in the United Nations Treaty Series and indexed by the Korean NTS treaty portal.",
+      "source_document_title": "China-Korea Tax Treaty",
+      "language_version": "en",
+      "official_source_ids": [
+        "nts-cn-kr-taxlaw-detail",
+        "unts-cn-kr-treaty-pdf"
+      ],
+      "working_papers": {
+        "dividends": "docs/superpowers/research/stage-6-evidence/2026-03-18-cn-kr-dividends-working-paper.md",
+        "interest": "docs/superpowers/research/stage-6-evidence/2026-03-18-cn-kr-interest-working-paper.md",
+        "royalties": "docs/superpowers/research/stage-6-evidence/2026-03-18-cn-kr-royalties-working-paper.md"
+      },
+      "protocol_note": null
+    },
+    "mli_context": {
+      "covered_tax_agreement": true,
+      "ppt_applies": true,
+      "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and Korea deposited on 13 May 2020 with entry into force on 1 September 2020. OECD signatory tables and Korea's Action 6 peer-review materials support treating the China-Korea agreement as an MLI-covered tax agreement with PPT applicable. The system does not determine PPT satisfaction automatically.",
+      "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+      "official_source_ids": [
+        "oecd-mli-signatories-and-parties",
+        "oecd-korea-treaty-abuse-peer-review-2024"
+      ]
+    }
+  },
+  "articles": [
+    {
+      "article_number": "10",
+      "article_title": "Dividends",
+      "article_label": "Article 10",
+      "income_type": "dividends",
+      "summary": "Defines treaty treatment for dividends between China and Korea.",
+      "notes": [
+        "The CN-KR dividend lane preserves the treaty's 5% and 10% branch split as a bounded manual-review output.",
+        "Pair-specific dividend narrowing beyond generic branch selection remains a future enhancement."
+      ],
+      "paragraphs": [
+        {
+          "paragraph_id": "art10-p2b",
+          "paragraph_label": "Article 10(2)(b)",
+          "source_reference": "CN-KR Article 10(2)(b)",
+          "source_language": "en",
+          "source_excerpt": "10 per cent of the gross amount of the dividends in all other cases.",
+          "source_segments": [
+            {
+              "segment_id": "art10-p2b-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": 78,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "10 per cent of the gross amount of the dividends in all other cases."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art10-general",
+            "paragraph_confidence": 0.99,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art10-general",
+              "rule_type": "source_tax_limit",
+              "rate": "10%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "derived_from_segments": [
+                "art10-p2b-s1"
+              ],
+              "conditions": [
+                "Applies in all other dividend cases where the reduced-rate branch is not established."
+              ],
+              "human_review_required": true,
+              "review_reason": "Dividend branch remains fact-sensitive and still requires beneficial-owner and anti-abuse review."
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art10-p2a",
+          "paragraph_label": "Article 10(2)(a)",
+          "source_reference": "CN-KR Article 10(2)(a)",
+          "source_language": "en",
+          "source_excerpt": "5 per cent of the gross amount of the dividends if the beneficial owner is a company (other than a partnership) which holds directly at least 25 per cent of the capital of the company paying the dividends;",
+          "source_segments": [
+            {
+              "segment_id": "art10-p2a-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": 77,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "5 per cent of the gross amount of the dividends if the beneficial owner is a company (other than a partnership) which holds directly at least 25 per cent of the capital of the company paying the dividends;"
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art10-reduced",
+            "paragraph_confidence": 0.99,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art10-reduced",
+              "rule_type": "source_tax_limit",
+              "rate": "5%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "derived_from_segments": [
+                "art10-p2a-s1"
+              ],
+              "conditions": [
+                "The beneficial owner is a company (other than a partnership) which holds directly at least 25 per cent of the capital of the company paying the dividends."
+              ],
+              "human_review_required": true,
+              "review_reason": "Reduced dividend branch requires manual confirmation of direct holding, beneficial ownership, and anti-abuse limits."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "11",
+      "article_title": "Interest",
+      "article_label": "Article 11",
+      "income_type": "interest",
+      "summary": "Defines treaty treatment for interest between China and Korea.",
+      "notes": [
+        "The general 10% cap is in runtime scope for the first CN-KR pilot.",
+        "Paragraph 3 government and central-institution exemption still requires manual confirmation outside the automated narrowing flow."
+      ],
+      "paragraphs": [
+        {
+          "paragraph_id": "art11-p2",
+          "paragraph_label": "Article 11(2)",
+          "source_reference": "CN-KR Article 11(2)",
+          "source_language": "en",
+          "source_excerpt": "However, such interest may also be taxed in the Contracting State in which it arises and according to the laws of that Contracting State, but if the recipient is the beneficial owner of the interest the tax so charged shall not exceed 10 per cent of the gross amount of the interest.",
+          "source_segments": [
+            {
+              "segment_id": "art11-p2-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": 79,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "However, such interest may also be taxed in the Contracting State in which it arises and according to the laws of that Contracting State, but if the recipient is the beneficial owner of the interest the tax so charged shall not exceed 10 per cent of the gross amount of the interest."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art11-general",
+            "paragraph_confidence": 0.99,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art11-general",
+              "rule_type": "source_tax_limit",
+              "rate": "10%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "derived_from_segments": [
+                "art11-p2-s1"
+              ],
+              "conditions": [
+                "The recipient is the beneficial owner of the interest."
+              ],
+              "human_review_required": true,
+              "review_reason": "General interest branch remains fact-sensitive and the paragraph 3 exemption lane is not automated in this pilot."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "12",
+      "article_title": "Royalties",
+      "article_label": "Article 12",
+      "income_type": "royalties",
+      "summary": "Defines treaty treatment for royalties between China and Korea.",
+      "notes": [
+        "The first CN-KR pilot preserves the treaty's 10% royalty cap with manual beneficial-owner confirmation."
+      ],
+      "paragraphs": [
+        {
+          "paragraph_id": "art12-p2",
+          "paragraph_label": "Article 12(2)",
+          "source_reference": "CN-KR Article 12(2)",
+          "source_language": "en",
+          "source_excerpt": "However, such royalties may also be taxed in the Contracting State in which they arise, and according to the laws of that Contracting State, but if the recipient is the beneficial owner of the royalties, the tax so charged shall not exceed 10 per cent of the gross amount of the royalties.",
+          "source_segments": [
+            {
+              "segment_id": "art12-p2-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": 80,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "However, such royalties may also be taxed in the Contracting State in which they arise, and according to the laws of that Contracting State, but if the recipient is the beneficial owner of the royalties, the tax so charged shall not exceed 10 per cent of the gross amount of the royalties."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art12-general",
+            "paragraph_confidence": 0.99,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art12-general",
+              "rule_type": "source_tax_limit",
+              "rate": "10%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.99,
+              "derived_from_segments": [
+                "art12-p2-s1"
+              ],
+              "conditions": [
+                "The recipient is the beneficial owner of the royalties."
+              ],
+              "human_review_required": true,
+              "review_reason": "Royalty branch still requires manual confirmation of beneficial ownership and characterization."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

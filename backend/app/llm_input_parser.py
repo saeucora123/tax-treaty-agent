@@ -10,7 +10,7 @@ from urllib import error, request
 
 DEFAULT_BASE_URL = "https://api.deepseek.com"
 DEFAULT_MODEL = "deepseek-chat"
-DEFAULT_TIMEOUT_SECONDS = 20
+DEFAULT_TIMEOUT_SECONDS = 120
 DOTENV_PATH = Path(__file__).resolve().parents[2] / ".env"
 ALLOW_LIVE_LLM_IN_TESTS_ENV = "TAX_TREATY_AGENT_ALLOW_LIVE_LLM_IN_TESTS"
 

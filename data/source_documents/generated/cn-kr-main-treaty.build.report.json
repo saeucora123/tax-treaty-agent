@@ -1,0 +1,26 @@
+{
+  "status": "ok",
+  "pair_id": "cn-kr",
+  "source_count": 2,
+  "article_count": 3,
+  "paragraph_count": 16,
+  "rule_count": 17,
+  "target_articles": [
+    "10",
+    "11",
+    "12"
+  ],
+  "missing_target_articles": [],
+  "results": [
+    {
+      "source_id": "nts-cn-kr-taxlaw-detail",
+      "source_type": "raw_text",
+      "parsed_output_path": "D:\\AI_Projects\\first agent\\data\\source_documents\\generated\\cn-kr-article10.parsed.json"
+    },
+    {
+      "source_id": "unts-cn-kr-treaty-pdf",
+      "source_type": "pdf_text",
+      "parsed_output_path": "D:\\AI_Projects\\first agent\\data\\source_documents\\generated\\cn-kr-articles11-12.parsed.json"
+    }
+  ]
+}

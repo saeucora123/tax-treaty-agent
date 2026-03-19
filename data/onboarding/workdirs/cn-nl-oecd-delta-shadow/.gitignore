@@ -1,0 +1,12 @@
+*
+!.gitignore
+!reviewed.source.json
+!compiled.report.json
+!compiled.rules.json
+!compiled.source.json
+!compiled.dataset.json
+!compiled.delta.json
+!compiled.delta.report.json
+!review.report.json
+!reviewed.dataset.json
+!promotion.record.json

@@ -1,0 +1,19 @@
+{
+  "status": "ok",
+  "pair_id": "cn-kr",
+  "baseline_id": "oecd-model-2017-articles10-12",
+  "delta_item_count": 4,
+  "high_materiality_count": 2,
+  "materiality_counts": {
+    "high": 2,
+    "low": 1,
+    "medium": 1
+  },
+  "delta_type_counts": {
+    "branch_added": 0,
+    "branch_removed": 0,
+    "condition_changed": 0,
+    "rate_changed": 2,
+    "scope_note": 2
+  }
+}

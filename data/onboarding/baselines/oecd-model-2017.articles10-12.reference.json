@@ -1,0 +1,98 @@
+{
+  "baseline_id": "oecd-model-2017-articles10-12",
+  "title": "OECD Model Tax Convention 2017 baseline reference for Articles 10 to 12",
+  "model_version": "2017",
+  "articles": [
+    {
+      "article_number": "10",
+      "article_title": "Dividends",
+      "income_type": "dividends",
+      "paragraphs": [
+        {
+          "paragraph_number": "2(a)",
+          "source_reference": "OECD Model 2017 Article 10(2)(a)",
+          "text": "Reduced dividend branch for direct 25 per cent corporate holdings maintained throughout a 365-day period.",
+          "reference_rules": [
+            {
+              "rule_label": "direct_corporate_reduced_rate",
+              "rate": "5%",
+              "conditions": [
+                "The beneficial owner is a company that holds directly at least 25 per cent of the capital of the paying company throughout a 365-day period that includes the payment date."
+              ]
+            }
+          ]
+        },
+        {
+          "paragraph_number": "2(b)",
+          "source_reference": "OECD Model 2017 Article 10(2)(b)",
+          "text": "General dividend withholding cap for other cases.",
+          "reference_rules": [
+            {
+              "rule_label": "general_dividend_rate",
+              "rate": "15%",
+              "conditions": [
+                "Applies in all other dividend cases not covered by the reduced-rate branch."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "11",
+      "article_title": "Interest",
+      "income_type": "interest",
+      "paragraphs": [
+        {
+          "paragraph_number": "2",
+          "source_reference": "OECD Model 2017 Article 11(2)",
+          "text": "General interest withholding cap when the beneficial owner is resident in the other state.",
+          "reference_rules": [
+            {
+              "rule_label": "general_interest_rate",
+              "rate": "10%",
+              "conditions": [
+                "The beneficial owner of the interest is a resident of the other Contracting State."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "12",
+      "article_title": "Royalties",
+      "income_type": "royalties",
+      "paragraphs": [
+        {
+          "paragraph_number": "1",
+          "source_reference": "OECD Model 2017 Article 12(1)",
+          "text": "Royalties are taxable only in the residence state of the beneficial owner.",
+          "reference_rules": [
+            {
+              "rule_label": "exclusive_residence_royalty_rule",
+              "rate": "0%",
+              "conditions": [
+                "Royalties arise in one state and are beneficially owned by a resident of the other Contracting State."
+              ]
+            }
+          ]
+        },
+        {
+          "paragraph_number": "2",
+          "source_reference": "OECD Model 2017 Article 12(2)",
+          "text": "Definition paragraph for royalties; no source-state withholding cap is created here.",
+          "reference_rules": [
+            {
+              "rule_label": "royalty_definition_scope",
+              "rate": "N/A",
+              "conditions": [
+                "Payments are for the use of, or right to use, qualifying intellectual property or industrial, commercial, or scientific experience."
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

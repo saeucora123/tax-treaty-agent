@@ -1,0 +1,45 @@
+{
+  "map_id": "cn-kr-source-usage-map",
+  "registry_id": "cn-kr-official-sources",
+  "last_reviewed_on": "2026-03-18",
+  "artifacts": [
+    {
+      "artifact_path": "data/raw_documents/cn-kr/cn-kr-article10.clean.txt",
+      "artifact_role": "clean_text_sample",
+      "derived_from_source_ids": ["unts-cn-kr-treaty-pdf", "nts-cn-kr-taxlaw-detail"],
+      "governance_status": "verified_excerpt",
+      "coverage_note": "Hand-cleaned Article 10 excerpt used as the raw-text input for the formal CN-KR source-build manifest."
+    },
+    {
+      "artifact_path": "data/raw_documents/cn-kr/cn-kr-articles11-12.unts-excerpt.pdf",
+      "artifact_role": "pdf_input_excerpt",
+      "derived_from_source_ids": ["unts-cn-kr-treaty-pdf"],
+      "governance_status": "verified_excerpt",
+      "coverage_note": "Official UNTS page subset covering Articles 11 and 12 for the mixed-source CN-KR source-build path."
+    },
+    {
+      "artifact_path": "data/source_documents/cn-kr-main-treaty.json",
+      "artifact_role": "governed_source_payload",
+      "derived_from_source_ids": [
+        "nts-cn-kr-taxlaw-detail",
+        "unts-cn-kr-treaty-pdf",
+        "oecd-mli-signatories-and-parties",
+        "oecd-korea-treaty-abuse-peer-review-2024"
+      ],
+      "governance_status": "curated_onboarding_fixture",
+      "coverage_note": "Governed source document for the first true CN-KR onboarding pilot, limited to Articles 10 to 12."
+    },
+    {
+      "artifact_path": "data/treaties/cn-kr.v3.json",
+      "artifact_role": "stable_curated_runtime_dataset",
+      "derived_from_source_ids": [
+        "nts-cn-kr-taxlaw-detail",
+        "unts-cn-kr-treaty-pdf",
+        "oecd-mli-signatories-and-parties",
+        "oecd-korea-treaty-abuse-peer-review-2024"
+      ],
+      "governance_status": "initial_onboarding_output",
+      "coverage_note": "First public runtime dataset for China-Korea dividends, interest, and royalties, promoted from the onboarding pipeline."
+    }
+  ]
+}

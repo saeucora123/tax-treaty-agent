@@ -1,0 +1,35 @@
+{
+  "compiled_source_path": "D:\\AI_Projects\\first agent\\data\\onboarding\\workdirs\\cn-kr-initial-oecd\\compiled.source.json",
+  "compiled_dataset_path": "D:\\AI_Projects\\first agent\\data\\onboarding\\workdirs\\cn-kr-initial-oecd\\compiled.dataset.json",
+  "source_changed_path_count": 13,
+  "source_changed_paths": [
+    "$.document.notes",
+    "$.parsed_articles[0].article_notes",
+    "$.parsed_articles[0].article_title",
+    "$.parsed_articles[0].paragraphs",
+    "$.parsed_articles[0].summary",
+    "$.parsed_articles[1].article_notes",
+    "$.parsed_articles[1].article_title",
+    "$.parsed_articles[1].paragraphs",
+    "$.parsed_articles[1].summary",
+    "$.parsed_articles[2].article_notes",
+    "$.parsed_articles[2].article_title",
+    "$.parsed_articles[2].paragraphs",
+    "$.parsed_articles[2].summary"
+  ],
+  "dataset_changed_path_count": 12,
+  "dataset_changed_paths": [
+    "$.articles[0].article_title",
+    "$.articles[0].notes",
+    "$.articles[0].paragraphs",
+    "$.articles[0].summary",
+    "$.articles[1].article_title",
+    "$.articles[1].notes",
+    "$.articles[1].paragraphs",
+    "$.articles[1].summary",
+    "$.articles[2].article_title",
+    "$.articles[2].notes",
+    "$.articles[2].paragraphs",
+    "$.articles[2].summary"
+  ]
+}

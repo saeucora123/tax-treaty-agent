@@ -1041,8 +1041,8 @@ def normalize_optional_label(raw_value: object) -> str | None:
 def detect_flow_countries(scenario: str) -> tuple[str | None, str | None]:
     if "向" in scenario:
         payer_segment, payee_segment = scenario.split("向", 1)
-        payer_country = detect_country(payer_segment, country_codes=["CN", "NL", "SG", "US"])
-        payee_country = detect_country(payee_segment, country_codes=["CN", "NL", "SG", "US"])
+        payer_country = detect_country(payer_segment, country_codes=["CN", "KR", "NL", "SG", "US"])
+        payee_country = detect_country(payee_segment, country_codes=["CN", "KR", "NL", "SG", "US"])
         return payer_country, payee_country
 
     return None, None
@@ -1533,10 +1533,12 @@ def build_supported_sentence(normalized: dict) -> str:
 
     payer_labels = {
         "CN": "中国居民企业",
+        "KR": "韩国公司",
         "NL": "荷兰公司",
         "SG": "新加坡公司",
     }
     payee_labels = {
+        ("KR", "interest"): "韩国银行",
         ("NL", "interest"): "荷兰银行",
         ("SG", "interest"): "新加坡银行",
     }
@@ -1716,7 +1718,7 @@ def build_unsupported_next_actions(reason: str, normalized: dict) -> list[dict]:
             "action": "改写为当前试点国家对列表内、且属于股息、利息或特许权使用费的查询后再重试。",
             "reason": (
                 "当前场景属于产品边界之外；目前稳定数据源只支持 "
-                f"{build_supported_pair_list_text()} 两个试点国家对。"
+                f"{build_supported_pair_list_text()} 试点国家对。"
             ),
         }
     ]

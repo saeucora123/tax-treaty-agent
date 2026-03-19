@@ -4,9 +4,14 @@
     "cross_cutting_infrastructure",
     "post_stage_6_hardening",
     "test_data_pipeline_productization",
-    "public_credibility_repair_pack"
+    "public_credibility_repair_pack",
+    "llm_treaty_compiler_shadow_onboarding",
+    "cn_nl_shadow_rebuild_proof",
+    "oecd_baseline_delta_extraction",
+    "cn_kr_initial_onboarding_public_support",
+    "internal_onboarding_reviewer_workspace"
   ],
-  "global_note": "Execution control is installed. Stage 1, Stage 2, Stage 3, Stage 3.5, Stage 4, Stage 5, and Stage 6 remain complete. The post-Stage-6 hardening track now includes contract cleanup, a completed test/data pipeline productization slice, and a public credibility repair pack: public analyze requests no longer expose data_source, llm_generated moved behind /internal/analyze, frontend guided-fact types/config generate from a backend contract source, runtime tests are split by public/dividend/internal/handoff boundaries, ingestion exposes formal build_treaty_dataset and run_source_ingest CLIs, and the repo now has a proof-first README, public smoke helper, public demo assets, docs guide, and bilingual v0.1.0 release notes while raw/PDF/catalog stub scripts remain isolated under scripts/experimental.",
+  "global_note": "Execution control is installed. Stage 1, Stage 2, Stage 3, Stage 3.5, Stage 4, Stage 5, and Stage 6 remain complete. The post-Stage-6 hardening track now includes contract cleanup, a completed test/data pipeline productization slice, a public credibility repair pack, and a manifest-driven LLM treaty compiler lane: public analyze requests no longer expose data_source, llm_generated moved behind /internal/analyze, frontend guided-fact types/config generate from a backend contract source, runtime tests are split by public/dividend/internal/handoff boundaries, ingestion now exposes formal build_treaty_dataset and manifest-driven run_source_ingest CLIs, the repo has an internal reviewer workspace under ?internal=onboarding, CN-SG and CN-NL both pass shadow re-onboarding under the same compile/review/promote contract, CN-SG and CN-NL both pass thin-baseline OECD delta proofs, and CN-KR has completed the first initial_onboarding path from official raw/PDF inputs through reviewer approval into public runtime support.",
   "stages": {
     "stage_1": {
       "status_summary": "Stage 1 has passed gate with a deterministic 70-case evidence pack, zero Critical/Major/Minor overreach in the fixed suite, and whitepaper-backed metrics plus System Behavior Commitments.",
@@ -156,8 +161,8 @@
       ]
     },
     "stage_6": {
-      "status_summary": "Stage 6 has passed gate: the system now exposes treaty-version notes, paragraph-level excerpts, working-paper lineage, and fact-based MLI/PPT prompts across both supported treaty pairs and all three supported income types.",
-      "current_checkpoint": "Stage 6 gate is now PASS with CN-SG treaty truth-check completed, CN-NL alignment checks recorded, a 6-case source-chain replay pack passing, and a documented 15-minute human-review exercise.",
+      "status_summary": "Stage 6 has passed gate: the system now exposes treaty-version notes, paragraph-level excerpts, working-paper lineage, and fact-based MLI/PPT prompts across three supported treaty pairs and all three supported income types.",
+      "current_checkpoint": "Stage 6 gate remains PASS, and the post-Stage-6 hardening track now includes dual-pair baseline-aware OECD delta proofing, a formal source-build entrypoint, an internal reviewer workspace, and the first completed initial_onboarding promotion of CN-KR into public runtime support.",
       "completed_items": [
         "Stage 6 target narrowed from generic controlled expansion to source chain closure",
         "CN-SG dividends truth-check corrected the runtime branch from 7% / 12% to 5% / 10%",
@@ -168,12 +173,20 @@
         "Analyze responses now expose treaty version notes, working-paper references, and fact-based MLI/PPT prompts in result and handoff layers",
         "Stage 6 evaluation module, fixture tests, runner, and 6-case replay pack added",
         "Stage 6 evidence pack recorded under docs/superpowers/research/stage-6-evidence",
-        "Stage 6 gate review is now PASS"
+        "Stage 6 gate review is now PASS",
+        "The offline treaty compiler now has a second shadow proof: CN-NL passes the same manifest-driven compile/review flow already proven on CN-SG",
+        "The thin-baseline V2 compiler path is now proven on CN-SG: live baseline-aware compile emits delta artifacts and still canonical-passes review against cn-sg.v3.json",
+        "CN-NL now also passes a live baseline-aware OECD delta proof with canonical-pass review under the same strict gate",
+        "Formal source-build now supports pair-level manifests and official raw/PDF inputs through run_source_ingest --manifest",
+        "CN-KR completed the first initial_onboarding path: source build, baseline-aware compile, reviewer JSON review, approval, promotion, and public runtime support",
+        "The frontend now exposes an internal reviewer workspace behind ?internal=onboarding for source build, compile, review, approve, and promote actions"
       ],
       "in_progress_items": [],
       "next_items": [
+        "Record end-to-end reviewer elapsed-time evidence so the onboarding cost-reduction claim is backed by measured process time instead of architecture inference alone",
         "Continue physically decomposing backend/app/service.py along the new contract/provider/dividend boundaries without changing runtime behavior",
-        "Plan Slice 4 removal of deprecated dividend bridge fields after all fixtures and replay packs migrate to raw-fact inputs"
+        "Plan Slice 4 removal of deprecated dividend bridge fields after all fixtures and replay packs migrate to raw-fact inputs",
+        "Decide whether the next onboarding-compiler slice should deepen the OECD reference artifact or improve reviewer diff ergonomics before broader treaty expansion"
       ],
       "blocking_items": [],
       "targets": [

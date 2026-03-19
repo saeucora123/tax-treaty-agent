@@ -142,6 +142,58 @@ def test_returns_cn_sg_royalties_single_rate_from_stable_dataset():
     }
 
 
+def test_returns_cn_kr_dividend_branch_candidates_from_stable_dataset():
+    response = client.post(
+        "/analyze",
+        json={"scenario": "中国公司向韩国公司支付股息"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["supported"] is True
+    assert response.json()["normalized_input"] == {
+        "payer_country": "CN",
+        "payee_country": "KR",
+        "transaction_type": "dividends",
+    }
+    assert response.json()["result"]["article_number"] == "10"
+    assert response.json()["result"]["rate"] == "5% / 10%"
+    assert response.json()["result"]["auto_conclusion_allowed"] is False
+
+
+def test_returns_cn_kr_interest_single_rate_from_stable_dataset():
+    response = client.post(
+        "/analyze",
+        json={"scenario": "中国企业向韩国银行支付利息"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["supported"] is True
+    assert response.json()["normalized_input"] == {
+        "payer_country": "CN",
+        "payee_country": "KR",
+        "transaction_type": "interest",
+    }
+    assert response.json()["result"]["article_number"] == "11"
+    assert response.json()["result"]["rate"] == "10%"
+
+
+def test_returns_cn_kr_royalties_single_rate_from_stable_dataset():
+    response = client.post(
+        "/analyze",
+        json={"scenario": "中国居民企业向韩国公司支付特许权使用费"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["supported"] is True
+    assert response.json()["normalized_input"] == {
+        "payer_country": "CN",
+        "payee_country": "KR",
+        "transaction_type": "royalties",
+    }
+    assert response.json()["result"]["article_number"] == "12"
+    assert response.json()["result"]["rate"] == "10%"
+
+
 def test_supports_reverse_direction_sg_to_cn_case():
     response = client.post(
         "/analyze",
@@ -221,6 +273,9 @@ def test_detects_singapore_aliases_and_supported_pair_examples():
 
     assert response.status_code == 200
     assert response.json()["suggested_examples"] == [
+        "中国居民企业向韩国公司支付股息",
+        "中国居民企业向韩国银行支付利息",
+        "中国居民企业向韩国公司支付特许权使用费",
         "中国居民企业向荷兰公司支付股息",
         "中国居民企业向荷兰银行支付利息",
         "中国居民企业向荷兰公司支付特许权使用费",

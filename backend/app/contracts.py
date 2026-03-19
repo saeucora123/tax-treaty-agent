@@ -32,3 +32,16 @@ class AnalyzeRequest(BaseModel):
 
 class InternalAnalyzeRequest(AnalyzeRequest):
     data_source: Literal["stable", "llm_generated"] = "stable"
+
+
+class InternalOnboardingManifestRequest(BaseModel):
+    manifest: str
+
+
+class InternalOnboardingReviewRequest(InternalOnboardingManifestRequest):
+    reviewed_source_json: str | None = None
+
+
+class InternalOnboardingApproveRequest(InternalOnboardingManifestRequest):
+    reviewer_name: str
+    note: str = ""

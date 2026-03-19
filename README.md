@@ -1,8 +1,8 @@
 # Tax Treaty Agent
 
-面向跨境支付场景的税收协定适用性预审工具。当前支持中荷、中新协定下的股息、利息及特许权使用费场景，使用结构化协定数据与保守规则引擎输出可追溯、可交接的预审结果。
+面向跨境支付场景的税收协定适用性预审工具。当前支持中荷、中新、中韩协定下的股息、利息及特许权使用费场景，使用结构化协定数据与保守规则引擎输出可追溯、可交接的预审结果。
 
-An international tax treaty pre-screening tool for cross-border payment scenarios. It currently supports China–Netherlands and China–Singapore dividend, interest, and royalty lanes using structured treaty data, conservative rule logic, and workflow-ready handoff output.
+An international tax treaty pre-screening tool for cross-border payment scenarios. It currently supports China–Netherlands, China–Singapore, and China–Korea dividend, interest, and royalty lanes using structured treaty data, conservative rule logic, and workflow-ready handoff output.
 
 ![Tax Treaty Agent guided demo](assets/tax-treaty-agent-guided-demo.gif)
 
@@ -70,6 +70,7 @@ Expected outcome:
 
 | Treaty Pair | Income Types |
 |---|---|
+| China – Korea | Dividends, Interest, Royalties |
 | China – Netherlands | Dividends, Interest, Royalties |
 | China – Singapore | Dividends, Interest, Royalties |
 

@@ -1,0 +1,59 @@
+{
+  "pair_id": "cn-kr",
+  "jurisdictions": ["CN", "KR"],
+  "target_articles": ["10", "11", "12"],
+  "document": {
+    "document_id": "cn-kr-main-treaty",
+    "title": "China-Korea Tax Treaty",
+    "document_type": "treaty_text",
+    "notes": [
+      "Formal pair-level source-build manifest for the CN-KR onboarding pilot.",
+      "This path uses mixed raw text and PDF treaty inputs to produce the governed source document."
+    ],
+    "source_trace": {
+      "treaty_full_name": "Agreement between the Government of the People's Republic of China and the Government of the Republic of Korea for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+      "version_note": "1994 agreement reflected in the official treaty text published in the United Nations Treaty Series and indexed by the Korean NTS treaty portal.",
+      "source_document_title": "China-Korea Tax Treaty",
+      "language_version": "en",
+      "official_source_ids": ["nts-cn-kr-taxlaw-detail", "unts-cn-kr-treaty-pdf"],
+      "working_papers": {
+        "dividends": "docs/superpowers/research/stage-6-evidence/2026-03-18-cn-kr-dividends-working-paper.md",
+        "interest": "docs/superpowers/research/stage-6-evidence/2026-03-18-cn-kr-interest-working-paper.md",
+        "royalties": "docs/superpowers/research/stage-6-evidence/2026-03-18-cn-kr-royalties-working-paper.md"
+      },
+      "protocol_note": null
+    },
+    "mli_context": {
+      "covered_tax_agreement": true,
+      "ppt_applies": true,
+      "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and Korea deposited on 13 May 2020 with entry into force on 1 September 2020. OECD signatory tables and Korea's Action 6 peer-review materials support treating the China-Korea agreement as an MLI-covered tax agreement with PPT applicable. The system does not determine PPT satisfaction automatically.",
+      "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+      "official_source_ids": ["oecd-mli-signatories-and-parties", "oecd-korea-treaty-abuse-peer-review-2024"]
+    }
+  },
+  "sources": [
+    {
+      "source_id": "nts-cn-kr-taxlaw-detail",
+      "source_type": "raw_text",
+      "input_path": "../../raw_documents/cn-kr/cn-kr-article10.clean.txt",
+      "parsed_output_path": "../generated/cn-kr-article10.parsed.json",
+      "document_id": "cn-kr-article10-text",
+      "title": "China-Korea Treaty Article 10 Clean Text",
+      "document_type": "treaty_text",
+      "language": "en"
+    },
+    {
+      "source_id": "unts-cn-kr-treaty-pdf",
+      "source_type": "pdf_text",
+      "input_path": "../../raw_documents/cn-kr/cn-kr-articles11-12.unts-excerpt.pdf",
+      "raw_text_output_path": "../generated/cn-kr-articles11-12.extracted.txt",
+      "parsed_output_path": "../generated/cn-kr-articles11-12.parsed.json",
+      "document_id": "cn-kr-articles11-12-pdf",
+      "title": "China-Korea Treaty Articles 11-12 UNTS Excerpt",
+      "document_type": "treaty_text",
+      "language": "en"
+    }
+  ],
+  "output_source_document": "../cn-kr-main-treaty.json",
+  "build_report_output": "../generated/cn-kr-main-treaty.build.report.json"
+}

@@ -16,6 +16,7 @@ class LLMDocumentExtractionError(RuntimeError):
     pass
 
 
+SOURCE_EXTRACTION_MIN_TIMEOUT_SECONDS = 180
 PERCENT_RATE_PATTERN = re.compile(r"(\d+)\s+per\s+cent", re.IGNORECASE)
 ENUMERATED_RATE_BRANCH_PATTERN = re.compile(
     r"\(([a-z])\)\s*(\d+)\s+per\s+cent\s+of\s+the\s+gross\s+amount\s+of\s+the\s+dividends\s*(.*?)(?=(\([a-z]\)\s*\d+\s+per\s+cent)|$)",
@@ -62,6 +63,7 @@ def extract_source_payload_from_text(
     resolved_config = config or load_config_from_env()
     if resolved_config is None:
         return None
+    pair_id = build_pair_id(jurisdictions)
 
     payload = build_request_payload(raw_text, resolved_config.model, source_language)
     body = json.dumps(payload).encode("utf-8")
@@ -76,7 +78,10 @@ def extract_source_payload_from_text(
     )
 
     try:
-        with request.urlopen(http_request, timeout=resolved_config.timeout_seconds) as response:
+        with request.urlopen(
+            http_request,
+            timeout=max(resolved_config.timeout_seconds, SOURCE_EXTRACTION_MIN_TIMEOUT_SECONDS),
+        ) as response:
             response_payload = json.loads(response.read().decode("utf-8"))
     except (error.URLError, TimeoutError, json.JSONDecodeError) as exc:
         raise LLMDocumentExtractionError(str(exc)) from exc
@@ -100,13 +105,26 @@ def extract_source_payload_from_text(
             ],
         },
         "parsed_articles": [
-            normalize_article(article, source_language=source_language)
+            normalize_article(
+                article,
+                source_language=source_language,
+                pair_id=pair_id,
+            )
             for article in model_payload.get("parsed_articles", [])
         ],
     }
 
 
-def normalize_article(article: dict[str, Any], *, source_language: str) -> dict[str, Any]:
+def build_pair_id(jurisdictions: list[str]) -> str:
+    return "-".join(jurisdiction.strip().lower() for jurisdiction in sorted(jurisdictions))
+
+
+def normalize_article(
+    article: dict[str, Any],
+    *,
+    source_language: str,
+    pair_id: str,
+) -> dict[str, Any]:
     article_number = str(article["article_number"]).strip()
     article_title = str(article["article_title"]).strip()
     paragraphs = article.get("paragraphs", [])
@@ -122,6 +140,7 @@ def normalize_article(article: dict[str, Any], *, source_language: str) -> dict[
             normalize_paragraph(
                 paragraph,
                 article_number=article_number,
+                pair_id=pair_id,
                 source_language=source_language,
             )
             for paragraph in paragraphs
@@ -133,6 +152,7 @@ def normalize_paragraph(
     paragraph: dict[str, Any],
     *,
     article_number: str,
+    pair_id: str,
     source_language: str,
 ) -> dict[str, Any]:
     paragraph_number = str(paragraph["paragraph_number"]).strip()
@@ -159,7 +179,7 @@ def normalize_paragraph(
         )
         normalized_rules.append(
             {
-                "rule_id": f"cn-nl-art{article_number}-p{paragraph_number}-r{index}",
+                "rule_id": f"{pair_id}-art{article_number}-p{paragraph_number}-r{index}",
                 "rule_type": rule_type,
                 "rate": normalized_rate,
                 "direction": normalize_direction(rule.get("direction")),

@@ -1,0 +1,780 @@
+{
+  "treaty": {
+    "treaty_id": "cn-kr",
+    "jurisdictions": [
+      "CN",
+      "KR"
+    ],
+    "title": "China-Korea Tax Treaty",
+    "version": "v3",
+    "source_type": "manual_structured_from_official_text",
+    "source_documents": [
+      {
+        "document_id": "cn-kr-main-treaty",
+        "title": "China-Korea Tax Treaty",
+        "document_type": "treaty_text"
+      }
+    ],
+    "notes": [
+      "First public runtime dataset promoted from the CN-KR onboarding pilot.",
+      "Articles 10 to 12 are anchored to official English treaty text and bounded review signals rather than free-form model recall."
+    ],
+    "source_trace": {
+      "treaty_full_name": "Agreement between the Government of the People's Republic of China and the Government of the Republic of Korea for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+      "version_note": "1994 agreement reflected in the official treaty text published in the United Nations Treaty Series and indexed by the Korean NTS treaty portal.",
+      "source_document_title": "China-Korea Tax Treaty",
+      "language_version": "en",
+      "official_source_ids": [
+        "nts-cn-kr-taxlaw-detail",
+        "unts-cn-kr-treaty-pdf"
+      ],
+      "working_papers": {
+        "dividends": "docs/superpowers/research/stage-6-evidence/2026-03-18-cn-kr-dividends-working-paper.md",
+        "interest": "docs/superpowers/research/stage-6-evidence/2026-03-18-cn-kr-interest-working-paper.md",
+        "royalties": "docs/superpowers/research/stage-6-evidence/2026-03-18-cn-kr-royalties-working-paper.md"
+      },
+      "protocol_note": null
+    },
+    "mli_context": {
+      "covered_tax_agreement": true,
+      "ppt_applies": true,
+      "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and Korea deposited on 13 May 2020 with entry into force on 1 September 2020. OECD signatory tables and Korea's Action 6 peer-review materials support treating the China-Korea agreement as an MLI-covered tax agreement with PPT applicable. The system does not determine PPT satisfaction automatically.",
+      "human_review_note": "Confirm during manual review whether obtaining treaty benefits was one of the principal purposes of the arrangement.",
+      "official_source_ids": [
+        "oecd-mli-signatories-and-parties",
+        "oecd-korea-treaty-abuse-peer-review-2024"
+      ]
+    }
+  },
+  "articles": [
+    {
+      "article_number": "10",
+      "article_title": "DIVIDENDS",
+      "article_label": "Article 10",
+      "income_type": "dividends",
+      "summary": "This article governs the taxation of dividends paid by a company resident in one Contracting State to a resident of the other Contracting State, specifying tax rates and conditions.",
+      "notes": [],
+      "paragraphs": [
+        {
+          "paragraph_id": "art10-p1",
+          "paragraph_label": "Article 10(1)",
+          "source_reference": "Article 10(1)",
+          "source_language": "en",
+          "source_excerpt": "Dividends paid by a company which is a resident of a Contracting State to a resident of the other Contracting State may be taxed in that other Contracting State.",
+          "source_segments": [
+            {
+              "segment_id": "art10-p1-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "Dividends paid by a company which is a resident of a Contracting State to a resident of the other Contracting State may be taxed in that other Contracting State."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art10-p1-r1",
+            "paragraph_confidence": 0.9,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art10-p1-r1",
+              "rule_type": "residence_taxation",
+              "rate": "0%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.9,
+              "derived_from_segments": [
+                "art10-p1-s1"
+              ],
+              "conditions": [
+                "Dividends paid by a resident company of one Contracting State to a resident of the other Contracting State"
+              ],
+              "human_review_required": true,
+              "review_reason": "General residence taxation right"
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art10-p2",
+          "paragraph_label": "Article 10(2)",
+          "source_reference": "Article 10(2)",
+          "source_language": "en",
+          "source_excerpt": "However, such dividends may also be taxed in the Contracting State of which the company paying the dividends is a resident, and according to the laws of that State, but if the recipient is the beneficial owner of the dividends the tax so charged shall not exceed: (a) 5 per cent of the gross amount of the dividends if the beneficial owner is a company (other than a partnership) which holds directly at least 25 per cent of the capital of the company paying the dividends; (b) 10 per cent of the gross amount of the dividends in all other cases. This paragraph shall not affect the taxation of the company in respect of the profits out of which the dividends are paid.",
+          "source_segments": [
+            {
+              "segment_id": "art10-p2-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "However, such dividends may also be taxed in the Contracting State of which the company paying the dividends is a resident, and according to the laws of that State, but if the recipient is the beneficial owner of the dividends the tax so charged shall not exceed: (a) 5 per cent of the gross amount of the dividends if the beneficial owner is a company (other than a partnership) which holds directly at least 25 per cent of the capital of the company paying the dividends; (b) 10 per cent of the gross amount of the dividends in all other cases. This paragraph shall not affect the taxation of the company in respect of the profits out of which the dividends are paid."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art10-p2-r1",
+            "paragraph_confidence": 0.95,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art10-p2-r1",
+              "rule_type": "withholding_rate",
+              "rate": "5%",
+              "direction": "payer_to_payee",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.95,
+              "derived_from_segments": [
+                "art10-p2-s1"
+              ],
+              "conditions": [
+                "Beneficial owner is a company (not partnership)",
+                "Company holds directly at least 25% of capital of paying company"
+              ],
+              "human_review_required": true,
+              "review_reason": "Reduced rate for qualifying corporate holdings"
+            },
+            {
+              "rule_id": "cn-kr-art10-p2-r2",
+              "rule_type": "withholding_rate",
+              "rate": "10%",
+              "direction": "payer_to_payee",
+              "candidate_rank": 2,
+              "is_primary_candidate": false,
+              "extraction_confidence": 0.95,
+              "derived_from_segments": [
+                "art10-p2-s1"
+              ],
+              "conditions": [
+                "Beneficial owner of dividends",
+                "All other cases not covered by 5% rate"
+              ],
+              "human_review_required": true,
+              "review_reason": "General withholding rate for dividends"
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art10-p3",
+          "paragraph_label": "Article 10(3)",
+          "source_reference": "Article 10(3)",
+          "source_language": "en",
+          "source_excerpt": "The term 'dividends' as used in this Article means income from shares, or other rights, not being debt-claims, participating in profits, as well as income from other corporate rights which is subjected to the same taxation treatment as income from shares by the laws of the State of which the company making the distribution is a resident.",
+          "source_segments": [
+            {
+              "segment_id": "art10-p3-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "The term 'dividends' as used in this Article means income from shares, or other rights, not being debt-claims, participating in profits, as well as income from other corporate rights which is subjected to the same taxation treatment as income from shares by the laws of the State of which the company making the distribution is a resident."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": null,
+            "paragraph_confidence": null,
+            "segment_count": 1,
+            "covered_segment_count": 0,
+            "segment_coverage": 0.0
+          },
+          "rules": []
+        },
+        {
+          "paragraph_id": "art10-p4",
+          "paragraph_label": "Article 10(4)",
+          "source_reference": "Article 10(4)",
+          "source_language": "en",
+          "source_excerpt": "The provisions of paragraphs 1 and 2 shall not apply if the beneficial owner of the dividends, being a resident of a Contracting State, carries on business in the other Contracting State of which the company paying the dividends is a resident, through a permanent establishment situated therein, or performs in that other Contracting State independent personal services from a fixed base situated therein, and the holding in respect of which the dividends are paid is effectively connected with such permanent establishment or fixed base. In such case, the provisions of Article 7 or Article 14, as the case may be, shall apply.",
+          "source_segments": [
+            {
+              "segment_id": "art10-p4-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "The provisions of paragraphs 1 and 2 shall not apply if the beneficial owner of the dividends, being a resident of a Contracting State, carries on business in the other Contracting State of which the company paying the dividends is a resident, through a permanent establishment situated therein, or performs in that other Contracting State independent personal services from a fixed base situated therein, and the holding in respect of which the dividends are paid is effectively connected with such permanent establishment or fixed base. In such case, the provisions of Article 7 or Article 14, as the case may be, shall apply."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art10-p4-r1",
+            "paragraph_confidence": 0.85,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art10-p4-r1",
+              "rule_type": "pe_override",
+              "rate": "0%",
+              "direction": "unknown",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.85,
+              "derived_from_segments": [
+                "art10-p4-s1"
+              ],
+              "conditions": [
+                "Beneficial owner resident in one Contracting State",
+                "Carries on business through PE in other Contracting State",
+                "Dividends effectively connected with PE"
+              ],
+              "human_review_required": true,
+              "review_reason": "Permanent establishment override to business profits article"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "11",
+      "article_title": "INTEREST",
+      "article_label": "Article 11",
+      "income_type": "interest",
+      "summary": "Article 11 covers taxation of interest income between Contracting States, including tax rates, exemptions for government entities, definitions, and special rules for permanent establishments and related parties.",
+      "notes": [],
+      "paragraphs": [
+        {
+          "paragraph_id": "art11-p1",
+          "paragraph_label": "Article 11(1)",
+          "source_reference": "1995 United Nations - Treaty Series, Article 11, Paragraph 1",
+          "source_language": "en",
+          "source_excerpt": "Interest arising in a Contracting State and paid to a resident of the other Contracting State may be taxed in that other Contracting State.",
+          "source_segments": [
+            {
+              "segment_id": "art11-p1-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "Interest arising in a Contracting State and paid to a resident of the other Contracting State may be taxed in that other Contracting State."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art11-p1-r1",
+            "paragraph_confidence": 0.9,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art11-p1-r1",
+              "rule_type": "residence_taxation",
+              "rate": "0%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.9,
+              "derived_from_segments": [
+                "art11-p1-s1"
+              ],
+              "conditions": [
+                "Interest arising in one Contracting State",
+                "Paid to resident of other Contracting State"
+              ],
+              "human_review_required": true,
+              "review_reason": "General residence taxation right"
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art11-p2",
+          "paragraph_label": "Article 11(2)",
+          "source_reference": "1995 United Nations - Treaty Series, Article 11, Paragraph 2",
+          "source_language": "en",
+          "source_excerpt": "However, such interest may also be taxed in the Contracting State in which it arises and according to the laws of that Contracting State, but if the recipient is the beneficial owner of the interest the tax so charged shall not exceed 10 per cent of the gross amount of the interest.",
+          "source_segments": [
+            {
+              "segment_id": "art11-p2-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "However, such interest may also be taxed in the Contracting State in which it arises and according to the laws of that Contracting State, but if the recipient is the beneficial owner of the interest the tax so charged shall not exceed 10 per cent of the gross amount of the interest."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art11-p2-r1",
+            "paragraph_confidence": 0.95,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art11-p2-r1",
+              "rule_type": "withholding_rate",
+              "rate": "10%",
+              "direction": "payer_to_payee",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.95,
+              "derived_from_segments": [
+                "art11-p2-s1"
+              ],
+              "conditions": [
+                "Beneficial owner of interest",
+                "Interest arises in Contracting State"
+              ],
+              "human_review_required": true,
+              "review_reason": "General interest withholding cap"
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art11-p3",
+          "paragraph_label": "Article 11(3)",
+          "source_reference": "1995 United Nations - Treaty Series, Article 11, Paragraph 3",
+          "source_language": "en",
+          "source_excerpt": "Notwithstanding the provisions of paragraph 2, interests arising in a Contracting State and derived by the Government of the other Contracting State including local authorities thereof, the central bank of the other Contracting State or any financial institution performing functions of a governmental nature or by any resident of the other Contracting State with respect to debt-claims guaranteed or indirectly financed by the Government of that other Contracting State including local authorities thereof, the central bank of that other Contracting State or any financial institution performing functions of a governmental nature shall be exempt from tax in the first-mentioned Contracting State.",
+          "source_segments": [
+            {
+              "segment_id": "art11-p3-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "Notwithstanding the provisions of paragraph 2, interests arising in a Contracting State and derived by the Government of the other Contracting State including local authorities thereof, the central bank of the other Contracting State or any financial institution performing functions of a governmental nature or by any resident of the other Contracting State with respect to debt-claims guaranteed or indirectly financed by the Government of that other Contracting State including local authorities thereof, the central bank of that other Contracting State or any financial institution performing functions of a governmental nature shall be exempt from tax in the first-mentioned Contracting State."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art11-p3-r1",
+            "paragraph_confidence": 0.9,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art11-p3-r1",
+              "rule_type": "exemption",
+              "rate": "0%",
+              "direction": "payer_to_payee",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.9,
+              "derived_from_segments": [
+                "art11-p3-s1"
+              ],
+              "conditions": [
+                "Interest derived by government/central bank/governmental financial institution of other Contracting State",
+                "Or interest on debt-claims guaranteed/financed by such entities"
+              ],
+              "human_review_required": true,
+              "review_reason": "Government interest exemption"
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art11-p4",
+          "paragraph_label": "Article 11(4)",
+          "source_reference": "1995 United Nations - Treaty Series, Article 11, Paragraph 4",
+          "source_language": "en",
+          "source_excerpt": "The term 'interest' as used in this Article means income from debt- claims of every kind, whether or not secured by mortgage and whether or not carrying a right to participate in the debtor's profits, and in particular, income from government securities and income from bonds or debentures, including premiums and prizes attaching to such securities, bonds or debentures.",
+          "source_segments": [
+            {
+              "segment_id": "art11-p4-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "The term 'interest' as used in this Article means income from debt- claims of every kind, whether or not secured by mortgage and whether or not carrying a right to participate in the debtor's profits, and in particular, income from government securities and income from bonds or debentures, including premiums and prizes attaching to such securities, bonds or debentures."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": null,
+            "paragraph_confidence": null,
+            "segment_count": 1,
+            "covered_segment_count": 0,
+            "segment_coverage": 0.0
+          },
+          "rules": []
+        },
+        {
+          "paragraph_id": "art11-p5",
+          "paragraph_label": "Article 11(5)",
+          "source_reference": "1995 United Nations - Treaty Series, Article 11, Paragraph 5",
+          "source_language": "en",
+          "source_excerpt": "The provisions of paragraphs 1, 2 and 3 shall not apply if the beneficial owner of the interest, being a resident of a Contracting State, carries on business in the other Contracting State in which the interest arises, through a permanent establishment situated therein, or performs in that other Contracting State independent personal services from a fixed base situated therein, and the debt-claims in respect of which the interest is paid is effectively connected with such permanent establishment or fixed base. In such case the provisions of Article 7 or Article 14, as the case may be, shall apply.",
+          "source_segments": [
+            {
+              "segment_id": "art11-p5-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "The provisions of paragraphs 1, 2 and 3 shall not apply if the beneficial owner of the interest, being a resident of a Contracting State, carries on business in the other Contracting State in which the interest arises, through a permanent establishment situated therein, or performs in that other Contracting State independent personal services from a fixed base situated therein, and the debt-claims in respect of which the interest is paid is effectively connected with such permanent establishment or fixed base. In such case the provisions of Article 7 or Article 14, as the case may be, shall apply."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art11-p5-r1",
+            "paragraph_confidence": 0.85,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art11-p5-r1",
+              "rule_type": "pe_override",
+              "rate": "0%",
+              "direction": "unknown",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.85,
+              "derived_from_segments": [
+                "art11-p5-s1"
+              ],
+              "conditions": [
+                "Beneficial owner resident in one Contracting State",
+                "Carries on business through PE in other Contracting State",
+                "Interest effectively connected with PE"
+              ],
+              "human_review_required": true,
+              "review_reason": "Permanent establishment override to business profits article"
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art11-p6",
+          "paragraph_label": "Article 11(6)",
+          "source_reference": "1995 United Nations - Treaty Series, Article 11, Paragraph 6",
+          "source_language": "en",
+          "source_excerpt": "Interest shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the interest, whether he is a resident of a Contracting State or not, has in a Contracting State a permanent establishment or a fixed base in connection with which the indebtedness on which the interest is paid was incurred, and such interest is borne by such permanent establishment or fixed base, then such interest shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated.",
+          "source_segments": [
+            {
+              "segment_id": "art11-p6-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "Interest shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the interest, whether he is a resident of a Contracting State or not, has in a Contracting State a permanent establishment or a fixed base in connection with which the indebtedness on which the interest is paid was incurred, and such interest is borne by such permanent establishment or fixed base, then such interest shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art11-p6-r1",
+            "paragraph_confidence": 0.8,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art11-p6-r1",
+              "rule_type": "source_rule",
+              "rate": "0%",
+              "direction": "unknown",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.8,
+              "derived_from_segments": [
+                "art11-p6-s1"
+              ],
+              "conditions": [
+                "Interest deemed to arise where payer is government/local authority/resident",
+                "Or where PE/fixed base bears the interest"
+              ],
+              "human_review_required": true,
+              "review_reason": "Source determination rule"
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art11-p7",
+          "paragraph_label": "Article 11(7)",
+          "source_reference": "1995 United Nations - Treaty Series, Article 11, Paragraph 7",
+          "source_language": "en",
+          "source_excerpt": "Where, by reason of a special relationship between the payer and the beneficial owner or between both of them and some other person, the amount of the interest, having regard to the debt-claims for which it is paid, exceeds the amount which would have been agreed upon by the payer and the beneficial owner in the absence of such relationship, the provisions of this Article shall apply only to the last-mentioned amount. In such case, the excess part of the payments shall remain taxable according to the laws of each Contracting State, due regard being had to the other provisions of this Agreement.",
+          "source_segments": [
+            {
+              "segment_id": "art11-p7-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "Where, by reason of a special relationship between the payer and the beneficial owner or between both of them and some other person, the amount of the interest, having regard to the debt-claims for which it is paid, exceeds the amount which would have been agreed upon by the payer and the beneficial owner in the absence of such relationship, the provisions of this Article shall apply only to the last-mentioned amount. In such case, the excess part of the payments shall remain taxable according to the laws of each Contracting State, due regard being had to the other provisions of this Agreement."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art11-p7-r1",
+            "paragraph_confidence": 0.8,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art11-p7-r1",
+              "rule_type": "arm_length_override",
+              "rate": "0%",
+              "direction": "unknown",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.8,
+              "derived_from_segments": [
+                "art11-p7-s1"
+              ],
+              "conditions": [
+                "Special relationship between payer and beneficial owner",
+                "Interest exceeds arm's length amount"
+              ],
+              "human_review_required": true,
+              "review_reason": "Arm's length principle application"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "article_number": "12",
+      "article_title": "ROYALTIES",
+      "article_label": "Article 12",
+      "income_type": "royalties",
+      "summary": "Article 12 covers taxation of royalty income between Contracting States, including tax rates, definitions, and rules for permanent establishments.",
+      "notes": [],
+      "paragraphs": [
+        {
+          "paragraph_id": "art12-p1",
+          "paragraph_label": "Article 12(1)",
+          "source_reference": "1995 United Nations - Treaty Series, Article 12, Paragraph 1",
+          "source_language": "en",
+          "source_excerpt": "Royalties arising in a Contracting State and paid to a resident of the other Contracting State may be taxed in that other Contracting State.",
+          "source_segments": [
+            {
+              "segment_id": "art12-p1-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "Royalties arising in a Contracting State and paid to a resident of the other Contracting State may be taxed in that other Contracting State."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art12-p1-r1",
+            "paragraph_confidence": 0.9,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art12-p1-r1",
+              "rule_type": "residence_taxation",
+              "rate": "0%",
+              "direction": "bidirectional",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.9,
+              "derived_from_segments": [
+                "art12-p1-s1"
+              ],
+              "conditions": [
+                "Royalties arising in one Contracting State",
+                "Paid to resident of other Contracting State"
+              ],
+              "human_review_required": true,
+              "review_reason": "General residence taxation right"
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art12-p2",
+          "paragraph_label": "Article 12(2)",
+          "source_reference": "1995 United Nations - Treaty Series, Article 12, Paragraph 2",
+          "source_language": "en",
+          "source_excerpt": "However, such royalties may also be taxed in the Contracting State in which they arise, and according to the laws of that Contracting State, but if the recipient is the beneficial owner of the royalties, the tax so charged shall not exceed 10 per cent of the gross amount of the royalties.",
+          "source_segments": [
+            {
+              "segment_id": "art12-p2-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "However, such royalties may also be taxed in the Contracting State in which they arise, and according to the laws of that Contracting State, but if the recipient is the beneficial owner of the royalties, the tax so charged shall not exceed 10 per cent of the gross amount of the royalties."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art12-p2-r1",
+            "paragraph_confidence": 0.95,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art12-p2-r1",
+              "rule_type": "withholding_rate",
+              "rate": "10%",
+              "direction": "payer_to_payee",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.95,
+              "derived_from_segments": [
+                "art12-p2-s1"
+              ],
+              "conditions": [
+                "Beneficial owner of royalties",
+                "Royalties arise in Contracting State"
+              ],
+              "human_review_required": true,
+              "review_reason": "Royalty withholding cap"
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art12-p3",
+          "paragraph_label": "Article 12(3)",
+          "source_reference": "1995 United Nations - Treaty Series, Article 12, Paragraph 3",
+          "source_language": "en",
+          "source_excerpt": "The term 'royalties' as used in this Article means payments of any kind received as a consideration for the use of, or the right to use, any copyright of literary, artistic or scientific work including cinematograph films and films or tapes for radio or television broadcasting, any patent, know-how, trade mark, design or model, plan, secret formula or process, or for the use of, or the right to use, industrial, commercial or scientific equipment, or for information concerning industrial, commercial or scientific experience.",
+          "source_segments": [
+            {
+              "segment_id": "art12-p3-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "The term 'royalties' as used in this Article means payments of any kind received as a consideration for the use of, or the right to use, any copyright of literary, artistic or scientific work including cinematograph films and films or tapes for radio or television broadcasting, any patent, know-how, trade mark, design or model, plan, secret formula or process, or for the use of, or the right to use, industrial, commercial or scientific equipment, or for information concerning industrial, commercial or scientific experience."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": null,
+            "paragraph_confidence": null,
+            "segment_count": 1,
+            "covered_segment_count": 0,
+            "segment_coverage": 0.0
+          },
+          "rules": []
+        },
+        {
+          "paragraph_id": "art12-p4",
+          "paragraph_label": "Article 12(4)",
+          "source_reference": "1995 United Nations - Treaty Series, Article 12, Paragraph 4",
+          "source_language": "en",
+          "source_excerpt": "The provisions of paragraphs 1 and 2 shall not apply if the beneficial owner of the royalties, being a resident of a Contracting State, carries on business in the other Contracting State in which the royalties arise, through a permanent establishment situated therein, or performs in that other Contracting State independent personal services from a fixed base situated therein, and the right or property in respect of which the royalties are paid is effectively connected with such permanent establishment or fixed base. In such case, the provisions of Article 7 or Article 14, as the case may be, shall apply.",
+          "source_segments": [
+            {
+              "segment_id": "art12-p4-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "The provisions of paragraphs 1 and 2 shall not apply if the beneficial owner of the royalties, being a resident of a Contracting State, carries on business in the other Contracting State in which the royalties arise, through a permanent establishment situated therein, or performs in that other Contracting State independent personal services from a fixed base situated therein, and the right or property in respect of which the royalties are paid is effectively connected with such permanent establishment or fixed base. In such case, the provisions of Article 7 or Article 14, as the case may be, shall apply."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art12-p4-r1",
+            "paragraph_confidence": 0.85,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art12-p4-r1",
+              "rule_type": "pe_override",
+              "rate": "0%",
+              "direction": "unknown",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.85,
+              "derived_from_segments": [
+                "art12-p4-s1"
+              ],
+              "conditions": [
+                "Beneficial owner resident in one Contracting State",
+                "Carries on business through PE in other Contracting State",
+                "Royalties effectively connected with PE"
+              ],
+              "human_review_required": true,
+              "review_reason": "Permanent establishment override to business profits article"
+            }
+          ]
+        },
+        {
+          "paragraph_id": "art12-p5",
+          "paragraph_label": "Article 12(5)",
+          "source_reference": "1995 United Nations - Treaty Series, Article 12, Paragraph 5",
+          "source_language": "en",
+          "source_excerpt": "Royalties shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the royalties, whether he is a resident of a Contracting State or not, has in a Contracting State a permanent establishment or a fixed base in connection with which the liability to pay the royalties was incurred, and such royalties are borne by such permanent establishment or fixed base, then such royalties shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated.",
+          "source_segments": [
+            {
+              "segment_id": "art12-p5-s1",
+              "segment_order": 1,
+              "raw_line_number": null,
+              "page_hint": null,
+              "source_kind": "article_paragraph",
+              "text_quality": "clean",
+              "normalization_status": "verbatim",
+              "text": "Royalties shall be deemed to arise in a Contracting State when the payer is the Government of that Contracting State, a local authority or a resident of that Contracting State. Where, however, the person paying the royalties, whether he is a resident of a Contracting State or not, has in a Contracting State a permanent establishment or a fixed base in connection with which the liability to pay the royalties was incurred, and such royalties are borne by such permanent establishment or fixed base, then such royalties shall be deemed to arise in the Contracting State in which the permanent establishment or fixed base is situated."
+            }
+          ],
+          "provenance_summary": {
+            "primary_rule_id": "cn-kr-art12-p5-r1",
+            "paragraph_confidence": 0.8,
+            "segment_count": 1,
+            "covered_segment_count": 1,
+            "segment_coverage": 1.0
+          },
+          "rules": [
+            {
+              "rule_id": "cn-kr-art12-p5-r1",
+              "rule_type": "source_rule",
+              "rate": "0%",
+              "direction": "unknown",
+              "candidate_rank": 1,
+              "is_primary_candidate": true,
+              "extraction_confidence": 0.8,
+              "derived_from_segments": [
+                "art12-p5-s1"
+              ],
+              "conditions": [
+                "Royalties deemed to arise where payer is government/local authority/resident",
+                "Or where PE/fixed base bears the royalties"
+              ],
+              "human_review_required": true,
+              "review_reason": "Source determination rule"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

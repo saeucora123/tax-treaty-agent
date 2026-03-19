@@ -1,7 +1,15 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import App from "./App";
+
+function setLocationSearch(search: string) {
+  window.history.pushState({}, "", search);
+}
+
+afterEach(() => {
+  setLocationSearch("/");
+});
 
 
 test("shows reference cases only for states the live demo can actually reach", () => {
@@ -2591,5 +2599,250 @@ test("renders a guided-input conflict warning while keeping legacy free-text sec
   expect(await screen.findByText(/guided input conflict/i)).toBeInTheDocument();
   expect(screen.getByText(/structured facts win/i)).toBeInTheDocument();
   expect(screen.getByText(/the guided bo fact is still unknown/i)).toBeInTheDocument();
+});
+
+
+test("renders the internal onboarding workspace when query-param mode is enabled", async () => {
+  setLocationSearch("/?internal=onboarding");
+
+  globalThis.fetch = vi
+    .fn()
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        manifests: [
+          {
+            manifest_path: "D:/repo/data/onboarding/manifests/cn-kr.initial-oecd.json",
+            pair_id: "cn-kr",
+            mode: "initial_onboarding",
+            jurisdictions: ["CN", "KR"],
+            target_articles: ["10", "11", "12"],
+            baseline_enabled: true,
+            source_build_manifest_path:
+              "D:/repo/data/source_documents/manifests/cn-kr-main-treaty.build.json",
+            source_build_available: true,
+          },
+        ],
+      }),
+    })
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        manifest: {
+          manifest_path: "D:/repo/data/onboarding/manifests/cn-kr.initial-oecd.json",
+          pair_id: "cn-kr",
+          mode: "initial_onboarding",
+          jurisdictions: ["CN", "KR"],
+          target_articles: ["10", "11", "12"],
+          baseline_enabled: true,
+          source_build_manifest_path:
+            "D:/repo/data/source_documents/manifests/cn-kr-main-treaty.build.json",
+          source_build_available: true,
+          source_documents: ["D:/repo/data/source_documents/cn-kr-main-treaty.json"],
+          promotion_target_dataset: "D:/repo/data/treaties/cn-kr.v3.json",
+          baseline_reference:
+            "D:/repo/data/onboarding/baselines/oecd-model-2017.articles10-12.reference.json",
+        },
+        source_build: {
+          available: true,
+          manifest_path: "D:/repo/data/source_documents/manifests/cn-kr-main-treaty.build.json",
+          report: { article_count: 3 },
+          status: "ok",
+        },
+        compile: {
+          status: "ok",
+          report: { rule_count: 4 },
+          delta_report: { delta_item_count: 4, high_materiality_count: 2 },
+          delta_analysis: [
+            {
+              article_number: "10",
+              delta_type: "rate_changed",
+              summary: "Dividend fallback rate differs from the OECD baseline.",
+            },
+          ],
+        },
+        review: {
+          status: "ready_for_approval",
+          report: { status: "ready_for_approval" },
+          diff: {
+            source_changed_path_count: 1,
+            dataset_changed_path_count: 1,
+            source_changed_paths: ["$.parsed_articles[0]"],
+            dataset_changed_paths: ["$.articles[0]"],
+          },
+        },
+        approval: { status: null, record: null },
+        promotion: { status: null, record: null },
+        reviewed_source: {
+          path: "D:/repo/data/onboarding/workdirs/cn-kr-initial-oecd/reviewed.source.json",
+          content: "{\"pair\":\"cn-kr\"}",
+        },
+      }),
+    }) as typeof fetch;
+
+  render(<App />);
+
+  expect(await screen.findByText(/internal onboarding workspace/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/onboarding manifest/i)).toBeInTheDocument();
+  expect(screen.getByText(/compiled delta summary/i)).toBeInTheDocument();
+  expect(screen.getByText(/review diff summary/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/reviewed\.source\.json editor/i)).toHaveValue(
+    "{\"pair\":\"cn-kr\"}",
+  );
+  expect(screen.getByRole("button", { name: /run source build/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /run compile/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /run review/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /^approve$/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /promote/i })).toBeInTheDocument();
+});
+
+
+test("internal onboarding workspace submits edited review JSON and approval payloads", async () => {
+  const user = userEvent.setup();
+  setLocationSearch("/?internal=onboarding");
+
+  globalThis.fetch = vi
+    .fn()
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        manifests: [
+          {
+            manifest_path: "D:/repo/data/onboarding/manifests/cn-kr.initial-oecd.json",
+            pair_id: "cn-kr",
+            mode: "initial_onboarding",
+            jurisdictions: ["CN", "KR"],
+            target_articles: ["10", "11", "12"],
+            baseline_enabled: true,
+            source_build_manifest_path:
+              "D:/repo/data/source_documents/manifests/cn-kr-main-treaty.build.json",
+            source_build_available: true,
+          },
+        ],
+      }),
+    })
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        manifest: {
+          manifest_path: "D:/repo/data/onboarding/manifests/cn-kr.initial-oecd.json",
+          pair_id: "cn-kr",
+          mode: "initial_onboarding",
+          jurisdictions: ["CN", "KR"],
+          target_articles: ["10", "11", "12"],
+          baseline_enabled: true,
+          source_build_manifest_path:
+            "D:/repo/data/source_documents/manifests/cn-kr-main-treaty.build.json",
+          source_build_available: true,
+          source_documents: ["D:/repo/data/source_documents/cn-kr-main-treaty.json"],
+          promotion_target_dataset: "D:/repo/data/treaties/cn-kr.v3.json",
+          baseline_reference:
+            "D:/repo/data/onboarding/baselines/oecd-model-2017.articles10-12.reference.json",
+        },
+        source_build: { available: true, manifest_path: "D:/repo/x", report: null, status: null },
+        compile: { status: null, report: null, delta_report: null, delta_analysis: [] },
+        review: { status: null, report: null, diff: null },
+        approval: { status: null, record: null },
+        promotion: { status: null, record: null },
+        reviewed_source: {
+          path: "D:/repo/data/onboarding/workdirs/cn-kr-initial-oecd/reviewed.source.json",
+          content: "{\"initial\":true}",
+        },
+      }),
+    })
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        manifest: {
+          manifest_path: "D:/repo/data/onboarding/manifests/cn-kr.initial-oecd.json",
+          pair_id: "cn-kr",
+          mode: "initial_onboarding",
+          jurisdictions: ["CN", "KR"],
+          target_articles: ["10", "11", "12"],
+          baseline_enabled: true,
+          source_build_manifest_path:
+            "D:/repo/data/source_documents/manifests/cn-kr-main-treaty.build.json",
+          source_build_available: true,
+          source_documents: ["D:/repo/data/source_documents/cn-kr-main-treaty.json"],
+          promotion_target_dataset: "D:/repo/data/treaties/cn-kr.v3.json",
+          baseline_reference:
+            "D:/repo/data/onboarding/baselines/oecd-model-2017.articles10-12.reference.json",
+        },
+        source_build: { available: true, manifest_path: "D:/repo/x", report: null, status: null },
+        compile: { status: "ok", report: { rule_count: 4 }, delta_report: null, delta_analysis: [] },
+        review: { status: "ready_for_approval", report: { status: "ready_for_approval" }, diff: null },
+        approval: { status: null, record: null },
+        promotion: { status: null, record: null },
+        reviewed_source: {
+          path: "D:/repo/data/onboarding/workdirs/cn-kr-initial-oecd/reviewed.source.json",
+          content: "{\"edited\":true}",
+        },
+      }),
+    })
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        manifest: {
+          manifest_path: "D:/repo/data/onboarding/manifests/cn-kr.initial-oecd.json",
+          pair_id: "cn-kr",
+          mode: "initial_onboarding",
+          jurisdictions: ["CN", "KR"],
+          target_articles: ["10", "11", "12"],
+          baseline_enabled: true,
+          source_build_manifest_path:
+            "D:/repo/data/source_documents/manifests/cn-kr-main-treaty.build.json",
+          source_build_available: true,
+          source_documents: ["D:/repo/data/source_documents/cn-kr-main-treaty.json"],
+          promotion_target_dataset: "D:/repo/data/treaties/cn-kr.v3.json",
+          baseline_reference:
+            "D:/repo/data/onboarding/baselines/oecd-model-2017.articles10-12.reference.json",
+        },
+        source_build: { available: true, manifest_path: "D:/repo/x", report: null, status: null },
+        compile: { status: "ok", report: { rule_count: 4 }, delta_report: null, delta_analysis: [] },
+        review: { status: "ready_for_approval", report: { status: "ready_for_approval" }, diff: null },
+        approval: { status: "approved", record: { reviewer_name: "Codex Reviewer" } },
+        promotion: { status: null, record: null },
+        reviewed_source: {
+          path: "D:/repo/data/onboarding/workdirs/cn-kr-initial-oecd/reviewed.source.json",
+          content: "{\"edited\":true}",
+        },
+      }),
+    }) as typeof fetch;
+
+  render(<App />);
+
+  const editor = await screen.findByLabelText(/reviewed\.source\.json editor/i);
+  await user.clear(editor);
+  await user.paste("{\"edited\":true}");
+  await user.click(screen.getByRole("button", { name: /run review/i }));
+
+  await waitFor(() => {
+    expect(globalThis.fetch).toHaveBeenNthCalledWith(
+      3,
+      "/api/internal/onboarding/review",
+      expect.objectContaining({
+        body: JSON.stringify({
+          manifest: "D:/repo/data/onboarding/manifests/cn-kr.initial-oecd.json",
+          reviewed_source_json: "{\"edited\":true}",
+        }),
+      }),
+    );
+  });
+
+  await user.click(screen.getByRole("button", { name: /^approve$/i }));
+
+  await waitFor(() => {
+    expect(globalThis.fetch).toHaveBeenNthCalledWith(
+      4,
+      "/api/internal/onboarding/approve",
+      expect.objectContaining({
+        body: JSON.stringify({
+          manifest: "D:/repo/data/onboarding/manifests/cn-kr.initial-oecd.json",
+          reviewer_name: "Codex Reviewer",
+          note: "Approved after reviewer workspace check.",
+        }),
+      }),
+    );
+  });
 });
 

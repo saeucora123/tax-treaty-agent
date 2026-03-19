@@ -10,8 +10,8 @@ Decision owner: `project owner + user-approved execution route`
 
 <!-- STAGE_6_PROGRESS:START -->
 Last synced: `2026-03-18`
-Status summary: Stage 6 has passed gate: the system now exposes treaty-version notes, paragraph-level excerpts, working-paper lineage, and fact-based MLI/PPT prompts across both supported treaty pairs and all three supported income types.
-Current checkpoint: Stage 6 gate is now PASS with CN-SG treaty truth-check completed, CN-NL alignment checks recorded, a 6-case source-chain replay pack passing, and a documented 15-minute human-review exercise.
+Status summary: Stage 6 has passed gate: the system now exposes treaty-version notes, paragraph-level excerpts, working-paper lineage, and fact-based MLI/PPT prompts across three supported treaty pairs and all three supported income types.
+Current checkpoint: Stage 6 gate remains PASS, and the post-Stage-6 hardening track now includes dual-pair baseline-aware OECD delta proofing, a formal source-build entrypoint, an internal reviewer workspace, and the first completed initial_onboarding promotion of CN-KR into public runtime support.
 
 Completed so far:
 - Stage 6 target narrowed from generic controlled expansion to source chain closure
@@ -24,12 +24,20 @@ Completed so far:
 - Stage 6 evaluation module, fixture tests, runner, and 6-case replay pack added
 - Stage 6 evidence pack recorded under docs/superpowers/research/stage-6-evidence
 - Stage 6 gate review is now PASS
+- The offline treaty compiler now has a second shadow proof: CN-NL passes the same manifest-driven compile/review flow already proven on CN-SG
+- The thin-baseline V2 compiler path is now proven on CN-SG: live baseline-aware compile emits delta artifacts and still canonical-passes review against cn-sg.v3.json
+- CN-NL now also passes a live baseline-aware OECD delta proof with canonical-pass review under the same strict gate
+- Formal source-build now supports pair-level manifests and official raw/PDF inputs through run_source_ingest --manifest
+- CN-KR completed the first initial_onboarding path: source build, baseline-aware compile, reviewer JSON review, approval, promotion, and public runtime support
+- The frontend now exposes an internal reviewer workspace behind ?internal=onboarding for source build, compile, review, approve, and promote actions
 
 In progress:
 
 Next up:
+- Record end-to-end reviewer elapsed-time evidence so the onboarding cost-reduction claim is backed by measured process time instead of architecture inference alone
 - Continue physically decomposing backend/app/service.py along the new contract/provider/dividend boundaries without changing runtime behavior
 - Plan Slice 4 removal of deprecated dividend bridge fields after all fixtures and replay packs migrate to raw-fact inputs
+- Decide whether the next onboarding-compiler slice should deepen the OECD reference artifact or improve reviewer diff ergonomics before broader treaty expansion
 
 Current blockers:
 <!-- STAGE_6_PROGRESS:END -->

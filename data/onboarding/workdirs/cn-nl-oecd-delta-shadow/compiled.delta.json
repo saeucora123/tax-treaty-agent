@@ -1,0 +1,50 @@
+{
+  "pair_id": "cn-nl",
+  "baseline_reference": {
+    "baseline_id": "oecd-model-2017-articles10-12",
+    "title": "OECD Model Tax Convention 2017 baseline reference for Articles 10 to 12",
+    "model_version": "2017"
+  },
+  "delta_analysis": [
+    {
+      "article_number": "10",
+      "income_type": "dividends",
+      "baseline_reference": "OECD Model 2017 Article 10(2)(b)",
+      "bilateral_reference": "Article 10(2)(b)",
+      "delta_type": "rate_changed",
+      "summary": "General dividend withholding rate is 10% in bilateral treaty vs 15% in OECD baseline",
+      "materiality": "high",
+      "reviewer_attention": "yes"
+    },
+    {
+      "article_number": "10",
+      "income_type": "dividends",
+      "baseline_reference": "OECD Model 2017 Article 10(2)(a)",
+      "bilateral_reference": "Article 10(2)(a)",
+      "delta_type": "condition_changed",
+      "summary": "Bilateral treaty omits 365-day holding period requirement for 5% reduced dividend rate",
+      "materiality": "medium",
+      "reviewer_attention": "yes"
+    },
+    {
+      "article_number": "11",
+      "income_type": "interest",
+      "baseline_reference": "OECD Model 2017 Article 11(2)",
+      "bilateral_reference": "Article 11(2)",
+      "delta_type": "scope_note",
+      "summary": "Interest withholding rate and conditions match OECD baseline (10% with beneficial owner residence condition)",
+      "materiality": "low",
+      "reviewer_attention": "no"
+    },
+    {
+      "article_number": "12",
+      "income_type": "royalties",
+      "baseline_reference": "OECD Model 2017 Article 12(1)",
+      "bilateral_reference": "Article 12(2)",
+      "delta_type": "scope_note",
+      "summary": "Bilateral treaty allows source-state taxation with 10% cap, while OECD baseline provides exclusive residence taxation",
+      "materiality": "high",
+      "reviewer_attention": "yes"
+    }
+  ]
+}

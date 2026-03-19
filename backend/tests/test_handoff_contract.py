@@ -25,7 +25,7 @@ def test_rejects_unsupported_country_pair():
     assert payload["supported"] is False
     assert payload["reason"] == "unsupported_country_pair"
     assert payload["message"] == (
-        "Current pilot scope supports only China-Netherlands, China-Singapore treaty scenarios."
+        "Current pilot scope supports only China-Korea, China-Netherlands, China-Singapore treaty scenarios."
     )
     assert payload["immediate_action"] == (
         "Rewrite the scenario into the supported pilot treaty pair list before running another review."
@@ -33,6 +33,9 @@ def test_rejects_unsupported_country_pair():
     assert payload["missing_fields"] == []
     assert payload["suggested_format"] == "Try a sentence like: 中国居民企业向新加坡公司支付特许权使用费"
     assert payload["suggested_examples"] == [
+        "中国居民企业向韩国公司支付股息",
+        "中国居民企业向韩国银行支付利息",
+        "中国居民企业向韩国公司支付特许权使用费",
         "中国居民企业向荷兰公司支付股息",
         "中国居民企业向荷兰银行支付利息",
         "中国居民企业向荷兰公司支付特许权使用费",
@@ -49,7 +52,7 @@ def test_rejects_unsupported_country_pair():
         {
             "priority": "high",
             "action": "改写为当前试点国家对列表内、且属于股息、利息或特许权使用费的查询后再重试。",
-            "reason": "当前场景属于产品边界之外；目前稳定数据源只支持 China-Netherlands, China-Singapore 两个试点国家对。",
+            "reason": "当前场景属于产品边界之外；目前稳定数据源只支持 China-Korea, China-Netherlands, China-Singapore 试点国家对。",
         }
     ]
     handoff = assert_machine_handoff(

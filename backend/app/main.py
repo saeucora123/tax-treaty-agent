@@ -1,8 +1,29 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
-from app.contracts import AnalyzeRequest, InternalAnalyzeRequest
+from app.contracts import (
+    AnalyzeRequest,
+    InternalAnalyzeRequest,
+    InternalOnboardingApproveRequest,
+    InternalOnboardingManifestRequest,
+    InternalOnboardingReviewRequest,
+)
 from app.guided_facts import build_guided_fact_contract
 from app.service import analyze_scenario
+from app.source_ingest import SourceBuildError
+from app.treaty_onboarding import (
+    ManifestValidationError,
+    PromotionGateError,
+    ReviewGateError,
+    TreatyOnboardingError,
+    build_workspace,
+    list_onboarding_manifests,
+    run_approve,
+    run_compile,
+    run_promote,
+    run_review,
+    run_source_build_for_manifest,
+    save_reviewed_source_json,
+)
 
 
 app = FastAPI(title="Tax Treaty Agent API")
@@ -39,3 +60,81 @@ def internal_analyze(request: InternalAnalyzeRequest) -> dict:
 @app.get("/guided-facts")
 def guided_facts() -> dict[str, object]:
     return build_guided_fact_contract()
+
+
+def _raise_internal_onboarding_error(error: Exception) -> None:
+    raise HTTPException(status_code=400, detail=str(error)) from error
+
+
+@app.get("/internal/onboarding/manifests")
+def list_internal_onboarding_manifests() -> dict[str, object]:
+    return {"manifests": list_onboarding_manifests()}
+
+
+@app.get("/internal/onboarding/workspace")
+def get_internal_onboarding_workspace(manifest: str) -> dict[str, object]:
+    try:
+        return build_workspace(manifest)
+    except (TreatyOnboardingError, ManifestValidationError) as error:
+        _raise_internal_onboarding_error(error)
+
+
+@app.post("/internal/onboarding/source-build")
+def run_internal_onboarding_source_build(
+    request: InternalOnboardingManifestRequest,
+) -> dict[str, object]:
+    try:
+        run_source_build_for_manifest(request.manifest)
+        return build_workspace(request.manifest)
+    except (TreatyOnboardingError, ManifestValidationError, SourceBuildError) as error:
+        _raise_internal_onboarding_error(error)
+
+
+@app.post("/internal/onboarding/compile")
+def run_internal_onboarding_compile(
+    request: InternalOnboardingManifestRequest,
+) -> dict[str, object]:
+    try:
+        run_compile(request.manifest)
+        return build_workspace(request.manifest)
+    except (TreatyOnboardingError, ManifestValidationError) as error:
+        _raise_internal_onboarding_error(error)
+
+
+@app.post("/internal/onboarding/review")
+def run_internal_onboarding_review(
+    request: InternalOnboardingReviewRequest,
+) -> dict[str, object]:
+    try:
+        if request.reviewed_source_json is not None:
+            save_reviewed_source_json(request.manifest, request.reviewed_source_json)
+        run_review(request.manifest)
+        return build_workspace(request.manifest)
+    except (TreatyOnboardingError, ManifestValidationError, ReviewGateError) as error:
+        _raise_internal_onboarding_error(error)
+
+
+@app.post("/internal/onboarding/approve")
+def run_internal_onboarding_approve(
+    request: InternalOnboardingApproveRequest,
+) -> dict[str, object]:
+    try:
+        run_approve(
+            request.manifest,
+            reviewer_name=request.reviewer_name,
+            note=request.note,
+        )
+        return build_workspace(request.manifest)
+    except (TreatyOnboardingError, ManifestValidationError, ReviewGateError) as error:
+        _raise_internal_onboarding_error(error)
+
+
+@app.post("/internal/onboarding/promote")
+def run_internal_onboarding_promote(
+    request: InternalOnboardingManifestRequest,
+) -> dict[str, object]:
+    try:
+        run_promote(request.manifest)
+        return build_workspace(request.manifest)
+    except (TreatyOnboardingError, ManifestValidationError, ReviewGateError, PromotionGateError) as error:
+        _raise_internal_onboarding_error(error)

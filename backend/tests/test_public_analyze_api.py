@@ -13,6 +13,23 @@ from tests.support.handoff_assertions import (
 
 client = TestClient(app)
 
+SUPPORTED_SCOPE_EXAMPLES = [
+    "中国居民企业向韩国公司支付股息",
+    "中国居民企业向韩国银行支付利息",
+    "中国居民企业向韩国公司支付特许权使用费",
+    "中国居民企业向荷兰公司支付股息",
+    "中国居民企业向荷兰银行支付利息",
+    "中国居民企业向荷兰公司支付特许权使用费",
+    "中国居民企业向新加坡公司支付股息",
+    "中国居民企业向新加坡银行支付利息",
+    "中国居民企业向新加坡公司支付特许权使用费",
+]
+
+INCOMPLETE_SCOPE_EXAMPLES = [
+    "中国居民企业向韩国公司支付股息",
+    "中国居民企业向韩国银行支付利息",
+]
+
 def test_public_openapi_hides_data_source_but_internal_contract_keeps_it():
     schema = app.openapi()
     analyze_schema = schema["components"]["schemas"]["AnalyzeRequest"]
@@ -181,14 +198,7 @@ def test_rejects_supported_country_pair_with_unknown_transaction_type():
     assert payload["reason"] == "unsupported_transaction_type"
     assert payload["missing_fields"] == ["transaction_type"]
     assert payload["suggested_format"] == "Try a sentence like: 中国居民企业向新加坡公司支付特许权使用费"
-    assert payload["suggested_examples"] == [
-        "中国居民企业向荷兰公司支付股息",
-        "中国居民企业向荷兰银行支付利息",
-        "中国居民企业向荷兰公司支付特许权使用费",
-        "中国居民企业向新加坡公司支付股息",
-        "中国居民企业向新加坡银行支付利息",
-        "中国居民企业向新加坡公司支付特许权使用费",
-    ]
+    assert payload["suggested_examples"] == SUPPORTED_SCOPE_EXAMPLES
     assert payload["review_state"] == {
         "state_code": "out_of_scope",
         "state_label_zh": "不在支持范围",
@@ -198,7 +208,7 @@ def test_rejects_supported_country_pair_with_unknown_transaction_type():
         {
             "priority": "high",
             "action": "改写为当前试点国家对列表内、且属于股息、利息或特许权使用费的查询后再重试。",
-            "reason": "当前场景属于产品边界之外；目前稳定数据源只支持 China-Netherlands, China-Singapore 两个试点国家对。",
+            "reason": "当前场景属于产品边界之外；目前稳定数据源只支持 China-Korea, China-Netherlands, China-Singapore 试点国家对。",
         }
     ]
 
@@ -215,10 +225,7 @@ def test_rejects_incomplete_scenario_when_country_pair_cannot_be_confirmed():
     assert payload["reason"] == "incomplete_scenario"
     assert payload["missing_fields"] == ["payer_country"]
     assert payload["suggested_format"] == "Try a sentence like: 中国居民企业向荷兰公司支付股息"
-    assert payload["suggested_examples"] == [
-        "中国居民企业向荷兰公司支付股息",
-        "中国居民企业向荷兰银行支付利息",
-    ]
+    assert payload["suggested_examples"] == INCOMPLETE_SCOPE_EXAMPLES
     assert payload["review_state"] == {
         "state_code": "can_be_completed",
         "state_label_zh": "可补全",
@@ -247,10 +254,7 @@ def test_incomplete_alias_input_gets_bridge_note_but_keeps_formal_template():
         "Use a fuller scenario so the tool can test the treaty position under the standard treaty royalties framework."
     )
     assert payload["suggested_format"] == "Try a sentence like: 中国居民企业向荷兰公司支付特许权使用费"
-    assert payload["suggested_examples"] == [
-        "中国居民企业向荷兰公司支付股息",
-        "中国居民企业向荷兰银行支付利息",
-    ]
+    assert payload["suggested_examples"] == INCOMPLETE_SCOPE_EXAMPLES
 
 def test_rejects_ambiguous_payer_country_instead_of_guessing():
     response = client.post(
@@ -262,10 +266,7 @@ def test_rejects_ambiguous_payer_country_instead_of_guessing():
     payload = response.json()
     assert payload["reason"] == "incomplete_scenario"
     assert payload["missing_fields"] == ["payer_country"]
-    assert payload["suggested_examples"] == [
-        "中国居民企业向荷兰公司支付股息",
-        "中国居民企业向荷兰银行支付利息",
-    ]
+    assert payload["suggested_examples"] == INCOMPLETE_SCOPE_EXAMPLES
 
 def test_rejects_ambiguous_payee_country_instead_of_guessing():
     response = client.post(
@@ -277,10 +278,7 @@ def test_rejects_ambiguous_payee_country_instead_of_guessing():
     payload = response.json()
     assert payload["reason"] == "incomplete_scenario"
     assert payload["missing_fields"] == ["payee_country"]
-    assert payload["suggested_examples"] == [
-        "中国居民企业向荷兰公司支付股息",
-        "中国居民企业向荷兰银行支付利息",
-    ]
+    assert payload["suggested_examples"] == INCOMPLETE_SCOPE_EXAMPLES
 
 def test_rejects_unsupported_country_pair_with_supported_scope_examples():
     response = client.post(
@@ -292,16 +290,9 @@ def test_rejects_unsupported_country_pair_with_supported_scope_examples():
     payload = response.json()
     assert payload["reason"] == "unsupported_country_pair"
     assert payload["message"] == (
-        "Current pilot scope supports only China-Netherlands, China-Singapore treaty scenarios."
+        "Current pilot scope supports only China-Korea, China-Netherlands, China-Singapore treaty scenarios."
     )
-    assert payload["suggested_examples"] == [
-        "中国居民企业向荷兰公司支付股息",
-        "中国居民企业向荷兰银行支付利息",
-        "中国居民企业向荷兰公司支付特许权使用费",
-        "中国居民企业向新加坡公司支付股息",
-        "中国居民企业向新加坡银行支付利息",
-        "中国居民企业向新加坡公司支付特许权使用费",
-    ]
+    assert payload["suggested_examples"] == SUPPORTED_SCOPE_EXAMPLES
 
 def test_medium_confidence_match_is_escalated_to_priority_review(tmp_path: Path, monkeypatch):
     payload = json.loads(Path(service.DATA_PATH).read_text(encoding="utf-8"))
@@ -559,7 +550,7 @@ def test_llm_input_parser_can_route_out_of_scope_country_pair_into_unsupported(m
         "matched_transaction_label": "股息",
     }
     assert payload["message"] == (
-        "Current pilot scope supports only China-Netherlands, China-Singapore treaty scenarios."
+        "Current pilot scope supports only China-Korea, China-Netherlands, China-Singapore treaty scenarios."
     )
 
 def test_llm_input_parser_rejects_non_tax_smalltalk_as_incomplete(monkeypatch):
@@ -590,10 +581,7 @@ def test_llm_input_parser_rejects_non_tax_smalltalk_as_incomplete(monkeypatch):
         "payee_country",
         "transaction_type",
     ]
-    assert payload["suggested_examples"] == [
-        "中国居民企业向荷兰公司支付股息",
-        "中国居民企业向荷兰银行支付利息",
-    ]
+    assert payload["suggested_examples"] == INCOMPLETE_SCOPE_EXAMPLES
     assert payload["input_interpretation"] == {
         "parser_source": "llm",
         "payer_country": None,
@@ -831,7 +819,7 @@ def test_stage3_state_contract_marks_unsupported_scope_as_out_of_scope():
         {
             "priority": "high",
             "action": "改写为当前试点国家对列表内、且属于股息、利息或特许权使用费的查询后再重试。",
-            "reason": "当前场景属于产品边界之外；目前稳定数据源只支持 China-Netherlands, China-Singapore 两个试点国家对。",
+            "reason": "当前场景属于产品边界之外；目前稳定数据源只支持 China-Korea, China-Netherlands, China-Singapore 试点国家对。",
         }
     ]
 

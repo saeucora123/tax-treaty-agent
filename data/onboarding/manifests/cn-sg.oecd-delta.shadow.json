@@ -1,0 +1,55 @@
+{
+  "pair_id": "cn-sg",
+  "mode": "shadow_rebuild",
+  "jurisdictions": [
+    "CN",
+    "SG"
+  ],
+  "target_articles": [
+    "10",
+    "11",
+    "12"
+  ],
+  "source_documents": [
+    "../../source_documents/cn-sg-main-treaty.json"
+  ],
+  "stable_reference_dataset": "../../treaties/cn-sg.v3.json",
+  "promotion_target_dataset": "../../treaties/cn-sg.v3.json",
+  "work_dir": "../workdirs/cn-sg-oecd-delta-shadow",
+  "baseline_reference": "../baselines/oecd-model-2017.articles10-12.reference.json",
+  "treaty_metadata": {
+    "version": "v3",
+    "source_type": "manual_structured_from_official_text",
+    "notes": [
+      "Stage 6 source-chain closure version for the second treaty pair.",
+      "CN-SG rates and excerpts are now verified against the IRAS official treaty text rather than Stage 2 placeholder text."
+    ],
+    "source_trace": {
+      "treaty_full_name": "Agreement between the Government of the Republic of Singapore and the Government of the People's Republic of China for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+      "version_note": "2007 agreement as reflected in the IRAS official treaty text, with the Second Protocol effective from 1 January 2010 and the Third Protocol effective from 1 January 2013 incorporated into the operative Articles 10 to 12.",
+      "source_document_title": "Agreement between the Government of the Republic of Singapore and the Government of the People's Republic of China for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+      "language_version": "en",
+      "official_source_ids": [
+        "iras-cn-sg-dta-full-text-pdf",
+        "iras-cn-sg-second-protocol-newsroom",
+        "iras-cn-sg-third-protocol-newsroom"
+      ],
+      "working_papers": {
+        "dividends": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-sg-dividends-working-paper.md",
+        "interest": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-sg-interest-working-paper.md",
+        "royalties": "docs/superpowers/research/stage-6-evidence/2026-03-13-cn-sg-royalties-working-paper.md"
+      },
+      "protocol_note": "IRAS states that the Second Protocol signed on 24 August 2009 entered into force on 11 December 2009 and took effect from 1 January 2010, while the Third Protocol entered into force on 24 July 2012 and took effect from 1 January 2013."
+    },
+    "mli_context": {
+      "covered_tax_agreement": true,
+      "ppt_applies": true,
+      "summary": "China deposited its MLI instrument on 25 May 2022 with entry into force on 1 September 2022, and Singapore deposited on 21 December 2018 with entry into force on 1 April 2019. OECD peer-review materials record the China-Singapore agreement as an MLI-covered tax agreement and show MLI Article 7 (PPT) as applicable. The system does not determine PPT satisfaction automatically.",
+      "human_review_note": "Confirm during manual review whether one of the principal purposes of the arrangement was to obtain treaty benefits.",
+      "official_source_ids": [
+        "oecd-mli-signatories-and-parties",
+        "oecd-singapore-mli-peer-review-2024"
+      ]
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "registry_id": "cn-kr-official-sources",
+  "jurisdiction_pair": ["CN", "KR"],
+  "last_reviewed_on": "2026-03-18",
+  "sources": [
+    {
+      "source_id": "nts-english-tax-treaty-index",
+      "title": "NTS English Tax Treaty Index",
+      "issuing_authority": "National Tax Service of Korea",
+      "jurisdictions": ["KR"],
+      "source_type": "metadata_page",
+      "official_url": "https://nts.go.kr/english/cm/cntnts/cntntsView.do?cntntsId=8810&mi=20251",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "source_governance_reference",
+      "notes": "English NTS treaty index page listing China as a tax-treaty partner and linking to the detailed treaty page."
+    },
+    {
+      "source_id": "nts-cn-kr-taxlaw-detail",
+      "title": "Korea-China Tax Treaty Detail Page",
+      "issuing_authority": "National Tax Service of Korea",
+      "jurisdictions": ["CN", "KR"],
+      "source_type": "metadata_page",
+      "official_url": "https://taxlaw.nts.go.kr/st/USESTC002M.do?txaAgrmBscId=200000000000000154",
+      "language": "ko/en",
+      "status": "confirmed",
+      "preferred_use": "source_governance_reference",
+      "notes": "Korean tax-law treaty detail page used as the Korea-side official treaty metadata anchor for the China-Korea agreement."
+    },
+    {
+      "source_id": "unts-cn-kr-treaty-pdf",
+      "title": "Agreement between the Government of the People's Republic of China and the Government of the Republic of Korea for the Avoidance of Double Taxation and the Prevention of Fiscal Evasion with respect to Taxes on Income",
+      "issuing_authority": "United Nations Treaty Series",
+      "jurisdictions": ["CN", "KR"],
+      "source_type": "treaty_text",
+      "official_url": "https://treaties.un.org/doc/Publication/UNTS/Volume%201848/v1848.pdf",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "primary_runtime_basis",
+      "notes": "Official UNTS PDF containing the full English treaty text. Articles 10 to 12 are used as the runtime paragraph anchor for the CN-KR onboarding pilot."
+    },
+    {
+      "source_id": "oecd-mli-signatories-and-parties",
+      "title": "Signatories and Parties to the Multilateral Convention to Implement Tax Treaty Related Measures to Prevent Base Erosion and Profit Shifting",
+      "issuing_authority": "Organisation for Economic Co-operation and Development",
+      "jurisdictions": ["CN", "KR"],
+      "source_type": "mli_status_table",
+      "official_url": "https://www.oecd.org/tax/beps/beps-mli-signatories-and-parties.pdf",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "mli_context_only",
+      "notes": "OECD status table used to verify that China and Korea have both ratified the MLI and to capture their entry-into-force dates."
+    },
+    {
+      "source_id": "oecd-korea-treaty-abuse-peer-review-2024",
+      "title": "Korea: Prevention of Tax Treaty Abuse – Sixth Peer Review Report on Treaty Shopping",
+      "issuing_authority": "Organisation for Economic Co-operation and Development",
+      "jurisdictions": ["CN", "KR"],
+      "source_type": "mli_peer_review",
+      "official_url": "https://www.oecd.org/en/publications/prevention-of-tax-treaty-abuse-sixth-peer-review-report-on-treaty-shopping_36cebf8e-en/full-report/korea_5c3e4909.html",
+      "language": "en",
+      "status": "confirmed",
+      "preferred_use": "mli_context_only",
+      "notes": "OECD peer-review page confirming Korea implements the Action 6 minimum standard through the MLI and listing China as an MLI/PPT treaty partner."
+    }
+  ]
+}

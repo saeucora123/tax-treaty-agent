@@ -1,0 +1,16 @@
+{
+  "status": "ready_for_approval",
+  "pair_id": "cn-kr",
+  "reviewed_source": "D:\\AI_Projects\\first agent\\data\\onboarding\\workdirs\\cn-kr-initial-oecd\\reviewed.source.json",
+  "reviewed_dataset": "D:\\AI_Projects\\first agent\\data\\onboarding\\workdirs\\cn-kr-initial-oecd\\reviewed.dataset.json",
+  "target_articles": [
+    "10",
+    "11",
+    "12"
+  ],
+  "missing_target_articles": [],
+  "primary_candidate_gap_count": 0,
+  "unresolved_item_count": 0,
+  "unresolved_items": [],
+  "required_source_chain_metadata_complete": true
+}

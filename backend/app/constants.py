@@ -8,6 +8,11 @@ SCHEMA_VERSION = "slice3.v1"
 NORMAL_CONFIDENCE_THRESHOLD = 0.95
 AUTO_CONCLUSION_CONFIDENCE_THRESHOLD = 0.80
 SUPPORTED_SCOPE_EXAMPLES_BY_PAIR = {
+    ("CN", "KR"): [
+        "中国居民企业向韩国公司支付股息",
+        "中国居民企业向韩国银行支付利息",
+        "中国居民企业向韩国公司支付特许权使用费",
+    ],
     ("CN", "NL"): [
         "中国居民企业向荷兰公司支付股息",
         "中国居民企业向荷兰银行支付利息",
@@ -20,10 +25,12 @@ SUPPORTED_SCOPE_EXAMPLES_BY_PAIR = {
     ],
 }
 TREATY_DISPLAY_NAMES_ZH = {
+    ("CN", "KR"): "中国-韩国税收协定",
     ("CN", "NL"): "中国-荷兰税收协定",
     ("CN", "SG"): "中国-新加坡税收协定",
 }
 PAIR_LABELS_EN = {
+    ("CN", "KR"): "China-Korea",
     ("CN", "NL"): "China-Netherlands",
     ("CN", "SG"): "China-Singapore",
 }
@@ -108,6 +115,17 @@ COUNTRY_FOOTPRINTS = {
         "新加坡银行",
         "Singapore bank",
         "Singapore company",
+    ],
+    "KR": [
+        "韩国",
+        "韩国公司",
+        "韩国银行",
+        "Korea",
+        "South Korea",
+        "Republic of Korea",
+        "Korean",
+        "Seoul",
+        "首尔",
     ],
     "US": ["美国", "美国公司", "United States", "USA", "Washington", "华盛顿"],
 }

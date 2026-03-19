@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import {
   type AnalyzeResponse,
   type BOPrecheck,
@@ -55,7 +55,379 @@ function buildGuidedFactState(incomeType: GuidedIncomeType): Record<string, Guid
   return nextFacts;
 }
 
+type OnboardingManifestSummary = {
+  manifest_path: string;
+  pair_id: string;
+  mode: "shadow_rebuild" | "initial_onboarding";
+  jurisdictions: string[];
+  target_articles: string[];
+  baseline_enabled: boolean;
+  source_build_manifest_path: string;
+  source_build_available: boolean;
+};
+
+type OnboardingWorkspace = {
+  manifest: OnboardingManifestSummary & {
+    source_documents: string[];
+    promotion_target_dataset: string;
+    baseline_reference: string | null;
+  };
+  source_build: {
+    available: boolean;
+    manifest_path: string;
+    report: Record<string, unknown> | null;
+    status: string | null;
+  };
+  compile: {
+    status: string | null;
+    report: Record<string, unknown> | null;
+    delta_report: Record<string, unknown> | null;
+    delta_analysis: Array<Record<string, unknown>>;
+  };
+  review: {
+    status: string | null;
+    report: Record<string, unknown> | null;
+    diff: Record<string, unknown> | null;
+  };
+  approval: {
+    status: string | null;
+    record: Record<string, unknown> | null;
+  };
+  promotion: {
+    status: string | null;
+    record: Record<string, unknown> | null;
+  };
+  reviewed_source: {
+    path: string;
+    content: string | null;
+  };
+};
+
+async function readApiJson<T>(url: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(url, init);
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    const detail =
+      payload && typeof payload === "object" && "detail" in payload
+        ? String((payload as { detail?: unknown }).detail ?? "Request failed.")
+        : "Request failed.";
+    throw new Error(detail);
+  }
+  return payload as T;
+}
+
+function isInternalOnboardingMode() {
+  return new URLSearchParams(window.location.search).get("internal") === "onboarding";
+}
+
+function formatWorkspaceStatus(status?: string | null) {
+  return status ?? "not_run";
+}
+
+function InternalOnboardingWorkspace() {
+  const [manifests, setManifests] = useState<OnboardingManifestSummary[]>([]);
+  const [selectedManifest, setSelectedManifest] = useState("");
+  const [workspace, setWorkspace] = useState<OnboardingWorkspace | null>(null);
+  const [reviewedSourceJson, setReviewedSourceJson] = useState("");
+  const [reviewerName, setReviewerName] = useState("Codex Reviewer");
+  const [approvalNote, setApprovalNote] = useState("Approved after reviewer workspace check.");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    void loadManifests();
+  }, []);
+
+  async function loadManifests() {
+    setIsLoading(true);
+    setError("");
+    try {
+      const payload = await readApiJson<{ manifests: OnboardingManifestSummary[] }>(
+        "/api/internal/onboarding/manifests",
+      );
+      setManifests(payload.manifests);
+      const nextManifest = selectedManifest || payload.manifests[0]?.manifest_path;
+      if (nextManifest) {
+        await loadWorkspace(nextManifest);
+      }
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : "Failed to load onboarding manifests.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function loadWorkspace(manifestPath: string) {
+    const payload = await readApiJson<OnboardingWorkspace>(
+      `/api/internal/onboarding/workspace?manifest=${encodeURIComponent(manifestPath)}`,
+    );
+    setSelectedManifest(manifestPath);
+    setWorkspace(payload);
+    setReviewedSourceJson(payload.reviewed_source.content ?? "");
+  }
+
+  async function runWorkspaceAction(
+    endpoint: string,
+    body: Record<string, unknown>,
+  ) {
+    setIsLoading(true);
+    setError("");
+    try {
+      const payload = await readApiJson<OnboardingWorkspace>(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      setWorkspace(payload);
+      setReviewedSourceJson(payload.reviewed_source.content ?? "");
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : "Internal onboarding action failed.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <div className="app-shell">
+      <main className="workspace-layout">
+        <section className="input-section">
+          <div className="section-heading">Internal Onboarding Workspace</div>
+          <p className="section-desc">
+            Internal-only reviewer surface for source build, compile, review, approval, and promotion.
+          </p>
+
+          <div className="record-row">
+            <div className="row-label">
+              <label htmlFor="onboarding-manifest">Onboarding manifest</label>
+            </div>
+            <div className="row-value">
+              <select
+                id="onboarding-manifest"
+                value={selectedManifest}
+                onChange={(event) => {
+                  void loadWorkspace(event.target.value);
+                }}
+              >
+                {manifests.map((manifest) => (
+                  <option key={manifest.manifest_path} value={manifest.manifest_path}>
+                    {manifest.pair_id} · {manifest.mode}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {workspace && (
+            <>
+              <div className="record-row">
+                <div className="row-label">Manifest summary</div>
+                <div className="row-value">
+                  <ul className="formal-list">
+                    <li>Pair: {workspace.manifest.pair_id}</li>
+                    <li>Mode: {workspace.manifest.mode}</li>
+                    <li>Jurisdictions: {workspace.manifest.jurisdictions.join(" -> ")}</li>
+                    <li>Target articles: {workspace.manifest.target_articles.join(", ")}</li>
+                    <li>Baseline enabled: {workspace.manifest.baseline_enabled ? "yes" : "no"}</li>
+                    <li>Source build available: {workspace.manifest.source_build_available ? "yes" : "no"}</li>
+                    <li>Promotion target: {workspace.manifest.promotion_target_dataset}</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="record-row highlight-row">
+                <div className="row-label">Pipeline status</div>
+                <div className="row-value">
+                  <ul className="formal-list">
+                    <li>Source build: {formatWorkspaceStatus(workspace.source_build.status)}</li>
+                    <li>Compile: {formatWorkspaceStatus(workspace.compile.status)}</li>
+                    <li>Review: {formatWorkspaceStatus(workspace.review.status)}</li>
+                    <li>Approval: {formatWorkspaceStatus(workspace.approval.status)}</li>
+                    <li>Promotion: {formatWorkspaceStatus(workspace.promotion.status)}</li>
+                  </ul>
+                </div>
+              </div>
+
+              {workspace.compile.delta_report && (
+                <div className="record-row">
+                  <div className="row-label">Compiled delta summary</div>
+                  <div className="row-value">
+                    <ul className="formal-list">
+                      <li>
+                        Delta items: {String(workspace.compile.delta_report["delta_item_count"] ?? 0)}
+                      </li>
+                      <li>
+                        High materiality: {String(workspace.compile.delta_report["high_materiality_count"] ?? 0)}
+                      </li>
+                    </ul>
+                    {workspace.compile.delta_analysis.length > 0 && (
+                      <ul className="formal-list">
+                        {workspace.compile.delta_analysis.map((item, index) => (
+                          <li key={`${item["article_number"] ?? "delta"}-${index}`}>
+                            {String(item["article_number"] ?? "n/a")} · {String(item["delta_type"] ?? "n/a")} ·{" "}
+                            {String(item["summary"] ?? "")}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {workspace.review.diff && (
+                <div className="record-row">
+                  <div className="row-label">Review diff summary</div>
+                  <div className="row-value">
+                    <ul className="formal-list">
+                      <li>
+                        Source changed paths:{" "}
+                        {String(workspace.review.diff["source_changed_path_count"] ?? 0)}
+                      </li>
+                      <li>
+                        Dataset changed paths:{" "}
+                        {String(workspace.review.diff["dataset_changed_path_count"] ?? 0)}
+                      </li>
+                    </ul>
+                    <ul className="formal-list">
+                      {[
+                        ...((workspace.review.diff["source_changed_paths"] as string[] | undefined) ?? []),
+                        ...((workspace.review.diff["dataset_changed_paths"] as string[] | undefined) ?? []),
+                      ].map((path, index) => (
+                        <li key={`${path}-${index}`}>{path}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              <div className="record-row">
+                <div className="row-label">
+                  <label htmlFor="reviewed-source-json">reviewed.source.json editor</label>
+                </div>
+                <div className="row-value">
+                  <textarea
+                    id="reviewed-source-json"
+                    rows={18}
+                    value={reviewedSourceJson}
+                    onChange={(event) => setReviewedSourceJson(event.target.value)}
+                    className="typewriter-input"
+                  />
+                </div>
+              </div>
+
+              <div className="record-row">
+                <div className="row-label">
+                  <label htmlFor="reviewer-name">Reviewer name</label>
+                </div>
+                <div className="row-value">
+                  <input
+                    id="reviewer-name"
+                    type="text"
+                    value={reviewerName}
+                    onChange={(event) => setReviewerName(event.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="record-row">
+                <div className="row-label">
+                  <label htmlFor="approval-note">Approval note</label>
+                </div>
+                <div className="row-value">
+                  <textarea
+                    id="approval-note"
+                    rows={3}
+                    value={approvalNote}
+                    onChange={(event) => setApprovalNote(event.target.value)}
+                    className="typewriter-input"
+                  />
+                </div>
+              </div>
+
+              <div className="action-row">
+                <button
+                  type="button"
+                  className="btn-seal"
+                  disabled={isLoading || !selectedManifest || !workspace.manifest.source_build_available}
+                  onClick={() =>
+                    void runWorkspaceAction("/api/internal/onboarding/source-build", {
+                      manifest: selectedManifest,
+                    })
+                  }
+                >
+                  Run Source Build
+                </button>
+                <button
+                  type="button"
+                  className="btn-seal"
+                  disabled={isLoading || !selectedManifest}
+                  onClick={() =>
+                    void runWorkspaceAction("/api/internal/onboarding/compile", {
+                      manifest: selectedManifest,
+                    })
+                  }
+                >
+                  Run Compile
+                </button>
+                <button
+                  type="button"
+                  className="btn-seal"
+                  disabled={isLoading || !selectedManifest}
+                  onClick={() =>
+                    void runWorkspaceAction("/api/internal/onboarding/review", {
+                      manifest: selectedManifest,
+                      reviewed_source_json: reviewedSourceJson,
+                    })
+                  }
+                >
+                  Run Review
+                </button>
+                <button
+                  type="button"
+                  className="btn-seal"
+                  disabled={isLoading || !selectedManifest}
+                  onClick={() =>
+                    void runWorkspaceAction("/api/internal/onboarding/approve", {
+                      manifest: selectedManifest,
+                      reviewer_name: reviewerName,
+                      note: approvalNote,
+                    })
+                  }
+                >
+                  Approve
+                </button>
+                <button
+                  type="button"
+                  className="btn-seal"
+                  disabled={isLoading || !selectedManifest}
+                  onClick={() =>
+                    void runWorkspaceAction("/api/internal/onboarding/promote", {
+                      manifest: selectedManifest,
+                    })
+                  }
+                >
+                  Promote
+                </button>
+              </div>
+            </>
+          )}
+
+          {error && (
+            <div className="memo-alert alert-error">
+              <span className="alert-marker">!</span>
+              <p>{error}</p>
+            </div>
+          )}
+        </section>
+      </main>
+    </div>
+  );
+}
+
 export default function App() {
+  if (isInternalOnboardingMode()) {
+    return <InternalOnboardingWorkspace />;
+  }
+
   const [submissionMode, setSubmissionMode] = useState<InputMode>("guided");
   const [guidedPayerCountry, setGuidedPayerCountry] = useState("CN");
   const [guidedPayeeCountry, setGuidedPayeeCountry] = useState("NL");
@@ -687,6 +1059,7 @@ export default function App() {
                       onChange={(event) => setGuidedPayerCountry(event.target.value)}
                     >
                       <option value="CN">CN</option>
+                      <option value="KR">KR</option>
                       <option value="NL">NL</option>
                       <option value="SG">SG</option>
                       <option value="US">US</option>
@@ -705,6 +1078,7 @@ export default function App() {
                     >
                       <option value="NL">NL</option>
                       <option value="CN">CN</option>
+                      <option value="KR">KR</option>
                       <option value="SG">SG</option>
                       <option value="US">US</option>
                     </select>

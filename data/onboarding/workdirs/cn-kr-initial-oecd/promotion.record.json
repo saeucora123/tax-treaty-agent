@@ -1,0 +1,9 @@
+{
+  "status": "promoted",
+  "pair_id": "cn-kr",
+  "manifest_path": "D:\\AI_Projects\\first agent\\data\\onboarding\\manifests\\cn-kr.initial-oecd.json",
+  "review_report_path": "D:\\AI_Projects\\first agent\\data\\onboarding\\workdirs\\cn-kr-initial-oecd\\review.report.json",
+  "promotion_target_dataset": "D:\\AI_Projects\\first agent\\data\\treaties\\cn-kr.v3.json",
+  "promoted_at_utc": "2026-03-18T16:12:17.279260+00:00",
+  "approval_record_path": "D:\\AI_Projects\\first agent\\data\\onboarding\\workdirs\\cn-kr-initial-oecd\\approval.record.json"
+}

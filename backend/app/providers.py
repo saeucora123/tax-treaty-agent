@@ -11,6 +11,7 @@ from app.constants import (
 
 
 STABLE_TREATY_REGISTRY = {
+    ("CN", "KR"): REPO_ROOT / "data" / "treaties" / "cn-kr.v3.json",
     ("CN", "NL"): REPO_ROOT / "data" / "treaties" / "cn-nl.v3.json",
     ("CN", "SG"): REPO_ROOT / "data" / "treaties" / "cn-sg.v3.json",
 }
