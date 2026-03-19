@@ -1,14 +1,23 @@
 # Tax Treaty Agent
 
-面向跨境支付场景的税收协定适用性预审工具。当前支持中荷、中新、中韩协定下的股息、利息及特许权使用费场景，使用结构化协定数据与保守规则引擎输出可追溯、可交接的预审结果。
+面向国际税团队的跨境税收协定预审工具。它先帮助团队快速完成第一轮筛查，整理关键事实、潜在协定路径与复核提示，但**不替代最终税务意见**。
 
-An international tax treaty pre-screening tool for cross-border payment scenarios. It currently supports China–Netherlands, China–Singapore, and China–Korea dividend, interest, and royalty lanes using structured treaty data, conservative rule logic, and workflow-ready handoff output.
+An international tax treaty pre-screening tool for cross-border payment scenarios. It helps tax teams move faster through the first-pass review by organizing key facts, narrowing the treaty lane in scope, and returning a workflow-ready handoff, while **not replacing a final tax opinion**.
 
 ![Tax Treaty Agent product cover](assets/tax-treaty-agent-demo.png)
 
-[Watch extended guided demo (26s)](assets/tax-treaty-agent-guided-demo-extended.gif)
+[Open product overview / 打开产品介绍页](https://saeucora123.github.io/tax-treaty-agent/)
 
-![Tax Treaty Agent guided workflow preview](assets/tax-treaty-agent-guided-demo.gif)
+当前支持范围：
+- China – Netherlands
+- China – Singapore
+- China – Korea
+- Dividends, Interest, Royalties
+
+它帮助团队：
+- 更快完成第一轮协定适用性筛查
+- 在关键事实缺失时停止猜测、转入人工复核
+- 把结果、风险点和后续动作整理给下一位复核者
 
 ## Quick Proof / 快速验证
 

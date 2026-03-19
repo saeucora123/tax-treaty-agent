@@ -10,6 +10,8 @@ from PIL import Image, ImageColor, ImageDraw, ImageFilter, ImageFont, ImageOps
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "assets"
 SOURCE = ASSETS / "source"
+DOCS = ROOT / "docs"
+SITE_ASSETS = DOCS / "site-assets"
 
 HERO_PATH = ASSETS / "tax-treaty-agent-demo.png"
 PREVIEW_GIF_PATH = ASSETS / "tax-treaty-agent-guided-demo.gif"
@@ -193,6 +195,7 @@ def save_gif(path: Path, frames: Iterable[Image.Image], duration_ms: int) -> int
 
 
 def build_assets() -> None:
+    SITE_ASSETS.mkdir(parents=True, exist_ok=True)
     empty_form = Image.open(SOURCE / "guided-step-0.png").convert("RGBA")
     filled_form = Image.open(SOURCE / "guided-step-1.png").convert("RGBA")
     result_view = Image.open(SOURCE / "guided-step-2.png").convert("RGBA")
@@ -203,6 +206,9 @@ def build_assets() -> None:
     form_run_crop = crop(filled_form, (70, 700, 930, 1480))
     result_crop = crop(result_view, (70, 720, 930, 1530))
     handoff_crop = crop(legacy_layout, (450, 120, 900, 980))
+    hero_form = ImageOps.fit(form_filled_top, (900, 700), method=Image.Resampling.LANCZOS)
+    hero_result = ImageOps.fit(result_crop, (920, 620), method=Image.Resampling.LANCZOS)
+    hero_handoff = ImageOps.fit(handoff_crop, (760, 980), method=Image.Resampling.LANCZOS)
 
     hero = Image.new("RGBA", (1600, 960), BG + (255,))
     draw = ImageDraw.Draw(hero)
@@ -216,11 +222,15 @@ def build_assets() -> None:
     make_badge(draw, badge_x, 230, "human-reviewed compiler", (228, 241, 230), (38, 98, 53))
     draw.text((108, 304), "Guide the facts", font=FONT_H2, fill=TEXT)
     draw.text((824, 304), "Return a structured result", font=FONT_H2, fill=TEXT)
-    paste_card(hero, form_filled_top, (108, 346, 744, 842), radius=30)
-    paste_card(hero, handoff_crop, (824, 346, 1492, 842), radius=30)
+    paste_card(hero, hero_form, (108, 346, 744, 842), radius=30)
+    paste_card(hero, hero_result, (824, 346, 1492, 842), radius=30)
     draw.text((108, 872), "Bounded input keeps the review path explicit.", font=FONT_SMALL, fill=MUTED)
     draw.text((824, 872), "Structured output carries review and handoff detail.", font=FONT_SMALL, fill=MUTED)
     hero.convert("RGB").save(HERO_PATH, quality=95)
+    hero.convert("RGB").save(SITE_ASSETS / "hero-cover.png", quality=95)
+    hero_form.convert("RGB").save(SITE_ASSETS / "guided-facts-panel.png", quality=95)
+    hero_result.convert("RGB").save(SITE_ASSETS / "review-result-panel.png", quality=95)
+    hero_handoff.convert("RGB").save(SITE_ASSETS / "workflow-handoff-panel.png", quality=95)
 
     scene_a = scene_canvas("Guided review starts in the wizard", "The product opens directly into a bounded fact-collection flow.", form_empty_top)
     scene_b = scene_canvas("Raw dividend facts are entered directly", "The reduced-rate branch is driven by structured facts, not free-form model recall.", form_filled_top)
