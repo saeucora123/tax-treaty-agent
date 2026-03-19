@@ -402,7 +402,8 @@ a {
 .workflow-grid,
 .walkthrough-grid,
 .coverage-grid,
-.limits-grid {
+.limits-grid,
+.walkthrough-chapters {
   display: grid;
   gap: 22px;
 }
@@ -412,7 +413,7 @@ a {
 }
 
 .walkthrough-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
 .coverage-grid,
@@ -423,12 +424,14 @@ a {
 .workflow-card,
 .walkthrough-card,
 .coverage-card,
-.limit-card {
+.limit-card,
+.walkthrough-chapter {
   border-radius: var(--radius-lg);
   padding: 28px;
 }
 
 .walkthrough-card h3,
+.walkthrough-chapter h3,
 .evidence-card h3,
 .verifier-step h3 {
   margin: 0 0 12px;
@@ -465,10 +468,34 @@ a {
 
 .walkthrough-video {
   width: 100%;
-  height: 220px;
+  height: min(720px, 62vw);
   object-fit: cover;
   display: block;
   background: linear-gradient(180deg, rgba(13, 17, 23, 0.08), rgba(13, 17, 23, 0.24));
+}
+
+.walkthrough-feature {
+  margin-top: 28px;
+}
+
+.walkthrough-main {
+  min-height: 0;
+  box-shadow: 0 28px 72px rgba(42, 32, 21, 0.18);
+}
+
+.walkthrough-video-main {
+  aspect-ratio: 16 / 10;
+}
+
+.walkthrough-chapters {
+  margin-top: 28px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.walkthrough-chapter {
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(80, 69, 55, 0.08);
+  box-shadow: 0 18px 44px rgba(47, 35, 20, 0.08);
 }
 
 .walkthrough-input img,
@@ -721,6 +748,7 @@ html:lang(zh-CN) .showcase-copy h2,
 html:lang(zh-CN) .footer-cta h2,
 html:lang(zh-CN) .workflow-card h3,
 html:lang(zh-CN) .walkthrough-card h3,
+html:lang(zh-CN) .walkthrough-chapter h3,
 html:lang(zh-CN) .evidence-card h3,
 html:lang(zh-CN) .verifier-step h3,
 html:lang(zh-CN) .coverage-card h3,
@@ -752,6 +780,7 @@ html:lang(zh-CN) .showcase-copy p,
 html:lang(zh-CN) .limit-card p,
 html:lang(zh-CN) .workflow-card p,
 html:lang(zh-CN) .walkthrough-card p,
+html:lang(zh-CN) .walkthrough-chapter p,
 html:lang(zh-CN) .evidence-card p,
 html:lang(zh-CN) .verifier-step p,
 html:lang(zh-CN) .coverage-card p,
@@ -788,6 +817,7 @@ html:lang(zh-CN) .feature-list span {
   .footer-cta,
   .workflow-grid,
   .walkthrough-grid,
+  .walkthrough-chapters,
   .evidence-grid,
   .coverage-grid,
   .limits-grid,
@@ -880,12 +910,13 @@ html:lang(zh-CN) .feature-list span {
     bottom: auto;
   }
 
-  .value-strip,
-  .workflow-card,
-  .walkthrough-card,
-  .coverage-card,
-  .limit-card,
-  .evidence-card,
+    .value-strip,
+    .workflow-card,
+    .walkthrough-card,
+    .walkthrough-chapter,
+    .coverage-card,
+    .limit-card,
+    .evidence-card,
   .verifier-step,
   .showcase-visual,
   .showcase-copy,

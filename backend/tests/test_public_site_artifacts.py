@@ -45,6 +45,7 @@ def test_public_product_page_exists_with_expert_facing_tax_copy() -> None:
     assert "Implemented today" in html
     assert "How to verify this repo quickly" in html
     assert "<video" in html
+    assert "walkthrough-main.mp4" in html
 
 
 def test_public_product_page_exposes_language_toggle() -> None:
@@ -85,10 +86,8 @@ def test_public_product_page_has_mp4_walkthrough_assets() -> None:
     html = site_index.read_text(encoding="utf-8")
 
     expected_assets = [
-        "walkthrough-guided-facts.mp4",
-        "walkthrough-treaty-branch.mp4",
-        "walkthrough-provenance.mp4",
-        "walkthrough-handoff-boundary.mp4",
+        "walkthrough-main.mp4",
+        "walkthrough-main-poster.png",
     ]
 
     for asset_name in expected_assets:
@@ -96,3 +95,5 @@ def test_public_product_page_has_mp4_walkthrough_assets() -> None:
         assert asset_path.exists(), asset_name
         assert asset_path.stat().st_size > 0, asset_name
         assert asset_name in html, asset_name
+
+    assert html.count("<video") == 1

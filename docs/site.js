@@ -66,19 +66,19 @@ const translations = {
     walkthroughTitle: "用一条真实的中荷股息案例，把输入到边界一次讲清楚",
     walkthroughIntro:
       "这一段不试图解释整个系统，只展示一条真实产品路径：输入、引导式事实、协定分支、来源依据、handoff artifact，以及产品最终停下来的边界。",
-    walkthroughCard1Title: "输入与引导式事实",
-    walkthroughCard1Body:
-      "从一条边界明确的场景开始，然后进入真实产品里的 dividend facts 采集：直接持股比例、付款日、持有期。",
     walkthroughCasePill: "CN -> NL dividends",
-    walkthroughCard2Title: "协定分支",
-    walkthroughCard2Body:
-      "引擎把案件收束到 Article 10 dividend branch，并把 5% / 10% 这种分支逻辑保持为显式规则，而不是藏在模型回答里。",
-    walkthroughCard3Title: "来源依据",
-    walkthroughCard3Body:
-      "输出不会只给一个税率。审核人还能看到条款路径、段落级来源和当前 review context，而不是一个没有出处的数字。",
-    walkthroughCard4Title: "交接材料与最终边界",
-    walkthroughCard4Body:
-      "结果会先被打包成交接材料，再停在清晰边界：不是最终税务意见，`MLI/PPT` 仍然只是 review signal，不会在 runtime 里被假装自动解决。",
+    walkthroughChapter1Title: "输入",
+    walkthroughChapter1Body: "先选择当前支持范围内的协定对和收入类型。",
+    walkthroughChapter2Title: "引导式事实",
+    walkthroughChapter2Body: "鼠标会明确点进真正决定 dividend 路径的字段，而不是悬在页面上晃动。",
+    walkthroughChapter3Title: "协定分支",
+    walkthroughChapter3Body: "看案件如何被收束到 Article 10 dividend branch，而不是被模型一句话带过去。",
+    walkthroughChapter4Title: "来源依据",
+    walkthroughChapter4Body: "停在 source-aware reference 上，让审核人看到条款和段落级出处。",
+    walkthroughChapter5Title: "交接材料",
+    walkthroughChapter5Body: "展示 workflow-ready handoff，而不是只有一个静态结论。",
+    walkthroughChapter6Title: "最终边界",
+    walkthroughChapter6Body: "最后明确停在边界上：不是最终税务意见，review signal 仍然保留。",
     evidenceCard1Label: "单次实测",
     onboardingEyebrow: "新协定如何接入",
     onboardingTitle: "不再从零手工写规则，而是走人工把关的协定编译流程",
@@ -249,19 +249,19 @@ const translations = {
     walkthroughTitle: "One real CN-NL dividends case, shown from input to final boundary",
     walkthroughIntro:
       "This walkthrough does not try to explain the whole system. It shows one concrete path through the current product: the initial case, the guided facts, the treaty branch, the source-aware record, the handoff artifact, and the final boundary the product keeps.",
-    walkthroughCard1Title: "Input and guided facts",
-    walkthroughCard1Body:
-      "Start with one bounded scenario, then let the product collect the actual dividend facts that matter: direct holding percentage, payment date, and holding period.",
     walkthroughCasePill: "CN -> NL dividends",
-    walkthroughCard2Title: "Treaty branch",
-    walkthroughCard2Body:
-      "The engine narrows the case into the Article 10 dividend branch and keeps the direct-holding threshold logic explicit rather than hiding the branch choice inside a model answer.",
-    walkthroughCard3Title: "Provenance",
-    walkthroughCard3Body:
-      "The result stays source-aware: the reviewer can see the treaty article lane, paragraph-level provenance, and the supporting review context instead of a bare percentage with no traceability.",
-    walkthroughCard4Title: "Handoff artifact and final boundary",
-    walkthroughCard4Body:
-      "The output is packaged for the next reviewer, then stops at the right boundary: not a final tax opinion, and MLI/PPT remains a review signal rather than an automatic runtime override.",
+    walkthroughChapter1Title: "Input",
+    walkthroughChapter1Body: "Choose the supported treaty pair and income type.",
+    walkthroughChapter2Title: "Guided facts",
+    walkthroughChapter2Body: "The cursor clicks into the actual dividend fields that determine the review path.",
+    walkthroughChapter3Title: "Treaty branch",
+    walkthroughChapter3Body: "Watch the case narrow into the Article 10 dividend branch instead of disappearing into a model answer.",
+    walkthroughChapter4Title: "Provenance",
+    walkthroughChapter4Body: "Pause on source-aware references so the reviewer sees the treaty lane and paragraph-level support.",
+    walkthroughChapter5Title: "Handoff",
+    walkthroughChapter5Body: "Show the workflow-ready package that the next reviewer can pick up immediately.",
+    walkthroughChapter6Title: "Boundary",
+    walkthroughChapter6Body: "End on the explicit line: not a final tax opinion, and review signals remain visible.",
     evidenceCard1Label: "Measured pilot",
     onboardingEyebrow: "How new treaties are onboarded",
     onboardingTitle: "A human-reviewed compiler replaces manual treaty-to-rule coding from scratch",
