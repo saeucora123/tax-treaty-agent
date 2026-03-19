@@ -35,6 +35,7 @@ Completed so far:
 - The Chinese version of the GitHub Pages product overview now uses dedicated Noto Sans SC typography and zh-CN-specific spacing rules so the page reads like one coherent product surface instead of a mixed fallback stack
 - A single controlled CN-KR measured pilot now records reviewer-only elapsed time and repo-internal end-to-end onboarding elapsed time in a formal timing.record.json artifact with a matching stage-6 evidence note
 - The repo now includes a top-level MIT license and a public-proof upgrade: a CN-NL 90-second walkthrough on GitHub Pages, evidence summary cards, and a 3-minute verifier path in the README
+- The GitHub Pages walkthrough now uses short MP4 product loops and posters generated from real product-state screenshots instead of static walkthrough panels
 
 In progress:
 

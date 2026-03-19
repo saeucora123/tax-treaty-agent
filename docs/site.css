@@ -412,7 +412,7 @@ a {
 }
 
 .walkthrough-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .coverage-grid,
@@ -463,27 +463,41 @@ a {
   display: block;
 }
 
-.walkthrough-input img {
+.walkthrough-video {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+  background: linear-gradient(180deg, rgba(13, 17, 23, 0.08), rgba(13, 17, 23, 0.24));
+}
+
+.walkthrough-input img,
+.walkthrough-input video {
   object-position: center 18%;
 }
 
-.walkthrough-guided img {
+.walkthrough-guided img,
+.walkthrough-guided video {
   object-position: center 18%;
 }
 
-.walkthrough-branch img {
+.walkthrough-branch img,
+.walkthrough-branch video {
   object-position: center 20%;
 }
 
-.walkthrough-provenance img {
+.walkthrough-provenance img,
+.walkthrough-provenance video {
   object-position: center 52%;
 }
 
-.walkthrough-handoff img {
+.walkthrough-handoff img,
+.walkthrough-handoff video {
   object-position: center 22%;
 }
 
-.walkthrough-boundary img {
+.walkthrough-boundary img,
+.walkthrough-boundary video {
   object-position: center 76%;
 }
 

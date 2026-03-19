@@ -213,93 +213,83 @@
           <div class="walkthrough-grid">
             <article class="walkthrough-card reveal">
               <span class="step-index">01</span>
-              <h3 data-i18n="walkthroughStep1Title">Input</h3>
-              <p data-i18n="walkthroughStep1Body">
-                Start with one bounded scenario: a China-to-Netherlands dividend payment that belongs in the current
-                supported review scope.
+              <h3 data-i18n="walkthroughCard1Title">Input and guided facts</h3>
+              <p data-i18n="walkthroughCard1Body">
+                Start with one bounded scenario, then let the product collect the actual dividend facts that matter:
+                direct holding percentage, payment date, and holding period.
               </p>
               <div class="walkthrough-case-pill" data-i18n="walkthroughCasePill">CN -> NL dividends</div>
-              <div class="walkthrough-visual walkthrough-input">
-                <img
-                  src="./site-assets/hero-cover.png"
-                  alt="CN-NL dividend case overview"
-                  data-i18n-alt="altWalkthroughInput"
-                />
+              <div class="walkthrough-visual walkthrough-guided">
+                <video
+                  class="walkthrough-video"
+                  src="./site-assets/walkthrough-guided-facts.mp4"
+                  poster="./site-assets/walkthrough-guided-facts-poster.png"
+                  muted
+                  loop
+                  autoplay
+                  playsinline
+                  preload="metadata"
+                ></video>
               </div>
             </article>
             <article class="walkthrough-card reveal reveal-delay">
               <span class="step-index">02</span>
-              <h3 data-i18n="walkthroughStep2Title">Guided facts</h3>
-              <p data-i18n="walkthroughStep2Body">
-                The product asks for the facts that actually matter here: direct holding percentage, payment date, and
-                holding period, instead of relying on free-form chat.
-              </p>
-              <div class="walkthrough-visual walkthrough-guided">
-                <img
-                  src="./site-assets/guided-facts-panel.png"
-                  alt="Guided facts panel for dividend review"
-                  data-i18n-alt="altWalkthroughGuided"
-                />
-              </div>
-            </article>
-            <article class="walkthrough-card reveal reveal-delay-2">
-              <span class="step-index">03</span>
-              <h3 data-i18n="walkthroughStep3Title">Treaty branch</h3>
-              <p data-i18n="walkthroughStep3Body">
+              <h3 data-i18n="walkthroughCard2Title">Treaty branch</h3>
+              <p data-i18n="walkthroughCard2Body">
                 The engine narrows the case into the Article 10 dividend branch and keeps the direct-holding threshold
                 logic explicit rather than hiding the branch choice inside a model answer.
               </p>
               <div class="walkthrough-visual walkthrough-branch">
-                <img
-                  src="./site-assets/review-result-panel.png"
-                  alt="Treaty branch narrowing for Article 10 dividends"
-                  data-i18n-alt="altWalkthroughBranch"
-                />
+                <video
+                  class="walkthrough-video"
+                  src="./site-assets/walkthrough-treaty-branch.mp4"
+                  poster="./site-assets/walkthrough-treaty-branch-poster.png"
+                  muted
+                  loop
+                  autoplay
+                  playsinline
+                  preload="metadata"
+                ></video>
               </div>
             </article>
-            <article class="walkthrough-card reveal">
-              <span class="step-index">04</span>
-              <h3 data-i18n="walkthroughStep4Title">Provenance</h3>
-              <p data-i18n="walkthroughStep4Body">
+            <article class="walkthrough-card reveal reveal-delay-2">
+              <span class="step-index">03</span>
+              <h3 data-i18n="walkthroughCard3Title">Provenance</h3>
+              <p data-i18n="walkthroughCard3Body">
                 The result stays source-aware: the reviewer can see the treaty article lane, paragraph-level provenance,
                 and the supporting review context instead of a bare percentage with no traceability.
               </p>
               <div class="walkthrough-visual walkthrough-provenance">
-                <img
-                  src="./site-assets/review-result-panel.png"
-                  alt="Source-aware provenance in treaty review output"
-                  data-i18n-alt="altWalkthroughProvenance"
-                />
+                <video
+                  class="walkthrough-video"
+                  src="./site-assets/walkthrough-provenance.mp4"
+                  poster="./site-assets/walkthrough-provenance-poster.png"
+                  muted
+                  loop
+                  autoplay
+                  playsinline
+                  preload="metadata"
+                ></video>
               </div>
             </article>
-            <article class="walkthrough-card reveal reveal-delay">
-              <span class="step-index">05</span>
-              <h3 data-i18n="walkthroughStep5Title">Handoff artifact</h3>
-              <p data-i18n="walkthroughStep5Body">
-                The output is packaged for the next reviewer, with machine-readable handoff detail instead of leaving
-                downstream review to reconstruct the first pass from scratch.
-              </p>
-              <div class="walkthrough-visual walkthrough-handoff">
-                <img
-                  src="./site-assets/workflow-handoff-panel.png"
-                  alt="Workflow handoff artifact for dividend review"
-                  data-i18n-alt="altWalkthroughHandoff"
-                />
-              </div>
-            </article>
-            <article class="walkthrough-card reveal reveal-delay-2">
-              <span class="step-index">06</span>
-              <h3 data-i18n="walkthroughStep6Title">Final boundary</h3>
-              <p data-i18n="walkthroughStep6Body">
-                The product still stops at the right boundary: not a final tax opinion, and MLI/PPT remains a review
-                signal rather than an automatic runtime override.
+            <article class="walkthrough-card reveal">
+              <span class="step-index">04</span>
+              <h3 data-i18n="walkthroughCard4Title">Handoff artifact and final boundary</h3>
+              <p data-i18n="walkthroughCard4Body">
+                The output is packaged for the next reviewer, then stops at the right boundary: not a final tax opinion,
+                and MLI/PPT remains a review signal rather than an automatic runtime override.
               </p>
               <div class="walkthrough-visual walkthrough-boundary">
-                <img
-                  src="./site-assets/workflow-handoff-panel.png"
-                  alt="Final boundary and review-only signals"
-                  data-i18n-alt="altWalkthroughBoundary"
-                />
+                <video
+                  class="walkthrough-video"
+                  src="./site-assets/walkthrough-handoff-boundary.mp4"
+                  poster="./site-assets/walkthrough-handoff-boundary-poster.png"
+                  muted
+                  loop
+                  autoplay
+                  playsinline
+                  preload="metadata"
+                ></video>
               </div>
             </article>
           </div>

@@ -4,6 +4,8 @@ import math
 from pathlib import Path
 from typing import Iterable
 
+import imageio.v2 as imageio
+import numpy as np
 from PIL import Image, ImageColor, ImageDraw, ImageFilter, ImageFont, ImageOps
 
 
@@ -16,6 +18,14 @@ SITE_ASSETS = DOCS / "site-assets"
 HERO_PATH = ASSETS / "tax-treaty-agent-demo.png"
 PREVIEW_GIF_PATH = ASSETS / "tax-treaty-agent-guided-demo.gif"
 EXTENDED_GIF_PATH = ASSETS / "tax-treaty-agent-guided-demo-extended.gif"
+WALKTHROUGH_GUIDED_MP4_PATH = SITE_ASSETS / "walkthrough-guided-facts.mp4"
+WALKTHROUGH_BRANCH_MP4_PATH = SITE_ASSETS / "walkthrough-treaty-branch.mp4"
+WALKTHROUGH_PROVENANCE_MP4_PATH = SITE_ASSETS / "walkthrough-provenance.mp4"
+WALKTHROUGH_HANDOFF_MP4_PATH = SITE_ASSETS / "walkthrough-handoff-boundary.mp4"
+WALKTHROUGH_GUIDED_POSTER_PATH = SITE_ASSETS / "walkthrough-guided-facts-poster.png"
+WALKTHROUGH_BRANCH_POSTER_PATH = SITE_ASSETS / "walkthrough-treaty-branch-poster.png"
+WALKTHROUGH_PROVENANCE_POSTER_PATH = SITE_ASSETS / "walkthrough-provenance-poster.png"
+WALKTHROUGH_HANDOFF_POSTER_PATH = SITE_ASSETS / "walkthrough-handoff-boundary-poster.png"
 
 
 def load_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
@@ -194,6 +204,27 @@ def save_gif(path: Path, frames: Iterable[Image.Image], duration_ms: int) -> int
     return len(items)
 
 
+def save_mp4(path: Path, frames: Iterable[Image.Image], fps: int = 18) -> int:
+    items = [frame.convert("RGB") for frame in frames]
+    if not items:
+        raise ValueError("no frames to save")
+    with imageio.get_writer(
+        path,
+        fps=fps,
+        codec="libx264",
+        quality=8,
+        pixelformat="yuv420p",
+        macro_block_size=1,
+    ) as writer:
+        for frame in items:
+            writer.append_data(np.asarray(frame))
+    return len(items)
+
+
+def save_first_frame(path: Path, frame: Image.Image) -> None:
+    frame.convert("RGB").save(path, quality=95)
+
+
 def build_assets() -> None:
     SITE_ASSETS.mkdir(parents=True, exist_ok=True)
     empty_form = Image.open(SOURCE / "guided-step-0.png").convert("RGBA")
@@ -267,9 +298,49 @@ def build_assets() -> None:
 
     short_seconds = round(short_frame_count * 0.09, 1)
     extended_seconds = round(extended_frame_count * 0.12, 1)
+
+    guided_video_frames: list[Image.Image] = []
+    guided_video_frames += animate_pointer(scene_a, (300, 210), (350, 250), 18)
+    guided_video_frames += [guided_video_frames[-1]] * 10
+    guided_video_frames += crossfade(guided_video_frames[-1], add_cursor(scene_b, (340, 236)), 8)
+    guided_video_frames += animate_pointer(scene_b, (340, 236), (385, 282), 18)
+    guided_video_frames += [guided_video_frames[-1]] * 16
+
+    branch_video_frames: list[Image.Image] = []
+    branch_video_frames += animate_pointer(scene_c, (430, 470), (438, 472), 18, click_at_end=True)
+    branch_video_frames += [branch_video_frames[-1]] * 10
+    branch_video_frames += crossfade(branch_video_frames[-1], add_cursor(scene_d, (700, 224)), 8)
+    branch_video_frames += animate_pointer(scene_d, (700, 224), (690, 300), 20)
+    branch_video_frames += [branch_video_frames[-1]] * 18
+
+    provenance_video_frames: list[Image.Image] = []
+    provenance_video_frames.append(add_cursor(scene_d, (682, 210)))
+    provenance_video_frames += animate_pointer(scene_d, (682, 210), (700, 432), 28)
+    provenance_video_frames += [provenance_video_frames[-1]] * 18
+
+    handoff_video_frames: list[Image.Image] = []
+    handoff_video_frames.append(add_cursor(scene_e, (690, 214)))
+    handoff_video_frames += animate_pointer(scene_e, (690, 214), (696, 516), 26)
+    handoff_video_frames += [handoff_video_frames[-1]] * 14
+    handoff_video_frames += crossfade(handoff_video_frames[-1], add_cursor(scene_e, (248, 132), click=0.2), 8)
+    handoff_video_frames += [handoff_video_frames[-1]] * 14
+
+    save_mp4(WALKTHROUGH_GUIDED_MP4_PATH, guided_video_frames)
+    save_mp4(WALKTHROUGH_BRANCH_MP4_PATH, branch_video_frames)
+    save_mp4(WALKTHROUGH_PROVENANCE_MP4_PATH, provenance_video_frames)
+    save_mp4(WALKTHROUGH_HANDOFF_MP4_PATH, handoff_video_frames)
+    save_first_frame(WALKTHROUGH_GUIDED_POSTER_PATH, guided_video_frames[0])
+    save_first_frame(WALKTHROUGH_BRANCH_POSTER_PATH, branch_video_frames[0])
+    save_first_frame(WALKTHROUGH_PROVENANCE_POSTER_PATH, provenance_video_frames[0])
+    save_first_frame(WALKTHROUGH_HANDOFF_POSTER_PATH, handoff_video_frames[0])
+
     print(f"hero={HERO_PATH.name}")
     print(f"preview_gif={PREVIEW_GIF_PATH.name} frames={short_frame_count} seconds={short_seconds}")
     print(f"extended_gif={EXTENDED_GIF_PATH.name} frames={extended_frame_count} seconds={extended_seconds}")
+    print(f"walkthrough_mp4={WALKTHROUGH_GUIDED_MP4_PATH.name}")
+    print(f"walkthrough_mp4={WALKTHROUGH_BRANCH_MP4_PATH.name}")
+    print(f"walkthrough_mp4={WALKTHROUGH_PROVENANCE_MP4_PATH.name}")
+    print(f"walkthrough_mp4={WALKTHROUGH_HANDOFF_MP4_PATH.name}")
 
 
 if __name__ == "__main__":

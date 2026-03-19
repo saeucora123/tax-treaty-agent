@@ -66,25 +66,19 @@ const translations = {
     walkthroughTitle: "用一条真实的中荷股息案例，把输入到边界一次讲清楚",
     walkthroughIntro:
       "这一段不试图解释整个系统，只展示一条真实产品路径：输入、引导式事实、协定分支、来源依据、handoff artifact，以及产品最终停下来的边界。",
-    walkthroughStep1Title: "输入",
-    walkthroughStep1Body:
-      "从一条边界明确的场景开始：一笔 `CN -> NL` 的 dividend payment，属于当前公开支持范围内的真实预审路径。",
+    walkthroughCard1Title: "输入与引导式事实",
+    walkthroughCard1Body:
+      "从一条边界明确的场景开始，然后进入真实产品里的 dividend facts 采集：直接持股比例、付款日、持有期。",
     walkthroughCasePill: "CN -> NL dividends",
-    walkthroughStep2Title: "引导式事实",
-    walkthroughStep2Body:
-      "系统不会靠自由聊天猜答案，而是要求真正影响分支判断的事实：直接持股比例、付款日、持有期等。",
-    walkthroughStep3Title: "协定分支",
-    walkthroughStep3Body:
+    walkthroughCard2Title: "协定分支",
+    walkthroughCard2Body:
       "引擎把案件收束到 Article 10 dividend branch，并把 5% / 10% 这种分支逻辑保持为显式规则，而不是藏在模型回答里。",
-    walkthroughStep4Title: "来源依据",
-    walkthroughStep4Body:
+    walkthroughCard3Title: "来源依据",
+    walkthroughCard3Body:
       "输出不会只给一个税率。审核人还能看到条款路径、段落级来源和当前 review context，而不是一个没有出处的数字。",
-    walkthroughStep5Title: "交接材料",
-    walkthroughStep5Body:
-      "结果会被打包成交接材料，让下一位审核人直接接续 workflow，而不是从头重建第一轮筛查。",
-    walkthroughStep6Title: "最终边界",
-    walkthroughStep6Body:
-      "产品在该停的地方会停下来：不是最终税务意见，`MLI/PPT` 仍然只是 review signal，不会在 runtime 里被假装自动解决。",
+    walkthroughCard4Title: "交接材料与最终边界",
+    walkthroughCard4Body:
+      "结果会先被打包成交接材料，再停在清晰边界：不是最终税务意见，`MLI/PPT` 仍然只是 review signal，不会在 runtime 里被假装自动解决。",
     evidenceCard1Label: "单次实测",
     onboardingEyebrow: "新协定如何接入",
     onboardingTitle: "不再从零手工写规则，而是走人工把关的协定编译流程",
@@ -255,25 +249,19 @@ const translations = {
     walkthroughTitle: "One real CN-NL dividends case, shown from input to final boundary",
     walkthroughIntro:
       "This walkthrough does not try to explain the whole system. It shows one concrete path through the current product: the initial case, the guided facts, the treaty branch, the source-aware record, the handoff artifact, and the final boundary the product keeps.",
-    walkthroughStep1Title: "Input",
-    walkthroughStep1Body:
-      "Start with one bounded scenario: a China-to-Netherlands dividend payment that belongs in the current supported review scope.",
+    walkthroughCard1Title: "Input and guided facts",
+    walkthroughCard1Body:
+      "Start with one bounded scenario, then let the product collect the actual dividend facts that matter: direct holding percentage, payment date, and holding period.",
     walkthroughCasePill: "CN -> NL dividends",
-    walkthroughStep2Title: "Guided facts",
-    walkthroughStep2Body:
-      "The product asks for the facts that actually matter here: direct holding percentage, payment date, and holding period, instead of relying on free-form chat.",
-    walkthroughStep3Title: "Treaty branch",
-    walkthroughStep3Body:
+    walkthroughCard2Title: "Treaty branch",
+    walkthroughCard2Body:
       "The engine narrows the case into the Article 10 dividend branch and keeps the direct-holding threshold logic explicit rather than hiding the branch choice inside a model answer.",
-    walkthroughStep4Title: "Provenance",
-    walkthroughStep4Body:
+    walkthroughCard3Title: "Provenance",
+    walkthroughCard3Body:
       "The result stays source-aware: the reviewer can see the treaty article lane, paragraph-level provenance, and the supporting review context instead of a bare percentage with no traceability.",
-    walkthroughStep5Title: "Handoff artifact",
-    walkthroughStep5Body:
-      "The output is packaged for the next reviewer, with machine-readable handoff detail instead of leaving downstream review to reconstruct the first pass from scratch.",
-    walkthroughStep6Title: "Final boundary",
-    walkthroughStep6Body:
-      "The product still stops at the right boundary: not a final tax opinion, and MLI/PPT remains a review signal rather than an automatic runtime override.",
+    walkthroughCard4Title: "Handoff artifact and final boundary",
+    walkthroughCard4Body:
+      "The output is packaged for the next reviewer, then stops at the right boundary: not a final tax opinion, and MLI/PPT remains a review signal rather than an automatic runtime override.",
     evidenceCard1Label: "Measured pilot",
     onboardingEyebrow: "How new treaties are onboarded",
     onboardingTitle: "A human-reviewed compiler replaces manual treaty-to-rule coding from scratch",
