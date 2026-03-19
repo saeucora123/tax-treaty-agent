@@ -4,6 +4,8 @@
 
 An international tax treaty pre-screening tool for cross-border payment scenarios. It helps tax teams move faster through the first-pass review by organizing key facts, narrowing the treaty lane in scope, and returning a workflow-ready handoff, while **not replacing a final tax opinion**.
 
+**MIT licensed** for reference, reuse, and extension.
+
 ![Tax Treaty Agent product cover](assets/tax-treaty-agent-demo.png)
 
 [Open product overview / 打开产品介绍页](https://saeucora123.github.io/tax-treaty-agent/)
@@ -18,6 +20,28 @@ An international tax treaty pre-screening tool for cross-border payment scenario
 - 更快完成第一轮协定适用性筛查
 - 在关键事实缺失时停止猜测、转入人工复核
 - 把结果、风险点和后续动作整理给下一位复核者
+
+## How to verify this repo quickly / 3 分钟快速验证
+
+1. 打开产品页并直接看 `90-second case walkthrough / 90 秒案例演示`：  
+   [https://saeucora123.github.io/tax-treaty-agent/#walkthrough](https://saeucora123.github.io/tax-treaty-agent/#walkthrough)
+2. 看 `Measured pilot card`，确认这不是只会讲故事的 README：
+   - `CN-KR`
+   - `single controlled pilot`
+   - reviewer elapsed time = `26 seconds`
+   - repo-internal end-to-end = `10m45s`
+3. 看 `Proof matrix`，确认 moat 不是单一案例：
+   - `CN-SG shadow rebuild`
+   - `CN-NL shadow rebuild`
+   - `CN-SG OECD delta proof`
+   - `CN-NL OECD delta proof`
+   - `CN-KR initial onboarding`
+4. 看 `Regression snapshot`，确认公开面和核心 workflow 都有回归保护。
+5. 如果你要本地验证 runtime，再走下面的 `Quick Proof / 快速验证`。  
+
+说明：
+- 这个区块的目标是让外部读者先在 3 分钟内判断 moat 是否真实存在。
+- 本地 `Quick Proof` 仍然有价值，但它主要证明公开 runtime 可以跑通，不再单独承担全部产品证明任务。
 
 ## Trusted AI Workflow / 可信 AI 工作流
 
@@ -37,34 +61,15 @@ The project is best understood as a **trusted AI workflow for international tax 
 
 ## Public Evidence Layer / 对外证据层
 
-### Measured Pilot Summary / 单次实测摘要
+这部分在产品页里已经做成了更易扫读的公开证明层。README 里只保留最短摘要：
 
-- Pair: `CN-KR`
-- Evidence type: `single controlled pilot`
-- Reviewer elapsed time: `26 seconds`
-- Repo-internal end-to-end elapsed time (`source build -> promote`): `10m45s`
-- Caveat: this measured run included one live provider retry gap before the final successful compile, so it is an auditable real-world workflow measurement, not an optimized lower bound
+- **Measured pilot**：`CN-KR` 单次受控 pilot，reviewer elapsed time = `26 seconds`，repo-internal end-to-end = `10m45s`
+- **Proof matrix**：`CN-SG` / `CN-NL` 双 shadow rebuild + 双 OECD delta proof + `CN-KR` real initial onboarding
+- **Regression snapshot**：backend `199 passed, 27 warnings`；frontend `20 passed`；site artifact tests `5 passed`；frontend build passed
 
-Primary evidence:
-- [2026-03-19-cn-kr-reviewer-elapsed-time-proof.md](D:/AI_Projects/first%20agent/docs/superpowers/research/stage-6-evidence/2026-03-19-cn-kr-reviewer-elapsed-time-proof.md)
-
-### Onboarding Proof Matrix / 接入证明矩阵
-
-| Proof lane | Status | What it proves |
-|---|---|---|
-| `CN-SG` shadow rebuild | Green | Existing pair can be rebuilt through manifest-driven compile/review/promote |
-| `CN-NL` shadow rebuild | Green | The same offline compiler contract holds on a second existing pair |
-| `CN-SG` OECD delta proof | Green | Thin-baseline delta extraction works without changing runtime schema |
-| `CN-NL` OECD delta proof | Green | Baseline-aware delta proof is robust across a second pair |
-| `CN-KR` initial onboarding | Green | A real new pair can move from governed source build through review/approval into public runtime support |
-
-### Regression / Replay Snapshot / 回归与重放快照
-
-As of `2026-03-19`:
-- `python -m pytest backend/tests/` -> `199 passed, 27 warnings`
-- `cd frontend && npm test -- --run src/App.test.tsx` -> `20 passed`
-- `python -m pytest backend/tests/test_public_site_artifacts.py -q` -> `5 passed`
-- `cd frontend && npm run build` -> passed
+Further reading:
+- Product overview: [https://saeucora123.github.io/tax-treaty-agent/](https://saeucora123.github.io/tax-treaty-agent/)
+- Timing evidence: [2026-03-19-cn-kr-reviewer-elapsed-time-proof.md](D:/AI_Projects/first%20agent/docs/superpowers/research/stage-6-evidence/2026-03-19-cn-kr-reviewer-elapsed-time-proof.md)
 
 ## Implemented today / 当前已实现
 

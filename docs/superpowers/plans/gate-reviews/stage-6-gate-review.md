@@ -34,6 +34,7 @@ Completed so far:
 - The GitHub Pages product overview now supports a persistent Chinese/English language switch so tax-domain visitors can read the site in their preferred language without changing the product layout
 - The Chinese version of the GitHub Pages product overview now uses dedicated Noto Sans SC typography and zh-CN-specific spacing rules so the page reads like one coherent product surface instead of a mixed fallback stack
 - A single controlled CN-KR measured pilot now records reviewer-only elapsed time and repo-internal end-to-end onboarding elapsed time in a formal timing.record.json artifact with a matching stage-6 evidence note
+- The repo now includes a top-level MIT license and a public-proof upgrade: a CN-NL 90-second walkthrough on GitHub Pages, evidence summary cards, and a 3-minute verifier path in the README
 
 In progress:
 

@@ -24,6 +24,7 @@
         <div class="topbar-actions">
           <nav class="topnav" aria-label="Primary">
             <a href="#workflow" data-i18n="navWorkflow">How it works</a>
+            <a href="#walkthrough" data-i18n="navWalkthrough">Case walkthrough</a>
             <a href="#onboarding" data-i18n="navOnboarding">New treaty onboarding</a>
             <a href="#evidence" data-i18n="navEvidence">Evidence</a>
             <a href="#coverage" data-i18n="navCoverage">Coverage</a>
@@ -64,7 +65,7 @@
               >
                 Open GitHub repository
               </a>
-              <a class="secondary-link" href="#coverage" data-i18n="heroSecondary">See supported coverage</a>
+              <a class="secondary-link" href="#walkthrough" data-i18n="heroSecondary">See the 90-second walkthrough</a>
             </div>
             <div class="hero-chips" aria-label="Product summary">
               <span data-i18n="chipPairs">3 treaty pairs</span>
@@ -199,6 +200,111 @@
           </div>
         </section>
 
+        <section id="walkthrough" class="story-section">
+          <div class="section-copy reveal">
+            <div class="eyebrow" data-i18n="walkthroughEyebrow">90-second case walkthrough</div>
+            <h2 data-i18n="walkthroughTitle">One real CN-NL dividends case, shown from input to final boundary</h2>
+            <p data-i18n="walkthroughIntro">
+              This walkthrough does not try to explain the whole system. It shows one concrete path through the current
+              product: the initial case, the guided facts, the treaty branch, the source-aware record, the handoff
+              artifact, and the final boundary the product keeps.
+            </p>
+          </div>
+          <div class="walkthrough-grid">
+            <article class="walkthrough-card reveal">
+              <span class="step-index">01</span>
+              <h3 data-i18n="walkthroughStep1Title">Input</h3>
+              <p data-i18n="walkthroughStep1Body">
+                Start with one bounded scenario: a China-to-Netherlands dividend payment that belongs in the current
+                supported review scope.
+              </p>
+              <div class="walkthrough-case-pill" data-i18n="walkthroughCasePill">CN -> NL dividends</div>
+              <div class="walkthrough-visual walkthrough-input">
+                <img
+                  src="./site-assets/hero-cover.png"
+                  alt="CN-NL dividend case overview"
+                  data-i18n-alt="altWalkthroughInput"
+                />
+              </div>
+            </article>
+            <article class="walkthrough-card reveal reveal-delay">
+              <span class="step-index">02</span>
+              <h3 data-i18n="walkthroughStep2Title">Guided facts</h3>
+              <p data-i18n="walkthroughStep2Body">
+                The product asks for the facts that actually matter here: direct holding percentage, payment date, and
+                holding period, instead of relying on free-form chat.
+              </p>
+              <div class="walkthrough-visual walkthrough-guided">
+                <img
+                  src="./site-assets/guided-facts-panel.png"
+                  alt="Guided facts panel for dividend review"
+                  data-i18n-alt="altWalkthroughGuided"
+                />
+              </div>
+            </article>
+            <article class="walkthrough-card reveal reveal-delay-2">
+              <span class="step-index">03</span>
+              <h3 data-i18n="walkthroughStep3Title">Treaty branch</h3>
+              <p data-i18n="walkthroughStep3Body">
+                The engine narrows the case into the Article 10 dividend branch and keeps the direct-holding threshold
+                logic explicit rather than hiding the branch choice inside a model answer.
+              </p>
+              <div class="walkthrough-visual walkthrough-branch">
+                <img
+                  src="./site-assets/review-result-panel.png"
+                  alt="Treaty branch narrowing for Article 10 dividends"
+                  data-i18n-alt="altWalkthroughBranch"
+                />
+              </div>
+            </article>
+            <article class="walkthrough-card reveal">
+              <span class="step-index">04</span>
+              <h3 data-i18n="walkthroughStep4Title">Provenance</h3>
+              <p data-i18n="walkthroughStep4Body">
+                The result stays source-aware: the reviewer can see the treaty article lane, paragraph-level provenance,
+                and the supporting review context instead of a bare percentage with no traceability.
+              </p>
+              <div class="walkthrough-visual walkthrough-provenance">
+                <img
+                  src="./site-assets/review-result-panel.png"
+                  alt="Source-aware provenance in treaty review output"
+                  data-i18n-alt="altWalkthroughProvenance"
+                />
+              </div>
+            </article>
+            <article class="walkthrough-card reveal reveal-delay">
+              <span class="step-index">05</span>
+              <h3 data-i18n="walkthroughStep5Title">Handoff artifact</h3>
+              <p data-i18n="walkthroughStep5Body">
+                The output is packaged for the next reviewer, with machine-readable handoff detail instead of leaving
+                downstream review to reconstruct the first pass from scratch.
+              </p>
+              <div class="walkthrough-visual walkthrough-handoff">
+                <img
+                  src="./site-assets/workflow-handoff-panel.png"
+                  alt="Workflow handoff artifact for dividend review"
+                  data-i18n-alt="altWalkthroughHandoff"
+                />
+              </div>
+            </article>
+            <article class="walkthrough-card reveal reveal-delay-2">
+              <span class="step-index">06</span>
+              <h3 data-i18n="walkthroughStep6Title">Final boundary</h3>
+              <p data-i18n="walkthroughStep6Body">
+                The product still stops at the right boundary: not a final tax opinion, and MLI/PPT remains a review
+                signal rather than an automatic runtime override.
+              </p>
+              <div class="walkthrough-visual walkthrough-boundary">
+                <img
+                  src="./site-assets/workflow-handoff-panel.png"
+                  alt="Final boundary and review-only signals"
+                  data-i18n-alt="altWalkthroughBoundary"
+                />
+              </div>
+            </article>
+          </div>
+        </section>
+
         <section id="onboarding" class="story-section">
           <div class="section-copy reveal">
             <div class="eyebrow" data-i18n="onboardingEyebrow">How new treaties are onboarded</div>
@@ -248,31 +354,106 @@
               more than the repo has actually proven.
             </p>
           </div>
-          <div class="workflow-grid">
-            <article class="workflow-card reveal">
-              <span class="step-index">A</span>
-              <h3 data-i18n="evidenceCard1Title">Measured pilot summary</h3>
+          <div class="evidence-grid">
+            <article class="evidence-card reveal">
+              <div class="card-label" data-i18n="evidenceCard1Label">Measured pilot</div>
+              <h3 data-i18n="evidenceCard1Title">Single controlled CN-KR timing evidence</h3>
+              <div class="metric-stack">
+                <div class="metric-row">
+                  <span data-i18n="evidenceMetricReviewer">Reviewer elapsed</span>
+                  <strong data-i18n="evidenceMetricReviewerValue">26 seconds</strong>
+                </div>
+                <div class="metric-row">
+                  <span data-i18n="evidenceMetricEndToEnd">End-to-end elapsed</span>
+                  <strong data-i18n="evidenceMetricEndToEndValue">10m45s</strong>
+                </div>
+                <div class="metric-row">
+                  <span data-i18n="evidenceMetricPilotType">Pilot type</span>
+                  <strong data-i18n="evidenceMetricPilotTypeValue">Single controlled pilot</strong>
+                </div>
+              </div>
               <p data-i18n="evidenceCard1Body">
-                A single controlled CN-KR onboarding pilot has machine-written timing evidence: a 26-second reviewer
-                session and a 10m45s repo-internal source-build-to-promote elapsed time.
+                Measured on governed official source inputs. The result is evidence of a real workflow, not a general
+                onboarding SLA.
               </p>
             </article>
-            <article class="workflow-card reveal reveal-delay">
-              <span class="step-index">B</span>
-              <h3 data-i18n="evidenceCard2Title">Onboarding proof matrix</h3>
+            <article class="evidence-card reveal reveal-delay">
+              <div class="card-label" data-i18n="evidenceCard2Label">Proof matrix</div>
+              <h3 data-i18n="evidenceCard2Title">Compiler moat, shown across more than one lane</h3>
+              <ul class="evidence-list">
+                <li><span class="status-dot"></span><span data-i18n="evidenceProof1">CN-SG shadow rebuild</span></li>
+                <li><span class="status-dot"></span><span data-i18n="evidenceProof2">CN-NL shadow rebuild</span></li>
+                <li><span class="status-dot"></span><span data-i18n="evidenceProof3">CN-SG OECD delta proof</span></li>
+                <li><span class="status-dot"></span><span data-i18n="evidenceProof4">CN-NL OECD delta proof</span></li>
+                <li><span class="status-dot"></span><span data-i18n="evidenceProof5">CN-KR initial onboarding</span></li>
+              </ul>
               <p data-i18n="evidenceCard2Body">
-                The compiler path is no longer proven on one toy case only. CN-SG and CN-NL both pass shadow rebuilds
-                and OECD delta proofs, and CN-KR completes a real initial onboarding path.
+                The offline treaty compiler is not proven on one toy case only; it now holds across shadow rebuilds,
+                baseline-aware delta proofs, and one real new-pair onboarding path.
               </p>
             </article>
-            <article class="workflow-card reveal reveal-delay-2">
-              <span class="step-index">C</span>
-              <h3 data-i18n="evidenceCard3Title">Regression and replay snapshot</h3>
+            <article class="evidence-card reveal reveal-delay-2">
+              <div class="card-label" data-i18n="evidenceCard3Label">Regression snapshot</div>
+              <h3 data-i18n="evidenceCard3Title">Replayable checks sit behind the public story</h3>
+              <div class="snapshot-grid">
+                <div class="snapshot-tile">
+                  <strong>199</strong>
+                  <span data-i18n="evidenceSnapshotBackend">backend passed</span>
+                </div>
+                <div class="snapshot-tile">
+                  <strong>20</strong>
+                  <span data-i18n="evidenceSnapshotFrontend">frontend passed</span>
+                </div>
+                <div class="snapshot-tile">
+                  <strong>5</strong>
+                  <span data-i18n="evidenceSnapshotSite">site tests passed</span>
+                </div>
+                <div class="snapshot-tile">
+                  <strong data-i18n="evidenceSnapshotBuildValue">Build</strong>
+                  <span data-i18n="evidenceSnapshotBuild">frontend build passed</span>
+                </div>
+              </div>
               <p data-i18n="evidenceCard3Body">
-                Public runtime, onboarding workflow, and product-site assertions all sit under replayable tests, so the
-                external narrative is anchored to real regression outputs rather than screenshots alone.
+                Public runtime, onboarding workflow, and product-site assertions all sit under replayable checks rather
+                than screenshots alone.
               </p>
             </article>
+          </div>
+        </section>
+
+        <section class="verifier-section reveal">
+          <div class="section-copy">
+            <div class="eyebrow" data-i18n="verifierEyebrow">3-minute verifier path</div>
+            <h2 data-i18n="verifierTitle">How to verify this repo quickly</h2>
+            <p data-i18n="verifierIntro">
+              If you only have a few minutes, do not start with the full local setup. Verify the moat in this order.
+            </p>
+          </div>
+          <div class="verifier-grid">
+            <article class="verifier-step">
+              <span class="step-index">1</span>
+              <h3 data-i18n="verifierStep1Title">Watch the 90-second walkthrough</h3>
+              <p data-i18n="verifierStep1Body">See one real CN-NL dividends case go from input to final boundary.</p>
+            </article>
+            <article class="verifier-step">
+              <span class="step-index">2</span>
+              <h3 data-i18n="verifierStep2Title">Check the measured pilot card</h3>
+              <p data-i18n="verifierStep2Body">Confirm that a real CN-KR onboarding pilot has recorded timing evidence.</p>
+            </article>
+            <article class="verifier-step">
+              <span class="step-index">3</span>
+              <h3 data-i18n="verifierStep3Title">Scan the proof matrix</h3>
+              <p data-i18n="verifierStep3Body">Verify that the compiler path holds across shadow rebuilds, delta proofs, and a real new-pair onboarding.</p>
+            </article>
+            <article class="verifier-step">
+              <span class="step-index">4</span>
+              <h3 data-i18n="verifierStep4Title">Only then open the local quick proof</h3>
+              <p data-i18n="verifierStep4Body">Use the README smoke path if you want to validate the public runtime locally after the evidence layer makes sense.</p>
+            </article>
+          </div>
+          <div class="hero-actions">
+            <a class="primary-button" href="https://github.com/saeucora123/tax-treaty-agent#readme" data-i18n="verifierPrimary">Open the README verifier path</a>
+            <a class="secondary-link" href="#evidence" data-i18n="verifierSecondary">Jump back to the evidence layer</a>
           </div>
         </section>
 

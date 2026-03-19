@@ -6,6 +6,7 @@ const translations = {
     pageDescription:
       "面向国际税务团队的跨境税收协定预审工具，帮助团队更快完成第一轮筛查，再进入正式法律或税务分析。",
     navWorkflow: "工作方式",
+    navWalkthrough: "案例演示",
     navOnboarding: "协定接入",
     navEvidence: "证据层",
     navCoverage: "当前支持",
@@ -18,7 +19,7 @@ const translations = {
     heroSub:
       "它的目标是节省流程前段的时间，不是取代最终税务意见或法律判断。",
     heroPrimary: "打开 GitHub 仓库",
-    heroSecondary: "查看当前支持范围",
+    heroSecondary: "看 90 秒案例演示",
     chipPairs: "3 个协定对",
     chipIncome: "股息、利息、特许权使用费",
     chipGuided: "引导式预审优先",
@@ -61,6 +62,30 @@ const translations = {
     feature3Body: "让下游审核人无需从头重新理解第一轮预审过程。",
     feature4Title: "复核信号",
     feature4Body: "让 BO、MLI/PPT、短持有期和冲突提示保持可见，但不假装替代最终判断。",
+    walkthroughEyebrow: "90 秒案例演示",
+    walkthroughTitle: "用一条真实的中荷股息案例，把输入到边界一次讲清楚",
+    walkthroughIntro:
+      "这一段不试图解释整个系统，只展示一条真实产品路径：输入、引导式事实、协定分支、来源依据、handoff artifact，以及产品最终停下来的边界。",
+    walkthroughStep1Title: "输入",
+    walkthroughStep1Body:
+      "从一条边界明确的场景开始：一笔 `CN -> NL` 的 dividend payment，属于当前公开支持范围内的真实预审路径。",
+    walkthroughCasePill: "CN -> NL dividends",
+    walkthroughStep2Title: "引导式事实",
+    walkthroughStep2Body:
+      "系统不会靠自由聊天猜答案，而是要求真正影响分支判断的事实：直接持股比例、付款日、持有期等。",
+    walkthroughStep3Title: "协定分支",
+    walkthroughStep3Body:
+      "引擎把案件收束到 Article 10 dividend branch，并把 5% / 10% 这种分支逻辑保持为显式规则，而不是藏在模型回答里。",
+    walkthroughStep4Title: "来源依据",
+    walkthroughStep4Body:
+      "输出不会只给一个税率。审核人还能看到条款路径、段落级来源和当前 review context，而不是一个没有出处的数字。",
+    walkthroughStep5Title: "交接材料",
+    walkthroughStep5Body:
+      "结果会被打包成交接材料，让下一位审核人直接接续 workflow，而不是从头重建第一轮筛查。",
+    walkthroughStep6Title: "最终边界",
+    walkthroughStep6Body:
+      "产品在该停的地方会停下来：不是最终税务意见，`MLI/PPT` 仍然只是 review signal，不会在 runtime 里被假装自动解决。",
+    evidenceCard1Label: "单次实测",
     onboardingEyebrow: "新协定如何接入",
     onboardingTitle: "不再从零手工写规则，而是走人工把关的协定编译流程",
     onboardingIntro:
@@ -78,15 +103,47 @@ const translations = {
     evidenceTitle: "把公共证明单独摆出来，而不是让故事替代证据",
     evidenceIntro:
       "这里对外强调的是已经被 repo 证明的内容：单次实测摘要、协定接入证明矩阵，以及回归/重放快照。目标是清楚说明当前已经实现了什么，同时避免把 repo 还没证明的能力提前写成事实。",
+    evidenceMetricReviewer: "Reviewer elapsed",
+    evidenceMetricReviewerValue: "26 seconds",
+    evidenceMetricEndToEnd: "End-to-end elapsed",
+    evidenceMetricEndToEndValue: "10m45s",
+    evidenceMetricPilotType: "Pilot type",
+    evidenceMetricPilotTypeValue: "Single controlled pilot",
     evidenceCard1Title: "单次实测摘要",
     evidenceCard1Body:
-      "一条受控 `CN-KR` onboarding pilot 已经留下机器时间戳证据：reviewer session 为 `26 seconds`，repo 内部 `source build -> promote` 总耗时为 `10m45s`。",
+      "这组数字来自受控官方来源输入下的真实流程。它证明的是 workflow 已经可测、可审计，而不是在承诺一条通用 onboarding SLA。",
+    evidenceCard2Label: "证明矩阵",
     evidenceCard2Title: "接入证明矩阵",
+    evidenceProof1: "CN-SG shadow rebuild",
+    evidenceProof2: "CN-NL shadow rebuild",
+    evidenceProof3: "CN-SG OECD delta proof",
+    evidenceProof4: "CN-NL OECD delta proof",
+    evidenceProof5: "CN-KR initial onboarding",
     evidenceCard2Body:
-      "编译器路径不再只在一个样例上成立。`CN-SG` 和 `CN-NL` 都已经通过 shadow rebuild 与 OECD delta proof，`CN-KR` 则完成了第一次真实 initial onboarding。",
+      "编译器路径已经跨过多个 lane：双 pair shadow rebuild、双 OECD delta proof，以及一个真实的新 pair initial onboarding。",
+    evidenceCard3Label: "回归快照",
     evidenceCard3Title: "回归与重放快照",
+    evidenceSnapshotBackend: "backend passed",
+    evidenceSnapshotFrontend: "frontend passed",
+    evidenceSnapshotSite: "site tests passed",
+    evidenceSnapshotBuildValue: "Build",
+    evidenceSnapshotBuild: "frontend build passed",
     evidenceCard3Body:
       "公开 runtime、onboarding workflow 和产品页本身都受回归测试保护，所以外部叙事不是只靠截图，而是能回到实际测试结果上。",
+    verifierEyebrow: "3 分钟快速验证",
+    verifierTitle: "3 分钟快速验证这个 repo",
+    verifierIntro:
+      "如果你只有几分钟，不要先从完整本地启动开始。先按下面这条最短路径验证 moat 是否真实存在。",
+    verifierStep1Title: "先看 90 秒案例演示",
+    verifierStep1Body: "用一条真实的 `CN-NL dividends` 案例快速判断产品是不是只会讲概念。",
+    verifierStep2Title: "再看 measured pilot card",
+    verifierStep2Body: "确认 `CN-KR` onboarding 已经留下 machine-written timing evidence，而不是口头声称。",
+    verifierStep3Title: "再扫 proof matrix",
+    verifierStep3Body: "确认 moat 不是单点成立，而是 shadow rebuild、delta proof 和 real onboarding 都有证据。",
+    verifierStep4Title: "最后才看本地 quick proof",
+    verifierStep4Body: "如果你还想本地验证 runtime，再回 README 跑 smoke path；那是最后一步，不是第一步。",
+    verifierPrimary: "打开 README 验证路径",
+    verifierSecondary: "回到证据层",
     claimsEyebrow: "已实现与未宣称",
     claimsTitle: "把已经做成的讲清楚，也把还没宣称的边界讲清楚",
     claimsIntro:
@@ -125,12 +182,19 @@ const translations = {
     altReviewOutput: "Tax Treaty Agent 的结构化预审输出界面",
     altWorkflowHandoff: "Tax Treaty Agent 的工作流交接摘要界面",
     altProductOverview: "Tax Treaty Agent 产品概览视觉图",
+    altWalkthroughInput: "中荷股息案例输入概览",
+    altWalkthroughGuided: "股息场景的引导式事实采集面板",
+    altWalkthroughBranch: "Article 10 股息分支收束界面",
+    altWalkthroughProvenance: "带来源依据的协定预审输出界面",
+    altWalkthroughHandoff: "股息预审的 workflow handoff 材料",
+    altWalkthroughBoundary: "最终边界与 review-only signal 展示",
   },
   en: {
     pageTitle: "Tax Treaty Agent | Cross-border treaty pre-screening",
     pageDescription:
       "Cross-border treaty pre-screening for international tax teams. Start with a faster first-pass review before full legal or tax analysis.",
     navWorkflow: "How it works",
+    navWalkthrough: "Case walkthrough",
     navOnboarding: "New treaty onboarding",
     navEvidence: "Evidence",
     navCoverage: "Coverage",
@@ -143,7 +207,7 @@ const translations = {
     heroSub:
       "It is designed to save time at the front of the workflow, not to replace a final tax opinion.",
     heroPrimary: "Open GitHub repository",
-    heroSecondary: "See supported coverage",
+    heroSecondary: "See the 90-second walkthrough",
     chipPairs: "3 treaty pairs",
     chipIncome: "Dividends, interest, royalties",
     chipGuided: "Guided review first",
@@ -187,6 +251,30 @@ const translations = {
     feature4Title: "Review signals",
     feature4Body:
       "So BO, MLI/PPT, short holding period, and conflict prompts remain visible without pretending to be final determinations.",
+    walkthroughEyebrow: "90-second case walkthrough",
+    walkthroughTitle: "One real CN-NL dividends case, shown from input to final boundary",
+    walkthroughIntro:
+      "This walkthrough does not try to explain the whole system. It shows one concrete path through the current product: the initial case, the guided facts, the treaty branch, the source-aware record, the handoff artifact, and the final boundary the product keeps.",
+    walkthroughStep1Title: "Input",
+    walkthroughStep1Body:
+      "Start with one bounded scenario: a China-to-Netherlands dividend payment that belongs in the current supported review scope.",
+    walkthroughCasePill: "CN -> NL dividends",
+    walkthroughStep2Title: "Guided facts",
+    walkthroughStep2Body:
+      "The product asks for the facts that actually matter here: direct holding percentage, payment date, and holding period, instead of relying on free-form chat.",
+    walkthroughStep3Title: "Treaty branch",
+    walkthroughStep3Body:
+      "The engine narrows the case into the Article 10 dividend branch and keeps the direct-holding threshold logic explicit rather than hiding the branch choice inside a model answer.",
+    walkthroughStep4Title: "Provenance",
+    walkthroughStep4Body:
+      "The result stays source-aware: the reviewer can see the treaty article lane, paragraph-level provenance, and the supporting review context instead of a bare percentage with no traceability.",
+    walkthroughStep5Title: "Handoff artifact",
+    walkthroughStep5Body:
+      "The output is packaged for the next reviewer, with machine-readable handoff detail instead of leaving downstream review to reconstruct the first pass from scratch.",
+    walkthroughStep6Title: "Final boundary",
+    walkthroughStep6Body:
+      "The product still stops at the right boundary: not a final tax opinion, and MLI/PPT remains a review signal rather than an automatic runtime override.",
+    evidenceCard1Label: "Measured pilot",
     onboardingEyebrow: "How new treaties are onboarded",
     onboardingTitle: "A human-reviewed compiler replaces manual treaty-to-rule coding from scratch",
     onboardingIntro:
@@ -204,15 +292,48 @@ const translations = {
     evidenceTitle: "Public proof is separated from product claims",
     evidenceIntro:
       "The public story is backed by concrete evidence artifacts: a measured pilot summary, a treaty onboarding proof matrix, and a regression snapshot. The goal is to show what is already implemented without claiming more than the repo has actually proven.",
+    evidenceMetricReviewer: "Reviewer elapsed",
+    evidenceMetricReviewerValue: "26 seconds",
+    evidenceMetricEndToEnd: "End-to-end elapsed",
+    evidenceMetricEndToEndValue: "10m45s",
+    evidenceMetricPilotType: "Pilot type",
+    evidenceMetricPilotTypeValue: "Single controlled pilot",
+    evidenceCard1Label: "Measured pilot",
     evidenceCard1Title: "Measured pilot summary",
     evidenceCard1Body:
-      "A single controlled CN-KR onboarding pilot has machine-written timing evidence: a 26-second reviewer session and a 10m45s repo-internal source-build-to-promote elapsed time.",
+      "Measured on governed official source inputs. The result is evidence of a real workflow, not a general onboarding SLA.",
+    evidenceCard2Label: "Proof matrix",
     evidenceCard2Title: "Onboarding proof matrix",
+    evidenceProof1: "CN-SG shadow rebuild",
+    evidenceProof2: "CN-NL shadow rebuild",
+    evidenceProof3: "CN-SG OECD delta proof",
+    evidenceProof4: "CN-NL OECD delta proof",
+    evidenceProof5: "CN-KR initial onboarding",
     evidenceCard2Body:
-      "The compiler path is no longer proven on one toy case only. CN-SG and CN-NL both pass shadow rebuilds and OECD delta proofs, and CN-KR completes a real initial onboarding path.",
+      "The offline treaty compiler is not proven on one toy case only; it now holds across shadow rebuilds, baseline-aware delta proofs, and one real new-pair onboarding path.",
+    evidenceCard3Label: "Regression snapshot",
     evidenceCard3Title: "Regression and replay snapshot",
+    evidenceSnapshotBackend: "backend passed",
+    evidenceSnapshotFrontend: "frontend passed",
+    evidenceSnapshotSite: "site tests passed",
+    evidenceSnapshotBuildValue: "Build",
+    evidenceSnapshotBuild: "frontend build passed",
     evidenceCard3Body:
-      "Public runtime, onboarding workflow, and product-site assertions all sit under replayable tests, so the external narrative is anchored to real regression outputs rather than screenshots alone.",
+      "Public runtime, onboarding workflow, and product-site assertions all sit under replayable checks rather than screenshots alone.",
+    verifierEyebrow: "3-minute verifier path",
+    verifierTitle: "How to verify this repo quickly",
+    verifierIntro:
+      "If you only have a few minutes, do not start with the full local setup. Verify the moat in this order.",
+    verifierStep1Title: "Watch the 90-second walkthrough",
+    verifierStep1Body: "See one real CN-NL dividends case go from input to final boundary.",
+    verifierStep2Title: "Check the measured pilot card",
+    verifierStep2Body: "Confirm that a real CN-KR onboarding pilot has recorded timing evidence.",
+    verifierStep3Title: "Scan the proof matrix",
+    verifierStep3Body: "Verify that the compiler path holds across shadow rebuilds, delta proofs, and a real new-pair onboarding.",
+    verifierStep4Title: "Only then open the local quick proof",
+    verifierStep4Body: "Use the README smoke path if you want to validate the public runtime locally after the evidence layer makes sense.",
+    verifierPrimary: "Open the README verifier path",
+    verifierSecondary: "Jump back to the evidence layer",
     claimsEyebrow: "Implemented vs not claimed",
     claimsTitle: "Show what is real, and say out loud what is still not claimed",
     claimsIntro:
@@ -251,6 +372,12 @@ const translations = {
     altReviewOutput: "Structured treaty review output in Tax Treaty Agent",
     altWorkflowHandoff: "Workflow handoff summary in Tax Treaty Agent",
     altProductOverview: "Tax Treaty Agent product overview artwork",
+    altWalkthroughInput: "CN-NL dividend case overview",
+    altWalkthroughGuided: "Guided facts panel for dividend review",
+    altWalkthroughBranch: "Treaty branch narrowing for Article 10 dividends",
+    altWalkthroughProvenance: "Source-aware provenance in treaty review output",
+    altWalkthroughHandoff: "Workflow handoff artifact for dividend review",
+    altWalkthroughBoundary: "Final boundary and review-only signals",
   },
 };
 
