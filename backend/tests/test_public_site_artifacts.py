@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import imageio.v3 as iio
+
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -97,3 +99,26 @@ def test_public_product_page_has_mp4_walkthrough_assets() -> None:
         assert asset_name in html, asset_name
 
     assert html.count("<video") == 1
+    assert "walkthrough-device-shell" in html
+    assert "walkthrough-device-topbar" in html
+
+
+def test_public_product_page_walkthrough_copy_is_provenance_first() -> None:
+    site_index = ROOT / "docs" / "index.html"
+    html = site_index.read_text(encoding="utf-8")
+
+    assert "First pause on the Article 10 branch that narrows the case." in html
+    assert "Stay longest on the source chain behind that branch." in html
+    assert "Then confirm the workflow-ready package for the next reviewer." in html
+    assert "Close on the explicit boundary: pre-review only, not a final tax opinion." in html
+
+
+def test_walkthrough_video_is_exported_as_high_frame_rate_mp4() -> None:
+    walkthrough_path = ROOT / "docs" / "site-assets" / "walkthrough-main.mp4"
+
+    meta = iio.immeta(walkthrough_path)
+
+    assert float(meta["fps"]) >= 24.0
+    assert int(meta["size"][0]) >= 1200
+    assert int(meta["size"][1]) >= 700
+    assert "h264" in str(meta.get("codec", "")).lower()

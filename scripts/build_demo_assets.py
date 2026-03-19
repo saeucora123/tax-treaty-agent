@@ -1,12 +1,24 @@
 from __future__ import annotations
 
 import math
+import shutil
+import subprocess
+import tempfile
 from pathlib import Path
 from typing import Iterable
 
 import imageio.v2 as imageio
+import imageio.v3 as iio
+import imageio_ffmpeg
 import numpy as np
 from PIL import Image, ImageColor, ImageDraw, ImageFilter, ImageFont, ImageOps
+from live_walkthrough_capture import (
+    FRONTEND_URL,
+    TARGET_FPS,
+    capture_live_walkthrough_frames,
+    ensure_local_app_stack,
+    record_live_walkthrough_video,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,6 +32,7 @@ PREVIEW_GIF_PATH = ASSETS / "tax-treaty-agent-guided-demo.gif"
 EXTENDED_GIF_PATH = ASSETS / "tax-treaty-agent-guided-demo-extended.gif"
 WALKTHROUGH_MAIN_MP4_PATH = SITE_ASSETS / "walkthrough-main.mp4"
 WALKTHROUGH_MAIN_POSTER_PATH = SITE_ASSETS / "walkthrough-main-poster.png"
+PLAYWRIGHT_WALKTHROUGH_SCRIPT = ROOT / "frontend" / "scripts" / "record_live_walkthrough_playwright.mjs"
 
 
 def load_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
@@ -198,7 +211,7 @@ def save_gif(path: Path, frames: Iterable[Image.Image], duration_ms: int) -> int
     return len(items)
 
 
-def save_mp4(path: Path, frames: Iterable[Image.Image], fps: int = 18) -> int:
+def save_mp4(path: Path, frames: Iterable[Image.Image], fps: int = TARGET_FPS) -> int:
     items = [frame.convert("RGB") for frame in frames]
     if not items:
         raise ValueError("no frames to save")
@@ -206,9 +219,10 @@ def save_mp4(path: Path, frames: Iterable[Image.Image], fps: int = 18) -> int:
         path,
         fps=fps,
         codec="libx264",
-        quality=8,
+        quality=10,
         pixelformat="yuv420p",
         macro_block_size=1,
+        ffmpeg_params=["-crf", "17", "-preset", "slow", "-movflags", "+faststart"],
     ) as writer:
         for frame in items:
             writer.append_data(np.asarray(frame))
@@ -221,6 +235,70 @@ def save_first_frame(path: Path, frame: Image.Image) -> None:
 
 def hold(frame: Image.Image, count: int) -> list[Image.Image]:
     return [frame.copy() for _ in range(count)]
+
+
+def save_video_poster(path: Path, video_path: Path, ratio: float = 0.66) -> None:
+    meta = iio.immeta(video_path)
+    fps = float(meta.get("fps", TARGET_FPS))
+    duration = float(meta.get("duration", 0))
+    frame_index = max(0, int(duration * fps * ratio))
+    frame = iio.imread(video_path, index=frame_index)
+    Image.fromarray(frame).convert("RGB").save(path, quality=95)
+
+
+def record_playwright_walkthrough_video(output_path: Path) -> None:
+    node_path = shutil.which("node.exe") or shutil.which("node")
+    if not node_path:
+        raise FileNotFoundError("node is not available for Playwright walkthrough recording")
+    if not PLAYWRIGHT_WALKTHROUGH_SCRIPT.exists():
+        raise FileNotFoundError(f"Playwright walkthrough script not found: {PLAYWRIGHT_WALKTHROUGH_SCRIPT}")
+
+    ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
+    with tempfile.TemporaryDirectory(prefix="tta-walkthrough-") as temp_dir:
+        raw_video_path = Path(temp_dir) / "walkthrough-raw.webm"
+
+        with ensure_local_app_stack():
+            subprocess.run(
+                [
+                    node_path,
+                    str(PLAYWRIGHT_WALKTHROUGH_SCRIPT),
+                    "--output",
+                    str(raw_video_path),
+                    "--url",
+                    FRONTEND_URL,
+                ],
+                cwd=str(ROOT / "frontend"),
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+
+        subprocess.run(
+            [
+                ffmpeg_exe,
+                "-y",
+                "-i",
+                str(raw_video_path),
+                "-c:v",
+                "libx264",
+                "-preset",
+                "slow",
+                "-crf",
+                "17",
+                "-pix_fmt",
+                "yuv420p",
+                "-movflags",
+                "+faststart",
+                "-r",
+                "30",
+                str(output_path),
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
 
 
 def build_assets() -> None:
@@ -297,37 +375,53 @@ def build_assets() -> None:
     short_seconds = round(short_frame_count * 0.09, 1)
     extended_seconds = round(extended_frame_count * 0.12, 1)
 
-    walkthrough_frames: list[Image.Image] = []
-    walkthrough_frames += animate_pointer(scene_a, (250, 214), (356, 250), 20, click_at_end=True)
-    walkthrough_frames += hold(walkthrough_frames[-1], 14)
-    walkthrough_frames += crossfade(walkthrough_frames[-1], add_cursor(scene_b, (338, 236)), 10)
-    walkthrough_frames += animate_pointer(scene_b, (338, 236), (382, 282), 20, click_at_end=True)
-    walkthrough_frames += hold(walkthrough_frames[-1], 14)
-    walkthrough_frames += animate_pointer(walkthrough_frames[-1], (382, 282), (428, 334), 18, click_at_end=True)
-    walkthrough_frames += hold(walkthrough_frames[-1], 12)
-    walkthrough_frames += animate_pointer(walkthrough_frames[-1], (428, 334), (468, 386), 18, click_at_end=True)
-    walkthrough_frames += hold(walkthrough_frames[-1], 16)
-    walkthrough_frames += crossfade(walkthrough_frames[-1], add_cursor(scene_c, (430, 470)), 10)
-    walkthrough_frames += animate_pointer(scene_c, (430, 470), (438, 472), 20, click_at_end=True)
-    walkthrough_frames += hold(walkthrough_frames[-1], 18)
-    walkthrough_frames += crossfade(walkthrough_frames[-1], add_cursor(scene_d, (690, 212)), 10)
-    walkthrough_frames += animate_pointer(scene_d, (690, 212), (696, 304), 22, click_at_end=True)
-    walkthrough_frames += hold(walkthrough_frames[-1], 16)
-    walkthrough_frames += animate_pointer(walkthrough_frames[-1], (696, 304), (704, 432), 22, click_at_end=True)
-    walkthrough_frames += hold(walkthrough_frames[-1], 16)
-    walkthrough_frames += crossfade(walkthrough_frames[-1], add_cursor(scene_e, (690, 214)), 10)
-    walkthrough_frames += animate_pointer(scene_e, (690, 214), (696, 516), 26, click_at_end=True)
-    walkthrough_frames += hold(walkthrough_frames[-1], 16)
-    walkthrough_frames += animate_pointer(walkthrough_frames[-1], (696, 516), (244, 132), 22, click_at_end=True)
-    walkthrough_frames += hold(walkthrough_frames[-1], 24)
+    walkthrough_frames: list[Image.Image]
+    walkthrough_source = "playwright_recording"
+    try:
+        record_playwright_walkthrough_video(WALKTHROUGH_MAIN_MP4_PATH)
+        save_video_poster(WALKTHROUGH_MAIN_POSTER_PATH, WALKTHROUGH_MAIN_MP4_PATH)
+        walkthrough_frames = []
+    except Exception as exc:
+        try:
+            walkthrough_source = f"screen_recording_fallback ({exc})"
+            record_live_walkthrough_video(WALKTHROUGH_MAIN_MP4_PATH)
+            save_video_poster(WALKTHROUGH_MAIN_POSTER_PATH, WALKTHROUGH_MAIN_MP4_PATH)
+            walkthrough_frames = []
+        except Exception as nested_exc:
+            walkthrough_source = f"frame_fallback ({nested_exc})"
+            walkthrough_frames = []
+            walkthrough_frames += animate_pointer(scene_a, (250, 214), (356, 250), 20, click_at_end=True)
+            walkthrough_frames += hold(walkthrough_frames[-1], 14)
+            walkthrough_frames += crossfade(walkthrough_frames[-1], add_cursor(scene_b, (338, 236)), 10)
+            walkthrough_frames += animate_pointer(scene_b, (338, 236), (382, 282), 20, click_at_end=True)
+            walkthrough_frames += hold(walkthrough_frames[-1], 14)
+            walkthrough_frames += animate_pointer(walkthrough_frames[-1], (382, 282), (428, 334), 18, click_at_end=True)
+            walkthrough_frames += hold(walkthrough_frames[-1], 12)
+            walkthrough_frames += animate_pointer(walkthrough_frames[-1], (428, 334), (468, 386), 18, click_at_end=True)
+            walkthrough_frames += hold(walkthrough_frames[-1], 16)
+            walkthrough_frames += crossfade(walkthrough_frames[-1], add_cursor(scene_c, (430, 470)), 10)
+            walkthrough_frames += animate_pointer(scene_c, (430, 470), (438, 472), 20, click_at_end=True)
+            walkthrough_frames += hold(walkthrough_frames[-1], 18)
+            walkthrough_frames += crossfade(walkthrough_frames[-1], add_cursor(scene_d, (690, 212)), 10)
+            walkthrough_frames += animate_pointer(scene_d, (690, 212), (696, 304), 22, click_at_end=True)
+            walkthrough_frames += hold(walkthrough_frames[-1], 16)
+            walkthrough_frames += animate_pointer(walkthrough_frames[-1], (696, 304), (704, 432), 22, click_at_end=True)
+            walkthrough_frames += hold(walkthrough_frames[-1], 16)
+            walkthrough_frames += crossfade(walkthrough_frames[-1], add_cursor(scene_e, (690, 214)), 10)
+            walkthrough_frames += animate_pointer(scene_e, (690, 214), (696, 516), 26, click_at_end=True)
+            walkthrough_frames += hold(walkthrough_frames[-1], 16)
+            walkthrough_frames += animate_pointer(walkthrough_frames[-1], (696, 516), (244, 132), 22, click_at_end=True)
+            walkthrough_frames += hold(walkthrough_frames[-1], 24)
 
-    save_mp4(WALKTHROUGH_MAIN_MP4_PATH, walkthrough_frames)
-    save_first_frame(WALKTHROUGH_MAIN_POSTER_PATH, walkthrough_frames[0])
+    if walkthrough_frames:
+        save_mp4(WALKTHROUGH_MAIN_MP4_PATH, walkthrough_frames, fps=TARGET_FPS)
+        poster_index = min(len(walkthrough_frames) - 1, max(0, int(len(walkthrough_frames) * 0.66)))
+        save_first_frame(WALKTHROUGH_MAIN_POSTER_PATH, walkthrough_frames[poster_index])
 
     print(f"hero={HERO_PATH.name}")
     print(f"preview_gif={PREVIEW_GIF_PATH.name} frames={short_frame_count} seconds={short_seconds}")
     print(f"extended_gif={EXTENDED_GIF_PATH.name} frames={extended_frame_count} seconds={extended_seconds}")
-    print(f"walkthrough_mp4={WALKTHROUGH_MAIN_MP4_PATH.name}")
+    print(f"walkthrough_mp4={WALKTHROUGH_MAIN_MP4_PATH.name} source={walkthrough_source}")
 
 
 if __name__ == "__main__":

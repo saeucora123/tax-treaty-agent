@@ -205,24 +205,38 @@
             <div class="eyebrow" data-i18n="walkthroughEyebrow">90-second case walkthrough</div>
             <h2 data-i18n="walkthroughTitle">One real CN-NL dividends case, shown from input to final boundary</h2>
             <p data-i18n="walkthroughIntro">
-              This walkthrough does not try to explain the whole system. It shows one concrete path through the current
-              product: the initial case, the guided facts, the treaty branch, the source-aware record, the handoff
-              artifact, and the final boundary the product keeps.
+              This walkthrough does not try to explain the whole system. It first establishes the case quickly, then
+              stops on the treaty branch and the source chain behind it, before showing the handoff artifact and ending
+              on the boundary the product keeps.
             </p>
           </div>
           <div class="walkthrough-feature reveal">
             <div class="walkthrough-case-pill" data-i18n="walkthroughCasePill">CN -> NL dividends</div>
             <div class="walkthrough-visual walkthrough-main">
-              <video
-                class="walkthrough-video walkthrough-video-main"
-                src="./site-assets/walkthrough-main.mp4"
-                poster="./site-assets/walkthrough-main-poster.png"
-                muted
-                loop
-                autoplay
-                playsinline
-                preload="metadata"
-              ></video>
+              <div class="walkthrough-device-shell">
+                <div class="walkthrough-device-topbar">
+                  <div class="walkthrough-device-dots" aria-hidden="true">
+                    <span class="walkthrough-device-dot dot-warm"></span>
+                    <span class="walkthrough-device-dot dot-neutral"></span>
+                    <span class="walkthrough-device-dot dot-cool"></span>
+                  </div>
+                  <div class="walkthrough-device-title" data-i18n="walkthroughDeviceTitle">
+                    Guided review playback
+                  </div>
+                </div>
+                <div class="walkthrough-device-screen">
+                  <video
+                    class="walkthrough-video walkthrough-video-main"
+                    src="./site-assets/walkthrough-main.mp4"
+                    poster="./site-assets/walkthrough-main-poster.png"
+                    muted
+                    loop
+                    autoplay
+                    playsinline
+                    preload="metadata"
+                  ></video>
+                </div>
+              </div>
             </div>
           </div>
           <div class="walkthrough-chapters">
@@ -239,22 +253,22 @@
             <article class="walkthrough-chapter reveal reveal-delay-2">
               <span class="step-index">03</span>
               <h3 data-i18n="walkthroughChapter3Title">Treaty branch</h3>
-              <p data-i18n="walkthroughChapter3Body">Watch the case narrow into the Article 10 dividend branch.</p>
+              <p data-i18n="walkthroughChapter3Body">First pause on the Article 10 branch that narrows the case.</p>
             </article>
             <article class="walkthrough-chapter reveal">
               <span class="step-index">04</span>
               <h3 data-i18n="walkthroughChapter4Title">Provenance</h3>
-              <p data-i18n="walkthroughChapter4Body">Pause on source-aware references instead of a bare answer.</p>
+              <p data-i18n="walkthroughChapter4Body">Stay longest on the source chain behind that branch.</p>
             </article>
             <article class="walkthrough-chapter reveal reveal-delay">
               <span class="step-index">05</span>
               <h3 data-i18n="walkthroughChapter5Title">Handoff</h3>
-              <p data-i18n="walkthroughChapter5Body">Show the workflow-ready package for the next reviewer.</p>
+              <p data-i18n="walkthroughChapter5Body">Then confirm the workflow-ready package for the next reviewer.</p>
             </article>
             <article class="walkthrough-chapter reveal reveal-delay-2">
               <span class="step-index">06</span>
               <h3 data-i18n="walkthroughChapter6Title">Boundary</h3>
-              <p data-i18n="walkthroughChapter6Body">End on the explicit line: not a final tax opinion, review signals stay visible.</p>
+              <p data-i18n="walkthroughChapter6Body">Close on the explicit boundary: pre-review only, not a final tax opinion.</p>
             </article>
           </div>
         </section>

@@ -10,3 +10,9 @@ logs/
 A?ENTS.md
 .c[o]dex/
 archive/internal-history/
+docs/site-assets/build-logs/
+docs/site-assets/frame-samples/
+docs/site-assets/frame-contact-sheet.png
+docs/site-assets/walkthrough-main-frame-check.png
+docs/site-assets/walkthrough-section-check.png
+docs/site-assets/record-check-*.png
