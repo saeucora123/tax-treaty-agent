@@ -64,6 +64,10 @@ def test_rejects_unsupported_country_pair():
     assert handoff["machine_handoff"]["article_number"] is None
     assert handoff["machine_handoff"]["rate_display"] is None
     assert handoff["human_review_brief"]["disposition"] == "Rewrite the scenario inside the supported pilot scope."
+    assert "authority_memo" in handoff
+    assert handoff["authority_memo"]["status"] == "out_of_scope"
+    assert isinstance(handoff["authority_memo"]["topics"], list)
+    assert isinstance(handoff["authority_memo"]["coverage_gaps"], list)
 
 def test_returns_structured_result_for_supported_royalties_case():
     response = client.post(
@@ -131,6 +135,22 @@ def test_returns_structured_result_for_supported_royalties_case():
     assert handoff["human_review_brief"]["disposition"] == "Proceed with standard human review."
     assert any("2013" in line for line in handoff["human_review_brief"]["summary_lines"])
     assert any("PPT" in line for line in handoff["human_review_brief"]["summary_lines"])
+    authority_memo = handoff["authority_memo"]
+    assert authority_memo["status"] == "available"
+    assert authority_memo["reviewer_note"]
+    topics_by_key = {topic["topic"]: topic for topic in authority_memo["topics"]}
+    assert {"treaty_basis", "mli_ppt", "working_paper"} <= set(topics_by_key)
+    assert any(
+        citation["source_id"] == "sat-cn-nl-2013-en-pdf"
+        for citation in topics_by_key["treaty_basis"]["citations"]
+    )
+    assert any(
+        "MLI 综合文本" in citation["note"]
+        for citation in topics_by_key["mli_ppt"]["citations"]
+    )
+    assert {gap["reason_code"] for gap in authority_memo["coverage_gaps"]}.issubset(
+        {"DATA_MISSING", "TREATY_SILENT"}
+    )
     if "input_interpretation" in payload:
         assert payload["input_interpretation"]["parser_source"] == "llm"
 

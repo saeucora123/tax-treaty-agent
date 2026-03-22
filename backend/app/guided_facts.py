@@ -318,9 +318,38 @@ export type HumanReviewBrief = {{
   handoff_note: string;
 }};
 
+export type AuthorityMemoCitation = {{
+  source_id: string;
+  title: string;
+  source_type: string;
+  official_url: string;
+  note: string;
+}};
+
+export type AuthorityMemoTopic = {{
+  topic: "treaty_basis" | "mli_ppt" | "beneficial_owner" | "domestic_law" | "working_paper";
+  summary: string;
+  citations: AuthorityMemoCitation[];
+  gap: string | null;
+}};
+
+export type AuthorityMemoCoverageGap = {{
+  topic: AuthorityMemoTopic["topic"];
+  reason_code: "DATA_MISSING" | "TREATY_SILENT";
+  note: string;
+}};
+
+export type AuthorityMemo = {{
+  status: string;
+  topics: AuthorityMemoTopic[];
+  reviewer_note: string;
+  coverage_gaps: AuthorityMemoCoverageGap[];
+}};
+
 export type HandoffPackage = {{
   machine_handoff: MachineHandoff;
   human_review_brief: HumanReviewBrief;
+  authority_memo?: AuthorityMemo;
 }};
 
 export type InputInterpretation = {{

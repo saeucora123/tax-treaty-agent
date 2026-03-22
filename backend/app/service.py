@@ -45,6 +45,21 @@ from app.providers import (
     resolve_data_path,
 )
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+AUTHORITY_MEMO_TOPICS = (
+    "treaty_basis",
+    "mli_ppt",
+    "beneficial_owner",
+    "domestic_law",
+    "working_paper",
+)
+AUTHORITY_GAP_REASON_CODES = {"DATA_MISSING", "TREATY_SILENT"}
+MLI_SYNTHESIZED_DISCLAIMER = (
+    "基于税务机关发布的 MLI 综合文本，仅供复核参考。具体适用受限于双边最终的 MLI 缔约立场。"
+)
+_SOURCE_REGISTRY_CACHE: dict[str, dict[str, dict]] = {}
+_AUTHORITY_TOPIC_CACHE: dict[str, list[dict]] = {}
+
 
 def _normalize_guided_fact_value(value: object) -> str | None:
     if not isinstance(value, str):
@@ -131,7 +146,201 @@ def build_handoff_package(response: dict) -> dict:
     return {
         "machine_handoff": machine_handoff,
         "human_review_brief": build_human_review_brief(response, machine_handoff),
+        "authority_memo": build_authority_memo(response),
     }
+
+
+def build_authority_memo(response: dict) -> dict:
+    normalized_input = response.get("normalized_input") or {}
+    payer_country = normalized_input.get("payer_country")
+    payee_country = normalized_input.get("payee_country")
+    pair = None
+    if payer_country and payee_country:
+        pair = canonical_country_pair(payer_country, payee_country)
+
+    if response.get("reason") == "unsupported_country_pair" or (
+        pair is not None and not is_supported_stable_pair(pair)
+    ):
+        return {
+            "status": "out_of_scope",
+            "topics": [],
+            "reviewer_note": "No authority memo is built for scenarios outside the supported pilot treaty pairs.",
+            "coverage_gaps": [],
+        }
+
+    if pair is None:
+        return {
+            "status": "unavailable",
+            "topics": [],
+            "reviewer_note": "Authority memo is unavailable until the treaty pair can be identified.",
+            "coverage_gaps": [],
+        }
+
+    pair_id = "-".join(country.lower() for country in pair)
+    registry_by_id = load_source_registry_by_id(pair_id)
+    configured_topics = {item["topic"]: item for item in load_authority_topics_for_pair(pair_id)}
+    defaults = build_default_authority_topics(response)
+    topics: list[dict] = []
+    coverage_gaps: list[dict] = []
+
+    for topic in AUTHORITY_MEMO_TOPICS:
+        configured = configured_topics.get(topic, {})
+        default = defaults.get(topic, {})
+        source_ids = list(configured.get("source_ids") or default.get("source_ids") or [])
+        summary = build_authority_topic_summary(topic, response)
+        citations = build_authority_citations(source_ids, registry_by_id, topic)
+        missing_reason_code = configured.get("missing_reason_code")
+        if missing_reason_code not in AUTHORITY_GAP_REASON_CODES:
+            missing_reason_code = None
+        if missing_reason_code is None and not citations and not summary:
+            missing_reason_code = "DATA_MISSING"
+
+        gap_note = None
+        if missing_reason_code == "TREATY_SILENT":
+            gap_note = "Manifest marks this topic as treaty-silent for the current slice."
+        elif missing_reason_code == "DATA_MISSING":
+            gap_note = "No mapped authority source is configured for this topic yet."
+
+        topics.append(
+            {
+                "topic": topic,
+                "summary": summary,
+                "citations": citations,
+                "gap": gap_note,
+            }
+        )
+        if gap_note is not None:
+            coverage_gaps.append(
+                {
+                    "topic": topic,
+                    "reason_code": missing_reason_code,
+                    "note": gap_note,
+                }
+            )
+
+    return {
+        "status": "available",
+        "topics": topics,
+        "reviewer_note": "Reviewer-facing authority support only. These references do not change the runtime conclusion path.",
+        "coverage_gaps": coverage_gaps,
+    }
+
+
+def build_default_authority_topics(response: dict) -> dict[str, dict]:
+    result = response.get("result") or {}
+    source_trace = result.get("source_trace") or {}
+    mli_context = result.get("mli_context") or {}
+    defaults = {
+        "treaty_basis": {
+            "source_ids": list(source_trace.get("official_source_ids", [])),
+        },
+        "mli_ppt": {
+            "source_ids": list(mli_context.get("official_source_ids", [])),
+        },
+        "beneficial_owner": {
+            "source_ids": [],
+        },
+        "domestic_law": {
+            "source_ids": [],
+        },
+        "working_paper": {
+            "source_ids": [],
+        },
+    }
+    return defaults
+
+
+def build_authority_topic_summary(topic: str, response: dict) -> str:
+    result = response.get("result") or {}
+    source_trace = result.get("source_trace") or {}
+    mli_context = result.get("mli_context") or {}
+    if topic == "treaty_basis":
+        parts = [
+            source_trace.get("source_document_title"),
+            source_trace.get("version_note"),
+        ]
+        return " ".join(part for part in parts if part)
+    if topic == "mli_ppt":
+        parts = [
+            mli_context.get("summary"),
+            mli_context.get("human_review_note"),
+        ]
+        return " ".join(part for part in parts if part)
+    if topic == "beneficial_owner":
+        bo_precheck = response.get("bo_precheck")
+        if bo_precheck:
+            return bo_precheck.get("reason_summary") or bo_precheck.get("review_note") or ""
+        return "Beneficial-owner review remains reviewer-controlled in this bounded workflow."
+    if topic == "working_paper":
+        working_paper_ref = source_trace.get("working_paper_ref")
+        if working_paper_ref:
+            return f"Working paper reference: {working_paper_ref}"
+    return ""
+
+
+def build_authority_citations(
+    source_ids: list[str],
+    registry_by_id: dict[str, dict],
+    topic: str,
+) -> list[dict]:
+    citations: list[dict] = []
+    for source_id in source_ids:
+        source = registry_by_id.get(source_id)
+        if source is None:
+            continue
+        note = str(source.get("notes") or "")
+        if topic == "mli_ppt" or source.get("source_type") == "mli_synthesized_text":
+            note = " ".join(part for part in [note, MLI_SYNTHESIZED_DISCLAIMER] if part).strip()
+        citations.append(
+            {
+                "source_id": source_id,
+                "title": source.get("title") or source_id,
+                "source_type": source.get("source_type") or "unknown",
+                "official_url": source.get("official_url") or "",
+                "note": note,
+            }
+        )
+    return citations
+
+
+def load_source_registry_by_id(pair_id: str) -> dict[str, dict]:
+    cached = _SOURCE_REGISTRY_CACHE.get(pair_id)
+    if cached is not None:
+        return cached
+    registry_path = REPO_ROOT / "data" / "source_registry" / f"{pair_id}-official-sources.json"
+    if not registry_path.exists():
+        _SOURCE_REGISTRY_CACHE[pair_id] = {}
+        return _SOURCE_REGISTRY_CACHE[pair_id]
+    registry_payload = json.loads(registry_path.read_text(encoding="utf-8"))
+    registry_by_id = {
+        source["source_id"]: source
+        for source in registry_payload.get("sources", [])
+        if isinstance(source, dict) and source.get("source_id")
+    }
+    _SOURCE_REGISTRY_CACHE[pair_id] = registry_by_id
+    return registry_by_id
+
+
+def load_authority_topics_for_pair(pair_id: str) -> list[dict]:
+    cached = _AUTHORITY_TOPIC_CACHE.get(pair_id)
+    if cached is not None:
+        return cached
+
+    manifests_dir = REPO_ROOT / "data" / "onboarding" / "manifests"
+    candidates: list[tuple[int, list[dict]]] = []
+    for manifest_path in manifests_dir.glob("*.json"):
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if payload.get("pair_id") != pair_id:
+            continue
+        authority_topics = payload.get("authority_topics")
+        if not isinstance(authority_topics, list):
+            continue
+        priority = 0 if payload.get("mode") == "initial_onboarding" else 1
+        candidates.append((priority, authority_topics))
+
+    selected = min(candidates, key=lambda item: item[0])[1] if candidates else []
+    _AUTHORITY_TOPIC_CACHE[pair_id] = selected
+    return selected
 
 
 def build_machine_handoff(response: dict) -> dict:

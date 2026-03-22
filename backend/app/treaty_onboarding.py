@@ -72,6 +72,23 @@ CANONICAL_LIST_SORT_KEYS = (
     "source_id",
 )
 TIMING_RECORD_FILENAME = "timing.record.json"
+ALLOWED_SOURCE_BUNDLE_ROLES = {
+    "treaty_text",
+    "protocol_text",
+    "mli_synthesized_text",
+    "metadata_page",
+    "domestic_law_reference",
+    "working_paper",
+}
+COMPILE_TARGET_ROLES = {"treaty_text", "protocol_text"}
+ALLOWED_AUTHORITY_TOPICS = {
+    "treaty_basis",
+    "mli_ppt",
+    "beneficial_owner",
+    "domestic_law",
+    "working_paper",
+}
+ALLOWED_AUTHORITY_GAP_REASON_CODES = {"DATA_MISSING", "TREATY_SILENT"}
 
 
 class TreatyOnboardingError(RuntimeError):
@@ -287,6 +304,128 @@ def build_timing_summary(timing_record: dict[str, Any] | None) -> dict[str, Any]
     }
 
 
+def normalize_source_bundle_entries(
+    manifest_file: Path,
+    payload: dict[str, Any],
+) -> list[dict[str, Any]]:
+    source_bundle_raw = payload.get("source_bundle")
+    if source_bundle_raw is None:
+        source_documents = payload.get("source_documents")
+        if not isinstance(source_documents, list) or len(source_documents) != 1:
+            raise ManifestValidationError(
+                "Manifest must contain either source_bundle or exactly one legacy source_documents path."
+            )
+        source_bundle_raw = [
+            {
+                "path": source_documents[0],
+                "role": "treaty_text",
+                "compile_target": True,
+                "source_ids": [],
+            }
+        ]
+
+    if not isinstance(source_bundle_raw, list) or not source_bundle_raw:
+        raise ManifestValidationError("Manifest source_bundle must be a non-empty list.")
+
+    normalized_bundle: list[dict[str, Any]] = []
+    compile_role_counts: dict[str, int] = {}
+    for entry in source_bundle_raw:
+        if not isinstance(entry, dict):
+            raise ManifestValidationError("Each source_bundle entry must be an object.")
+        missing = sorted({"path", "role", "compile_target"} - set(entry))
+        if missing:
+            raise ManifestValidationError(
+                "Each source_bundle entry is missing required keys: " + ", ".join(missing)
+            )
+
+        role = normalize_optional_text(entry.get("role"))
+        if role not in ALLOWED_SOURCE_BUNDLE_ROLES:
+            raise ManifestValidationError(f"Unsupported source_bundle role: {entry.get('role')}")
+        compile_target = entry.get("compile_target")
+        if not isinstance(compile_target, bool):
+            raise ManifestValidationError("source_bundle compile_target must be true or false.")
+        if compile_target and role not in COMPILE_TARGET_ROLES:
+            raise ManifestValidationError(
+                "source_bundle compile_target is only allowed for treaty_text or protocol_text roles."
+            )
+        if compile_target:
+            compile_role_counts[role] = compile_role_counts.get(role, 0) + 1
+
+        source_ids = entry.get("source_ids", [])
+        if not isinstance(source_ids, list) or any(
+            not isinstance(source_id, str) or not source_id.strip() for source_id in source_ids
+        ):
+            raise ManifestValidationError("source_bundle source_ids must be a list of non-empty strings.")
+
+        resolved_path = resolve_manifest_path(manifest_file.parent, str(entry["path"]))
+        if not resolved_path.exists():
+            raise ManifestValidationError(f"Structured source document does not exist: {resolved_path}")
+
+        normalized_bundle.append(
+            {
+                "path": str(resolved_path),
+                "role": role,
+                "compile_target": compile_target,
+                "source_ids": [source_id.strip() for source_id in source_ids],
+            }
+        )
+
+    for role, count in compile_role_counts.items():
+        if count > 1:
+            raise ManifestValidationError(
+                f"source_bundle compile_target allows at most one document for role {role}."
+            )
+
+    return normalized_bundle
+
+
+def normalize_authority_topics(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    authority_topics_raw = payload.get("authority_topics", [])
+    if authority_topics_raw is None:
+        return []
+    if not isinstance(authority_topics_raw, list):
+        raise ManifestValidationError("Manifest authority_topics must be a list.")
+
+    normalized_topics: list[dict[str, Any]] = []
+    seen_topics: set[str] = set()
+    for item in authority_topics_raw:
+        if not isinstance(item, dict):
+            raise ManifestValidationError("Each authority_topics entry must be an object.")
+        missing = sorted({"topic", "source_ids"} - set(item))
+        if missing:
+            raise ManifestValidationError(
+                "Each authority_topics entry is missing required keys: " + ", ".join(missing)
+            )
+        topic = normalize_optional_text(item.get("topic"))
+        if topic not in ALLOWED_AUTHORITY_TOPICS:
+            raise ManifestValidationError(f"Unsupported authority topic: {item.get('topic')}")
+        if topic in seen_topics:
+            raise ManifestValidationError(f"Duplicate authority topic in manifest: {topic}")
+        source_ids = item.get("source_ids", [])
+        if not isinstance(source_ids, list) or any(
+            not isinstance(source_id, str) or not source_id.strip() for source_id in source_ids
+        ):
+            raise ManifestValidationError("authority_topics source_ids must be a list of non-empty strings.")
+        missing_reason_code = item.get("missing_reason_code")
+        if missing_reason_code is not None and missing_reason_code not in ALLOWED_AUTHORITY_GAP_REASON_CODES:
+            raise ManifestValidationError(
+                "authority_topics missing_reason_code must be DATA_MISSING or TREATY_SILENT."
+            )
+        normalized_topics.append(
+            {
+                "topic": topic,
+                "source_ids": [source_id.strip() for source_id in source_ids],
+                **(
+                    {"missing_reason_code": missing_reason_code}
+                    if missing_reason_code is not None
+                    else {}
+                ),
+            }
+        )
+        seen_topics.add(topic)
+    return normalized_topics
+
+
 def load_manifest(manifest_path: Path | str) -> dict[str, Any]:
     manifest_file = Path(manifest_path).resolve()
     payload = read_json(manifest_file)
@@ -295,7 +434,6 @@ def load_manifest(manifest_path: Path | str) -> dict[str, Any]:
         "mode",
         "jurisdictions",
         "target_articles",
-        "source_documents",
         "promotion_target_dataset",
         "work_dir",
         "treaty_metadata",
@@ -303,6 +441,8 @@ def load_manifest(manifest_path: Path | str) -> dict[str, Any]:
     missing = sorted(required_keys - set(payload))
     if missing:
         raise ManifestValidationError(f"Manifest is missing required keys: {', '.join(missing)}")
+    if "source_documents" not in payload and "source_bundle" not in payload:
+        raise ManifestValidationError("Manifest must contain source_bundle or source_documents.")
 
     if payload["mode"] not in {"shadow_rebuild", "initial_onboarding"}:
         raise ManifestValidationError("Manifest mode must be shadow_rebuild or initial_onboarding.")
@@ -312,8 +452,9 @@ def load_manifest(manifest_path: Path | str) -> dict[str, Any]:
         raise ManifestValidationError("Manifest jurisdictions must contain exactly two country codes.")
     if not isinstance(payload["target_articles"], list) or not payload["target_articles"]:
         raise ManifestValidationError("Manifest target_articles must be a non-empty list.")
-    if not isinstance(payload["source_documents"], list) or len(payload["source_documents"]) != 1:
-        raise ManifestValidationError("Manifest source_documents must contain exactly one structured source document path.")
+
+    source_bundle = normalize_source_bundle_entries(manifest_file, payload)
+    authority_topics = normalize_authority_topics(payload)
 
     treaty_metadata = payload["treaty_metadata"]
     required_treaty_metadata = {"version", "source_type", "notes", "source_trace", "mli_context"}
@@ -323,10 +464,6 @@ def load_manifest(manifest_path: Path | str) -> dict[str, Any]:
             "Manifest treaty_metadata is missing required keys: "
             + ", ".join(missing_treaty_metadata)
         )
-
-    source_document_path = resolve_manifest_path(manifest_file.parent, payload["source_documents"][0])
-    if not source_document_path.exists():
-        raise ManifestValidationError(f"Structured source document does not exist: {source_document_path}")
 
     stable_reference_dataset_raw = payload.get("stable_reference_dataset")
     stable_reference_dataset = None
@@ -351,7 +488,12 @@ def load_manifest(manifest_path: Path | str) -> dict[str, Any]:
     return {
         **payload,
         "manifest_path": str(manifest_file),
-        "source_documents": [str(source_document_path)],
+        "source_documents": [
+            entry["path"] for entry in source_bundle if entry.get("compile_target") is True
+        ]
+        or [source_bundle[0]["path"]],
+        "source_bundle": source_bundle,
+        "authority_topics": authority_topics,
         "stable_reference_dataset": str(stable_reference_dataset) if stable_reference_dataset is not None else None,
         "promotion_target_dataset": str(promotion_target_dataset),
         "work_dir": str(work_dir),
@@ -369,6 +511,9 @@ def resolve_manifest_path(base_dir: Path, raw_path: str) -> Path:
 def extract_compilation_units(source_payload: dict[str, Any], target_articles: list[str]) -> list[dict[str, Any]]:
     target_article_set = {str(article).strip() for article in target_articles}
     units: list[dict[str, Any]] = []
+    document = source_payload.get("document", {})
+    document_id = normalize_optional_text(document.get("document_id"))
+    document_role = normalize_optional_text(document.get("document_type"))
     for article in source_payload.get("parsed_articles", []):
         article_number = str(article.get("article_number", "")).strip()
         if article_number not in target_article_set:
@@ -380,6 +525,8 @@ def extract_compilation_units(source_payload: dict[str, Any], target_articles: l
                     "paragraph_number": extract_paragraph_number(paragraph),
                     "source_reference": paragraph.get("source_reference"),
                     "text": build_paragraph_text(paragraph),
+                    "document_id": document_id,
+                    "document_role": document_role,
                 }
             )
         units.append(
@@ -418,6 +565,7 @@ def build_compiler_request_payload(
     compilation_units: list[dict[str, Any]],
     model: str,
     baseline_reference: dict[str, Any] | None = None,
+    document_role: str | None = None,
 ) -> dict[str, Any]:
     system_prompt = (
         "You compile structured treaty paragraphs into paragraph-level rule candidates for an "
@@ -430,6 +578,11 @@ def build_compiler_request_payload(
         "between 0 and 1. Do not invent treaty-level metadata, source identifiers, or runtime wiring. "
         "If a paragraph does not support a usable rule candidate, return an empty rules list."
     )
+    if document_role == "protocol_text":
+        system_prompt += (
+            " This payload comes from protocol_text. If a conflict exists between treaty_text and "
+            "protocol_text regarding the same article, the protocol_text MUST prevail."
+        )
     user_payload: dict[str, Any] = {"parsed_articles": compilation_units}
     if baseline_reference is not None:
         system_prompt += (
@@ -457,6 +610,7 @@ def request_rule_candidates_from_llm(
     compilation_units: list[dict[str, Any]],
     config: LLMInputParserConfig | None = None,
     baseline_reference: dict[str, Any] | None = None,
+    document_role: str | None = None,
 ) -> dict[str, Any]:
     resolved_config = config or load_config_from_env()
     if resolved_config is None:
@@ -466,6 +620,7 @@ def request_rule_candidates_from_llm(
         compilation_units,
         resolved_config.model,
         baseline_reference=baseline_reference,
+        document_role=document_role,
     )
     body = json.dumps(payload).encode("utf-8")
     http_request = request.Request(
@@ -611,41 +766,72 @@ def load_baseline_reference(path: Path | str) -> dict[str, Any]:
 
 def build_compiled_source(
     *,
-    raw_candidates: dict[str, Any],
-    source_payload: dict[str, Any],
+    raw_candidates: dict[str, Any] | None = None,
+    source_payload: dict[str, Any] | None = None,
+    raw_candidates_by_role: dict[str, dict[str, Any]] | None = None,
+    source_payloads_by_role: dict[str, dict[str, Any]] | None = None,
     manifest: dict[str, Any],
 ) -> dict[str, Any]:
+    if source_payloads_by_role is None:
+        if source_payload is None:
+            raise TreatyOnboardingError("build_compiled_source requires source_payload or source_payloads_by_role.")
+        default_role = normalize_optional_text(source_payload.get("document", {}).get("document_type")) or "treaty_text"
+        source_payloads_by_role = {default_role: source_payload}
+    if raw_candidates_by_role is None:
+        if raw_candidates is None:
+            raise TreatyOnboardingError("build_compiled_source requires raw_candidates or raw_candidates_by_role.")
+        default_role = next(iter(source_payloads_by_role))
+        raw_candidates_by_role = {default_role: raw_candidates}
+
     pair_id = manifest["pair_id"]
     target_articles = {str(article).strip() for article in manifest["target_articles"]}
-    raw_articles_by_number = {
-        str(article.get("article_number", "")).strip(): article
-        for article in raw_candidates.get("parsed_articles", [])
+    base_role = "treaty_text" if "treaty_text" in source_payloads_by_role else next(iter(source_payloads_by_role))
+    base_source_payload = source_payloads_by_role[base_role]
+    raw_articles_by_role = {
+        role: {
+            str(article.get("article_number", "")).strip(): article
+            for article in candidates.get("parsed_articles", [])
+        }
+        for role, candidates in raw_candidates_by_role.items()
+    }
+    source_articles_by_role = {
+        role: {
+            str(article.get("article_number", "")).strip(): article
+            for article in payload.get("parsed_articles", [])
+        }
+        for role, payload in source_payloads_by_role.items()
     }
     parsed_articles: list[dict[str, Any]] = []
 
-    for original_article in source_payload.get("parsed_articles", []):
+    for original_article in base_source_payload.get("parsed_articles", []):
         article_number = str(original_article.get("article_number", "")).strip()
         if article_number not in target_articles:
             continue
-        raw_article = raw_articles_by_number.get(article_number, {})
-        raw_paragraphs = raw_article.get("paragraphs", [])
+        base_raw_article = raw_articles_by_role.get(base_role, {}).get(article_number, {})
+        base_raw_paragraphs = base_raw_article.get("paragraphs", [])
+        protocol_article = source_articles_by_role.get("protocol_text", {}).get(article_number)
+        protocol_raw_article = raw_articles_by_role.get("protocol_text", {}).get(article_number, {})
+        protocol_raw_paragraphs = protocol_raw_article.get("paragraphs", [])
         parsed_articles.append(
             {
                 "article_number": original_article["article_number"],
                 "article_title": original_article["article_title"],
                 "article_label": original_article["article_label"],
-                "income_type": normalize_income_type(raw_article.get("income_type", original_article["income_type"])),
+                "income_type": normalize_income_type(
+                    base_raw_article.get("income_type", original_article["income_type"])
+                ),
                 "summary": original_article.get("summary", ""),
                 "article_notes": list(original_article.get("article_notes", [])),
                 "paragraphs": [
-                    normalize_candidate_paragraph(
+                    build_merged_candidate_paragraph(
                         pair_id=pair_id,
                         article_number=article_number,
-                        original_paragraph=paragraph,
-                        raw_paragraph=find_matching_raw_paragraph(
-                            paragraph,
-                            raw_paragraphs,
-                        ),
+                        base_role=base_role,
+                        base_paragraph=paragraph,
+                        base_raw_paragraphs=base_raw_paragraphs,
+                        protocol_article=protocol_article,
+                        protocol_raw_paragraphs=protocol_raw_paragraphs,
+                        source_payloads_by_role=source_payloads_by_role,
                     )
                     for paragraph in original_article.get("paragraphs", [])
                 ],
@@ -653,9 +839,52 @@ def build_compiled_source(
         )
 
     return {
-        "document": build_compiled_document(source_payload["document"], manifest["treaty_metadata"]),
+        "document": build_compiled_document(base_source_payload["document"], manifest["treaty_metadata"]),
         "parsed_articles": parsed_articles,
     }
+
+
+def build_merged_candidate_paragraph(
+    *,
+    pair_id: str,
+    article_number: str,
+    base_role: str,
+    base_paragraph: dict[str, Any],
+    base_raw_paragraphs: list[dict[str, Any]],
+    protocol_article: dict[str, Any] | None,
+    protocol_raw_paragraphs: list[dict[str, Any]],
+    source_payloads_by_role: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    base_raw_paragraph = find_matching_raw_paragraph(base_paragraph, base_raw_paragraphs)
+    protocol_paragraph = None
+    protocol_raw_paragraph = {}
+    if protocol_article is not None:
+        protocol_paragraph = find_matching_original_paragraph(
+            base_paragraph,
+            protocol_article.get("paragraphs", []),
+        )
+        if protocol_paragraph is not None:
+            protocol_raw_paragraph = find_matching_raw_paragraph(protocol_paragraph, protocol_raw_paragraphs)
+
+    protocol_override_active = bool(protocol_raw_paragraph)
+    effective_role = "protocol_text" if protocol_override_active else base_role
+    effective_source_payload = source_payloads_by_role[effective_role]
+    effective_original_paragraph = protocol_paragraph if protocol_override_active and protocol_paragraph is not None else base_paragraph
+
+    return normalize_candidate_paragraph(
+        pair_id=pair_id,
+        article_number=article_number,
+        original_paragraph=effective_original_paragraph,
+        raw_paragraph=protocol_raw_paragraph if protocol_override_active else base_raw_paragraph,
+        effective_document_id=effective_source_payload["document"]["document_id"],
+        effective_document_role=effective_role,
+        modified_by_protocol=protocol_override_active and base_role != "protocol_text",
+        overridden_document_id=(
+            source_payloads_by_role[base_role]["document"]["document_id"]
+            if protocol_override_active and base_role != "protocol_text"
+            else None
+        ),
+    )
 
 
 def build_compiled_document(
@@ -692,12 +921,31 @@ def find_matching_raw_paragraph(
     return {}
 
 
+def find_matching_original_paragraph(
+    reference_paragraph: dict[str, Any],
+    candidate_paragraphs: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    reference_source_reference = normalize_optional_text(reference_paragraph.get("source_reference"))
+    reference_number = extract_paragraph_number(reference_paragraph)
+    for paragraph in candidate_paragraphs:
+        if normalize_optional_text(paragraph.get("source_reference")) == reference_source_reference:
+            return paragraph
+    for paragraph in candidate_paragraphs:
+        if extract_paragraph_number(paragraph) == reference_number:
+            return paragraph
+    return None
+
+
 def normalize_candidate_paragraph(
     *,
     pair_id: str,
     article_number: str,
     original_paragraph: dict[str, Any],
     raw_paragraph: dict[str, Any],
+    effective_document_id: str | None = None,
+    effective_document_role: str | None = None,
+    modified_by_protocol: bool = False,
+    overridden_document_id: str | None = None,
 ) -> dict[str, Any]:
     paragraph_number = extract_paragraph_number(original_paragraph)
     paragraph_text = normalize_optional_text(raw_paragraph.get("text")) or build_paragraph_text(original_paragraph)
@@ -741,6 +989,10 @@ def normalize_candidate_paragraph(
                     rate=normalized_rate,
                     branch_hint=branch_hint,
                 ),
+                "effective_document_id": effective_document_id,
+                "effective_document_role": effective_document_role,
+                "modified_by_protocol": modified_by_protocol,
+                "overridden_document_id": overridden_document_id,
             }
         )
 
@@ -755,6 +1007,10 @@ def normalize_candidate_paragraph(
         "source_language": original_paragraph["source_language"],
         "source_segments": source_segments,
         "extracted_rules": normalized_rules,
+        "effective_document_id": effective_document_id,
+        "effective_document_role": effective_document_role,
+        "modified_by_protocol": modified_by_protocol,
+        "overridden_document_id": overridden_document_id,
     }
 
 
@@ -835,11 +1091,29 @@ def project_candidate_to_reference_shape(candidate: Any, reference: Any) -> Any:
     return candidate
 
 
+def count_protocol_overrides(compiled_source: dict[str, Any]) -> int:
+    return sum(
+        1
+        for article in compiled_source.get("parsed_articles", [])
+        for paragraph in article.get("paragraphs", [])
+        if paragraph.get("modified_by_protocol") is True
+    )
+
+
 def build_compiled_report(
     *,
-    raw_candidates: dict[str, Any],
+    raw_candidates: dict[str, Any] | None = None,
+    raw_candidates_by_role: dict[str, dict[str, Any]] | None = None,
     compiled_source: dict[str, Any],
 ) -> dict[str, Any]:
+    if raw_candidates_by_role is None:
+        raw_candidates_by_role = {"treaty_text": raw_candidates or {"parsed_articles": []}}
+    article_numbers = {
+        str(article.get("article_number", "")).strip()
+        for candidates in raw_candidates_by_role.values()
+        for article in candidates.get("parsed_articles", [])
+        if str(article.get("article_number", "")).strip()
+    }
     paragraph_count = sum(
         len(article.get("paragraphs", [])) for article in compiled_source.get("parsed_articles", [])
     )
@@ -851,11 +1125,14 @@ def build_compiled_report(
     unresolved_items = collect_unresolved_items(compiled_source)
     return {
         "status": "ok",
-        "article_count": len(raw_candidates.get("parsed_articles", [])),
+        "article_count": len(article_numbers),
         "paragraph_count": paragraph_count,
         "rule_count": rule_count,
         "unresolved_item_count": len(unresolved_items),
         "unresolved_items": unresolved_items,
+        "compile_target_count": len(raw_candidates_by_role),
+        "compile_target_roles": sorted(raw_candidates_by_role),
+        "protocol_override_count": count_protocol_overrides(compiled_source),
     }
 
 
@@ -1007,30 +1284,46 @@ def run_compile(manifest_path: Path | str) -> dict[str, Any]:
         "note": "",
     }
     save_timing_record(manifest, timing_record)
-    source_payload = read_json(Path(manifest["source_documents"][0]))
-    compilation_units = extract_compilation_units(source_payload, manifest["target_articles"])
+    compile_targets = [
+        entry for entry in manifest.get("source_bundle", []) if entry.get("compile_target") is True
+    ]
+    if not compile_targets:
+        raise TreatyOnboardingError("Manifest source_bundle does not define any compile_target documents.")
     baseline_reference = None
     if manifest.get("baseline_reference") is not None:
         baseline_reference = load_baseline_reference(manifest["baseline_reference"])
-    raw_candidates = request_rule_candidates_from_llm(
-        compilation_units,
-        baseline_reference=baseline_reference,
-    )
+    source_payloads_by_role: dict[str, dict[str, Any]] = {}
+    raw_candidates_by_role: dict[str, dict[str, Any]] = {}
+    for entry in compile_targets:
+        role = entry["role"]
+        source_payload = read_json(Path(entry["path"]))
+        source_payloads_by_role[role] = source_payload
+        compilation_units = extract_compilation_units(source_payload, manifest["target_articles"])
+        raw_candidates_by_role[role] = request_rule_candidates_from_llm(
+            compilation_units,
+            baseline_reference=baseline_reference if role == "treaty_text" else None,
+            document_role=role,
+        )
     compiled_source = build_compiled_source(
-        raw_candidates=raw_candidates,
-        source_payload=source_payload,
         manifest=manifest,
+        raw_candidates_by_role=raw_candidates_by_role,
+        source_payloads_by_role=source_payloads_by_role,
     )
     compiled_dataset = build_dataset_from_source(compiled_source, manifest)
-    compiled_report = build_compiled_report(raw_candidates=raw_candidates, compiled_source=compiled_source)
+    compiled_report = build_compiled_report(
+        raw_candidates_by_role=raw_candidates_by_role,
+        compiled_source=compiled_source,
+    )
 
-    write_json(work_dir / "compiled.rules.json", raw_candidates)
+    write_json(work_dir / "compiled.rules.json", {"candidates_by_role": raw_candidates_by_role})
     write_json(work_dir / "compiled.source.json", compiled_source)
     write_json(work_dir / "compiled.dataset.json", compiled_dataset)
     write_json(work_dir / "compiled.report.json", compiled_report)
     if baseline_reference is not None:
+        baseline_role = "treaty_text" if "treaty_text" in raw_candidates_by_role else next(iter(raw_candidates_by_role))
+        baseline_candidates = raw_candidates_by_role[baseline_role]
         compiled_delta = build_compiled_delta_payload(
-            raw_candidates["delta_analysis"],
+            baseline_candidates["delta_analysis"],
             baseline_reference,
             manifest,
         )
@@ -1313,6 +1606,30 @@ def resolve_source_build_manifest_path(manifest: dict[str, Any]) -> Path:
     )
 
 
+def build_source_bundle_summary(manifest: dict[str, Any]) -> dict[str, Any]:
+    source_bundle = list(manifest.get("source_bundle", []))
+    compile_target_roles = sorted(
+        entry["role"] for entry in source_bundle if entry.get("compile_target") is True
+    )
+    return {
+        "document_count": len(source_bundle),
+        "compile_target_count": len(compile_target_roles),
+        "compile_target_roles": compile_target_roles,
+        "roles": sorted(entry["role"] for entry in source_bundle),
+    }
+
+
+def build_authority_coverage_summary(manifest: dict[str, Any]) -> dict[str, Any]:
+    authority_topics = list(manifest.get("authority_topics", []))
+    return {
+        "configured_topic_count": len(authority_topics),
+        "mapped_topic_count": sum(1 for topic in authority_topics if topic.get("source_ids")),
+        "gap_topics": sorted(
+            topic["topic"] for topic in authority_topics if topic.get("missing_reason_code")
+        ),
+    }
+
+
 def run_source_build_for_manifest(manifest_path: Path | str) -> dict[str, Any]:
     manifest = load_manifest(manifest_path)
     source_build_manifest_path = resolve_source_build_manifest_path(manifest)
@@ -1371,6 +1688,7 @@ def build_workspace(manifest_path: Path | str) -> dict[str, Any]:
             source_build_report = None
 
     compiled_report = read_json(work_dir / "compiled.report.json") if (work_dir / "compiled.report.json").exists() else None
+    compiled_source = read_json(work_dir / "compiled.source.json") if (work_dir / "compiled.source.json").exists() else None
     compiled_delta = read_json(work_dir / "compiled.delta.json") if (work_dir / "compiled.delta.json").exists() else None
     compiled_delta_report = (
         read_json(work_dir / "compiled.delta.report.json")
@@ -1402,6 +1720,9 @@ def build_workspace(manifest_path: Path | str) -> dict[str, Any]:
             "promotion_target_dataset": manifest["promotion_target_dataset"],
             "baseline_reference": manifest.get("baseline_reference"),
         },
+        "source_bundle_summary": build_source_bundle_summary(manifest),
+        "authority_coverage": build_authority_coverage_summary(manifest),
+        "protocol_override_count": count_protocol_overrides(compiled_source or {}),
         "source_build": {
             "available": source_build_manifest_path.exists(),
             "manifest_path": str(source_build_manifest_path),

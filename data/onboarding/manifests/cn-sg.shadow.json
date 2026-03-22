@@ -6,6 +6,38 @@
   "source_documents": [
     "../../source_documents/cn-sg-main-treaty.json"
   ],
+  "source_bundle": [
+    {
+      "path": "../../source_documents/cn-sg-main-treaty.json",
+      "role": "treaty_text",
+      "compile_target": true,
+      "source_ids": ["iras-cn-sg-dta-full-text-pdf", "iras-cn-sg-second-protocol-newsroom", "iras-cn-sg-third-protocol-newsroom"]
+    }
+  ],
+  "authority_topics": [
+    {
+      "topic": "treaty_basis",
+      "source_ids": ["iras-cn-sg-dta-full-text-pdf", "iras-cn-sg-second-protocol-newsroom", "iras-cn-sg-third-protocol-newsroom"]
+    },
+    {
+      "topic": "mli_ppt",
+      "source_ids": ["oecd-mli-signatories-and-parties", "oecd-singapore-mli-peer-review-2024"]
+    },
+    {
+      "topic": "beneficial_owner",
+      "source_ids": [],
+      "missing_reason_code": "DATA_MISSING"
+    },
+    {
+      "topic": "domestic_law",
+      "source_ids": [],
+      "missing_reason_code": "DATA_MISSING"
+    },
+    {
+      "topic": "working_paper",
+      "source_ids": []
+    }
+  ],
   "stable_reference_dataset": "../../treaties/cn-sg.v3.json",
   "promotion_target_dataset": "../../treaties/cn-sg.v3.json",
   "work_dir": "../workdirs/cn-sg-shadow",

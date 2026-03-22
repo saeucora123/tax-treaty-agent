@@ -4,6 +4,38 @@
   "jurisdictions": ["CN", "NL"],
   "target_articles": ["10", "11", "12"],
   "source_documents": ["../../source_documents/cn-nl-main-treaty.json"],
+  "source_bundle": [
+    {
+      "path": "../../source_documents/cn-nl-main-treaty.json",
+      "role": "treaty_text",
+      "compile_target": true,
+      "source_ids": ["sat-cn-nl-2013-en-pdf", "nl-2013-consolidated-text"]
+    }
+  ],
+  "authority_topics": [
+    {
+      "topic": "treaty_basis",
+      "source_ids": ["sat-cn-nl-2013-en-pdf", "nl-2013-consolidated-text"]
+    },
+    {
+      "topic": "mli_ppt",
+      "source_ids": ["oecd-mli-signatories-and-parties", "sat-cn-nl-mli-en-pdf"]
+    },
+    {
+      "topic": "beneficial_owner",
+      "source_ids": [],
+      "missing_reason_code": "DATA_MISSING"
+    },
+    {
+      "topic": "domestic_law",
+      "source_ids": [],
+      "missing_reason_code": "DATA_MISSING"
+    },
+    {
+      "topic": "working_paper",
+      "source_ids": []
+    }
+  ],
   "stable_reference_dataset": "../../treaties/cn-nl.v3.json",
   "promotion_target_dataset": "../../treaties/cn-nl.v3.json",
   "work_dir": "../workdirs/cn-nl-oecd-delta-shadow",

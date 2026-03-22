@@ -40,12 +40,99 @@ const REFERENCE_ARCHIVES = [
     scenario: "向荷兰公司支付股息",
   },
 ] as const;
+const REFERENCE_GUIDED_PRESETS = {
+  中国居民企业向荷兰支付特许权使用费: {
+    payer_country: "CN",
+    payee_country: "NL",
+    income_type: "royalties" as GuidedIncomeType,
+  },
+  中国居民企业向新加坡公司支付特许权使用费: {
+    payer_country: "CN",
+    payee_country: "SG",
+    income_type: "royalties" as GuidedIncomeType,
+  },
+  中国居民企业向美国支付特许权使用费: {
+    payer_country: "CN",
+    payee_country: "US",
+    income_type: "royalties" as GuidedIncomeType,
+  },
+  向荷兰公司支付股息: {
+    payer_country: "",
+    payee_country: "NL",
+    income_type: "dividends" as GuidedIncomeType,
+  },
+} satisfies Record<
+  (typeof REFERENCE_ARCHIVES)[number]["scenario"],
+  {
+    payer_country: string;
+    payee_country: string;
+    income_type: GuidedIncomeType;
+  }
+>;
 const FIELD_LABELS: Record<string, string> = {
   payer_country: "Payer country",
   payee_country: "Payee country",
   transaction_type: "Income type",
 };
+const GUIDED_FACT_PROMPTS = Object.entries(GUIDED_FACT_CONFIG).reduce<
+  Record<string, Record<string, string>>
+>((accumulator, [incomeType, fields]) => {
+  accumulator[incomeType] = fields.reduce<Record<string, string>>((fieldAccumulator, field) => {
+    fieldAccumulator[field.fact_key] = field.prompt;
+    return fieldAccumulator;
+  }, {});
+  return accumulator;
+}, {});
 type GuidedIncomeType = keyof typeof GUIDED_FACT_CONFIG;
+
+type AnalyzeRequestPayload = {
+  input_mode?: InputMode;
+  scenario?: string;
+  guided_input?: {
+    payer_country: string;
+    payee_country: string;
+    income_type: string;
+    facts: Record<string, string>;
+    scenario_text?: string;
+  };
+};
+
+type CaseCreateResponse = {
+  case_id: string;
+  saved_at: string;
+  creator_token: string;
+  reviewer_token: string;
+  analyze_response_snapshot: AnalyzeResponse;
+};
+
+type SavedCaseView = {
+  case_id: string;
+  saved_at: string;
+  schema_version: string;
+  input_mode_used: InputMode;
+  view_role: "creator" | "reviewer";
+  reviewer_share_ready: boolean;
+  request_snapshot: AnalyzeRequestPayload;
+  response_snapshot: AnalyzeResponse;
+};
+
+type SavedCaseLinks = {
+  case_id: string;
+  saved_at: string;
+  creator_link: string;
+  reviewer_link: string;
+  creator_workpaper_link: string;
+  reviewer_workpaper_link: string;
+};
+
+type SavedMachineHandoff = HandoffPackage["machine_handoff"];
+type SavedAuthorityMemo = NonNullable<HandoffPackage["authority_memo"]>;
+type ReviewerRiskSummary = {
+  items: string[];
+  escalated: boolean;
+  recommendedRoute: string;
+  reviewPriority: string;
+};
 
 function buildGuidedFactState(incomeType: GuidedIncomeType): Record<string, GuidedFactValue> {
   const nextFacts: Record<string, GuidedFactValue> = {};
@@ -53,6 +140,147 @@ function buildGuidedFactState(incomeType: GuidedIncomeType): Record<string, Guid
     nextFacts[fact.fact_key] = fact.input_type === "text" ? "" : "unknown";
   }
   return nextFacts;
+}
+
+function getCaseAccessParams() {
+  const params = new URLSearchParams(window.location.search);
+  const caseId = params.get("case");
+  const token = params.get("token");
+  if (!caseId || !token) {
+    return null;
+  }
+  return { caseId, token };
+}
+
+function buildCaseLink(caseId: string, token: string) {
+  const url = new URL(window.location.href);
+  url.search = "";
+  url.hash = "";
+  url.searchParams.set("case", caseId);
+  url.searchParams.set("token", token);
+  return url.toString();
+}
+
+function buildWorkpaperLink(caseId: string, token: string) {
+  return `/api/cases/${encodeURIComponent(caseId)}/workpaper?token=${encodeURIComponent(token)}`;
+}
+
+function getGuidedFactPrompt(incomeType: string | undefined, factKey: string) {
+  return GUIDED_FACT_PROMPTS[incomeType ?? ""]?.[factKey] ?? factKey;
+}
+
+function applyReferencePreset(
+  scenario: (typeof REFERENCE_ARCHIVES)[number]["scenario"],
+  setGuidedPayerCountry: (value: string) => void,
+  setGuidedPayeeCountry: (value: string) => void,
+  setGuidedIncomeType: (value: GuidedIncomeType) => void,
+  setGuidedFacts: (value: Record<string, GuidedFactValue>) => void,
+  setGuidedScenarioText: (value: string) => void,
+  setShowLegacyParserValidation: (value: boolean) => void,
+  setSubmissionMode: (value: InputMode) => void,
+  setScenario: (value: string) => void,
+) {
+  const preset = REFERENCE_GUIDED_PRESETS[scenario];
+  setGuidedPayerCountry(preset.payer_country);
+  setGuidedPayeeCountry(preset.payee_country);
+  setGuidedIncomeType(preset.income_type);
+  setGuidedFacts(buildGuidedFactState(preset.income_type));
+  setGuidedScenarioText(scenario);
+  setShowLegacyParserValidation(false);
+  setSubmissionMode("guided");
+  setScenario("");
+}
+
+function formatSavedCaseRole(viewRole: SavedCaseView["view_role"]) {
+  return viewRole === "creator" ? "Creator read-only package" : "Reviewer read-only package";
+}
+
+function getSavedCaseAccessNote(viewRole: SavedCaseView["view_role"]) {
+  if (viewRole === "creator") {
+    return "This creator link stays read-only and is meant for the internal case owner.";
+  }
+  return "This reviewer link is a read-only package for downstream review and printable export.";
+}
+
+function combineRiskNotes(primary?: string | null, secondary?: string | null) {
+  const notes = [primary, secondary].filter(
+    (item, index, items): item is string => Boolean(item) && items.indexOf(item) === index,
+  );
+  return notes.join(" ");
+}
+
+function formatAuthorityCoverageGap(
+  gap: SavedAuthorityMemo["coverage_gaps"][number],
+) {
+  return `${gap.topic} (${gap.reason_code})`;
+}
+
+function buildReviewerRiskItems(
+  machineHandoff?: SavedMachineHandoff,
+  authorityMemo?: SavedAuthorityMemo,
+) {
+  const items: string[] = [];
+  const boPrecheck = machineHandoff?.bo_precheck;
+
+  if (boPrecheck) {
+    const note = combineRiskNotes(boPrecheck.reason_summary, boPrecheck.review_note);
+    if (note) {
+      items.push(`BO precheck (${boPrecheck.status}): ${note}`);
+    }
+  }
+
+  if (machineHandoff?.guided_conflict) {
+    items.push(`Guided input conflict: ${machineHandoff.guided_conflict.reason_summary}`);
+  }
+
+  if (authorityMemo?.coverage_gaps.length) {
+    items.push(
+      `Authority memo gaps: ${authorityMemo.coverage_gaps.map(formatAuthorityCoverageGap).join("; ")}`,
+    );
+  }
+
+  if (machineHandoff?.recommended_route && machineHandoff.recommended_route !== "standard_review") {
+    items.push(`Machine handoff route remains ${machineHandoff.recommended_route}.`);
+  }
+  if (machineHandoff?.review_priority === "high") {
+    items.push("Machine handoff keeps this case at high review priority.");
+  }
+  if (machineHandoff?.mli_ppt_review_required) {
+    items.push("MLI / PPT review is still required.");
+  }
+  if (machineHandoff?.short_holding_period_review_required) {
+    items.push("Short holding period review is still required.");
+  }
+  if (machineHandoff?.payment_date_unconfirmed) {
+    items.push("Payment date remains unconfirmed in the saved snapshot.");
+  }
+  if (machineHandoff?.calculated_threshold_met === false) {
+    items.push("Saved facts do not support the reduced-rate threshold.");
+  } else if (
+    machineHandoff?.calculated_threshold_met === null &&
+    machineHandoff?.determining_condition_priority !== undefined
+  ) {
+    items.push("Saved facts still do not let the tool confirm the reduced-rate threshold.");
+  }
+
+  return items;
+}
+
+function buildReviewerRiskSummary(result: AnalyzeResponse): ReviewerRiskSummary {
+  const machineHandoff = result.handoff_package?.machine_handoff;
+  const authorityMemo = result.handoff_package?.authority_memo;
+  const items = buildReviewerRiskItems(machineHandoff, authorityMemo);
+  const escalated =
+    machineHandoff?.recommended_route === "manual_review" ||
+    machineHandoff?.review_priority === "high" ||
+    Boolean(machineHandoff?.guided_conflict);
+
+  return {
+    items,
+    escalated,
+    recommendedRoute: machineHandoff?.recommended_route ?? "not_recorded",
+    reviewPriority: machineHandoff?.review_priority ?? "not_recorded",
+  };
 }
 
 type OnboardingManifestSummary = {
@@ -72,6 +300,18 @@ type OnboardingWorkspace = {
     promotion_target_dataset: string;
     baseline_reference: string | null;
   };
+  source_bundle_summary?: {
+    document_count: number;
+    compile_target_count: number;
+    compile_target_roles: string[];
+    roles?: string[];
+  };
+  authority_coverage?: {
+    configured_topic_count: number;
+    mapped_topic_count?: number;
+    gap_topics: string[];
+  };
+  protocol_override_count?: number;
   source_build: {
     available: boolean;
     manifest_path: string;
@@ -246,6 +486,37 @@ function InternalOnboardingWorkspace() {
                     <li>Baseline enabled: {workspace.manifest.baseline_enabled ? "yes" : "no"}</li>
                     <li>Source build available: {workspace.manifest.source_build_available ? "yes" : "no"}</li>
                     <li>Promotion target: {workspace.manifest.promotion_target_dataset}</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="record-row">
+                <div className="row-label">Source bundle summary</div>
+                <div className="row-value">
+                  <ul className="formal-list">
+                    <li>Documents: {workspace.source_bundle_summary?.document_count ?? 0}</li>
+                    <li>Compile targets: {workspace.source_bundle_summary?.compile_target_count ?? 0}</li>
+                    <li>
+                      Compile target roles:{" "}
+                      {workspace.source_bundle_summary?.compile_target_roles?.join(", ") || "none"}
+                    </li>
+                    <li>Protocol overrides: {workspace.protocol_override_count ?? 0}</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="record-row">
+                <div className="row-label">Authority coverage</div>
+                <div className="row-value">
+                  <ul className="formal-list">
+                    <li>Configured topics: {workspace.authority_coverage?.configured_topic_count ?? 0}</li>
+                    <li>Mapped topics: {workspace.authority_coverage?.mapped_topic_count ?? 0}</li>
+                    <li>
+                      Gap topics:{" "}
+                      {(workspace.authority_coverage?.gap_topics.length ?? 0) > 0
+                        ? workspace.authority_coverage?.gap_topics?.join(", ")
+                        : "none"}
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -470,6 +741,10 @@ export default function App() {
     return <InternalOnboardingWorkspace />;
   }
 
+  const caseAccessParams = getCaseAccessParams();
+  const caseIdParam = caseAccessParams?.caseId ?? "";
+  const caseTokenParam = caseAccessParams?.token ?? "";
+  const isSavedCaseMode = caseIdParam !== "" && caseTokenParam !== "";
   const [submissionMode, setSubmissionMode] = useState<InputMode>("guided");
   const [guidedPayerCountry, setGuidedPayerCountry] = useState("CN");
   const [guidedPayeeCountry, setGuidedPayeeCountry] = useState("NL");
@@ -479,10 +754,54 @@ export default function App() {
     buildGuidedFactState("dividends"),
   );
   const [scenario, setScenario] = useState("");
+  const [showLegacyParserValidation, setShowLegacyParserValidation] = useState(false);
   const [result, setResult] = useState<AnalyzeResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [factSelections, setFactSelections] = useState<Record<string, string>>({});
+  const [lastRequestPayload, setLastRequestPayload] = useState<AnalyzeRequestPayload | null>(null);
+  const [savedCaseLinks, setSavedCaseLinks] = useState<SavedCaseLinks | null>(null);
+  const [isSavingCase, setIsSavingCase] = useState(false);
+  const [savedCaseView, setSavedCaseView] = useState<SavedCaseView | null>(null);
+  const [isSavedCaseLoading, setIsSavedCaseLoading] = useState(isSavedCaseMode);
+
+  useEffect(() => {
+    if (!isSavedCaseMode) {
+      setSavedCaseView(null);
+      setIsSavedCaseLoading(false);
+      return;
+    }
+
+    let isDisposed = false;
+    setIsSavedCaseLoading(true);
+    setError("");
+
+    void readApiJson<SavedCaseView>(
+      `/api/cases/${encodeURIComponent(caseIdParam)}?token=${encodeURIComponent(caseTokenParam)}`,
+    )
+      .then((payload) => {
+        if (isDisposed) {
+          return;
+        }
+        setSavedCaseView(payload);
+      })
+      .catch(() => {
+        if (isDisposed) {
+          return;
+        }
+        setSavedCaseView(null);
+        setError("Saved case unavailable. Check that the link is still valid and the backend is running.");
+      })
+      .finally(() => {
+        if (!isDisposed) {
+          setIsSavedCaseLoading(false);
+        }
+      });
+
+    return () => {
+      isDisposed = true;
+    };
+  }, [caseIdParam, caseTokenParam, isSavedCaseMode]);
 
   async function submitReview(
     modeOverride?: InputMode,
@@ -496,10 +815,11 @@ export default function App() {
   ) {
     setIsLoading(true);
     setError("");
+    setSavedCaseLinks(null);
 
     try {
       const resolvedMode = modeOverride ?? submissionMode;
-      const body =
+      const body: AnalyzeRequestPayload =
         resolvedMode === "guided"
           ? {
               input_mode: "guided",
@@ -515,17 +835,12 @@ export default function App() {
                 },
             }
           : { scenario };
-      const response = await fetch("/api/analyze", {
+      setLastRequestPayload(body);
+      const payload = await readApiJson<AnalyzeResponse>("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-
-      if (!response.ok) {
-        throw new Error("Request failed.");
-      }
-
-      const payload = (await response.json()) as AnalyzeResponse;
       setResult(payload);
       setFactSelections(buildInitialFactSelections(payload));
     } catch {
@@ -544,14 +859,58 @@ export default function App() {
   }
 
   async function handleFactCompletionSubmit() {
-    if (!scenario.trim() || !result || !result.supported) return;
+    if (!result || !result.supported) return;
+
+    const priorScenarioText =
+      lastRequestPayload?.guided_input?.scenario_text?.trim() || lastRequestPayload?.scenario?.trim();
+
     await submitReview("guided", {
       payer_country: result.normalized_input.payer_country,
       payee_country: result.normalized_input.payee_country,
       income_type: result.normalized_input.transaction_type,
       facts: factSelections,
-      scenario_text: scenario.trim(),
+      ...(priorScenarioText ? { scenario_text: priorScenarioText } : {}),
     });
+  }
+
+  async function handleSaveCase() {
+    if (!lastRequestPayload?.guided_input) {
+      return;
+    }
+
+    setIsSavingCase(true);
+    setError("");
+
+    try {
+      const payload = await readApiJson<CaseCreateResponse>("/api/cases", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(lastRequestPayload),
+      });
+
+      setResult(payload.analyze_response_snapshot);
+      setSavedCaseLinks({
+        case_id: payload.case_id,
+        saved_at: payload.saved_at,
+        creator_link: buildCaseLink(payload.case_id, payload.creator_token),
+        reviewer_link: buildCaseLink(payload.case_id, payload.reviewer_token),
+        creator_workpaper_link: buildWorkpaperLink(payload.case_id, payload.creator_token),
+        reviewer_workpaper_link: buildWorkpaperLink(payload.case_id, payload.reviewer_token),
+      });
+    } catch {
+      setError("Case save failed. Check that the backend service is running.");
+    } finally {
+      setIsSavingCase(false);
+    }
+  }
+
+  function canSaveCurrentCase() {
+    return (
+      result !== null &&
+      result.input_mode_used === "guided" &&
+      Boolean(result.handoff_package) &&
+      Boolean(lastRequestPayload?.guided_input)
+    );
   }
 
   function buildInitialFactSelections(payload: AnalyzeResponse) {
@@ -947,7 +1306,11 @@ export default function App() {
       return null;
     }
 
-    const { machine_handoff: machineHandoff, human_review_brief: humanReviewBrief } = handoffPackage;
+    const {
+      machine_handoff: machineHandoff,
+      human_review_brief: humanReviewBrief,
+      authority_memo: authorityMemo,
+    } = handoffPackage;
 
     return (
       <div className="record-row highlight-row">
@@ -1040,9 +1403,404 @@ export default function App() {
             </>
           )}
           <p>{humanReviewBrief.handoff_note}</p>
+          {authorityMemo && (
+            <details>
+              <summary>
+                Authority Memo · status: {authorityMemo.status} · coverage gaps:{" "}
+                {authorityMemo.coverage_gaps.length}
+              </summary>
+              <p>{authorityMemo.reviewer_note}</p>
+              <ul className="formal-list">
+                {authorityMemo.topics.map((topic) => (
+                  <li key={topic.topic}>
+                    <strong>{topic.topic}</strong>
+                    {topic.summary ? ` · ${topic.summary}` : ""}
+                    {topic.gap ? ` · Gap: ${topic.gap}` : ""}
+                    {topic.citations.length > 0 && (
+                      <ul className="formal-list">
+                        {topic.citations.map((citation) => (
+                          <li key={`${topic.topic}-${citation.source_id}`}>
+                            {citation.title} ({citation.source_id})
+                            {citation.note ? ` · ${citation.note}` : ""}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
         </div>
       </div>
     );
+  }
+
+  function renderSavedCaseLinks() {
+    if (!savedCaseLinks) {
+      return null;
+    }
+
+    function renderSavedCaseLinkField(label: string, url: string) {
+      return (
+        <label className="saved-share-field">
+          <span className="saved-share-field-label">{label}</span>
+          <input
+            className="saved-share-field-input"
+            type="text"
+            aria-label={`${label} URL`}
+            value={url}
+            readOnly
+            spellCheck={false}
+            onClick={(event) => event.currentTarget.select()}
+            onFocus={(event) => event.currentTarget.select()}
+          />
+        </label>
+      );
+    }
+
+    function renderSavedCaseSharePackage(options: {
+      title: string;
+      note: string;
+      caseLinkLabel: string;
+      caseLink: string;
+      workpaperLinkLabel: string;
+      workpaperLink: string;
+      caseActionLabel: string;
+      workpaperActionLabel: string;
+      primary?: boolean;
+    }) {
+      const packageClassName = options.primary
+        ? "saved-share-package saved-share-package-primary"
+        : "saved-share-package";
+
+      return (
+        <div className={packageClassName}>
+          <p className="saved-share-title">
+            <strong>{options.title}</strong>
+          </p>
+          <p className="saved-share-note">{options.note}</p>
+          <div className="action-row saved-share-actions">
+            <a className="btn-seal" href={options.caseLink} target="_blank" rel="noreferrer">
+              {options.caseActionLabel}
+            </a>
+            <a className="btn-seal" href={options.workpaperLink} target="_blank" rel="noreferrer">
+              {options.workpaperActionLabel}
+            </a>
+          </div>
+          <div className="saved-share-fields">
+            {renderSavedCaseLinkField(options.caseLinkLabel, options.caseLink)}
+            {renderSavedCaseLinkField(options.workpaperLinkLabel, options.workpaperLink)}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="record-row highlight-row">
+        <div className="row-label">Saved Case</div>
+        <div className="row-value">
+          <p><strong>{savedCaseLinks.case_id}</strong></p>
+          <p>Saved at: {savedCaseLinks.saved_at}</p>
+          <p>Immutable snapshot saved.</p>
+          <p>
+            <strong>Reviewer package is the default share surface.</strong> Open the reviewer
+            read-only case or reviewer workpaper below, and click either URL field to select the
+            full link for manual copy.
+          </p>
+          <div className="saved-share-grid">
+            {renderSavedCaseSharePackage({
+              title: "Reviewer Package",
+              note: "Use these links for downstream review and printable handoff.",
+              caseLinkLabel: "Reviewer case link",
+              caseLink: savedCaseLinks.reviewer_link,
+              workpaperLinkLabel: "Reviewer workpaper link",
+              workpaperLink: savedCaseLinks.reviewer_workpaper_link,
+              caseActionLabel: "Open Reviewer View",
+              workpaperActionLabel: "Open Reviewer Workpaper",
+              primary: true,
+            })}
+            {renderSavedCaseSharePackage({
+              title: "Creator-Only Backup",
+              note: "Keep these internal for the case owner; they stay read-only but are not the default review share path.",
+              caseLinkLabel: "Creator case link",
+              caseLink: savedCaseLinks.creator_link,
+              workpaperLinkLabel: "Creator workpaper link",
+              workpaperLink: savedCaseLinks.creator_workpaper_link,
+              caseActionLabel: "Open Creator View",
+              workpaperActionLabel: "Open Creator Workpaper",
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function renderSavedCasePackageSummary(savedCase: SavedCaseView) {
+    const savedResult = savedCase.response_snapshot;
+    const humanReviewBrief = savedResult.handoff_package?.human_review_brief;
+    const machineHandoff = savedResult.handoff_package?.machine_handoff;
+    const authorityMemo = savedResult.handoff_package?.authority_memo;
+    const summaryText = savedResult.supported ? savedResult.result.summary : savedResult.message;
+    const immediateAction = savedResult.supported
+      ? savedResult.result.immediate_action
+      : savedResult.immediate_action;
+
+    return (
+      <div className="record-row highlight-row">
+        <div className="row-label">Saved Case Summary</div>
+        <div className="row-value">
+          <p><strong>{formatSavedCaseRole(savedCase.view_role)}</strong></p>
+          <p>{getSavedCaseAccessNote(savedCase.view_role)}</p>
+          <p>{summaryText}</p>
+          <ul className="formal-list">
+            <li>Immediate action: {immediateAction}</li>
+            {humanReviewBrief?.headline && <li>Reviewer headline: {humanReviewBrief.headline}</li>}
+            {humanReviewBrief?.disposition && <li>Reviewer disposition: {humanReviewBrief.disposition}</li>}
+            {machineHandoff?.recommended_route && (
+              <li>Recommended route: {machineHandoff.recommended_route}</li>
+            )}
+            {machineHandoff?.record_kind && <li>Record kind: {machineHandoff.record_kind}</li>}
+            {authorityMemo && (
+              <li>
+                Authority memo: {authorityMemo.status} · coverage gaps: {authorityMemo.coverage_gaps.length}
+              </li>
+            )}
+            <li>Printable workpaper uses the same immutable saved snapshot.</li>
+          </ul>
+          {humanReviewBrief?.summary_lines.length ? (
+            <>
+              <p>Reviewer summary lines:</p>
+              <ul className="formal-list">
+                {humanReviewBrief.summary_lines.map((line, idx) => (
+                  <li key={`saved-summary-${idx}`}>{line}</li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+          {humanReviewBrief?.facts_to_verify.length ? (
+            <>
+              <p>Facts to verify:</p>
+              <ul className="formal-list">
+                {humanReviewBrief.facts_to_verify.map((fact, idx) => (
+                  <li key={`saved-verify-${idx}`}>{fact}</li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
+  function renderSavedCaseReviewerRiskSummary(savedCase: SavedCaseView) {
+    const summary = buildReviewerRiskSummary(savedCase.response_snapshot);
+
+    return (
+      <div className={`record-row ${summary.escalated ? "warning-row review-flagged" : "highlight-row"}`}>
+        <div className="row-label">Reviewer Risk Summary</div>
+        <div className="row-value">
+          <p>
+            <strong>
+              {summary.escalated
+                ? "Escalated reviewer-risk signals remain in this immutable saved snapshot."
+                : "Compact reviewer-risk cues from this immutable saved snapshot."}
+            </strong>
+          </p>
+          <p>
+            Recommended route: {summary.recommendedRoute} · Review priority: {summary.reviewPriority}
+          </p>
+          <ul className="formal-list">
+            {summary.items.length > 0 ? (
+              summary.items.map((item, idx) => <li key={`saved-risk-${idx}`}>{item}</li>)
+            ) : (
+              <li>No additional elevated reviewer-risk signals are recorded beyond the standard review path.</li>
+            )}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
+  function renderSavedCaseInputSnapshot(savedCase: SavedCaseView) {
+    const guidedInput = savedCase.request_snapshot.guided_input;
+    if (!guidedInput) {
+      return null;
+    }
+
+    return (
+      <div className="record-row">
+        <div className="row-label">Saved Facts / Scenario Snapshot</div>
+        <div className="row-value">
+          <ul className="formal-list">
+            <li>Payer jurisdiction: {guidedInput.payer_country}</li>
+            <li>Payee jurisdiction: {guidedInput.payee_country}</li>
+            <li>Income type: {guidedInput.income_type}</li>
+            {guidedInput.scenario_text && <li>Scenario text: {guidedInput.scenario_text}</li>}
+          </ul>
+          {Object.keys(guidedInput.facts).length > 0 ? (
+            <ul className="formal-list">
+              {Object.entries(guidedInput.facts).map(([factKey, factValue]) => (
+                <li key={factKey}>
+                  {getGuidedFactPrompt(guidedInput.income_type, factKey)}: {formatFactValue(factValue)}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No structured facts were saved with this case snapshot.</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  function renderSavedCaseView() {
+    if (isSavedCaseLoading) {
+      return (
+        <div className="document-body">
+          <header className="memo-header">
+            <div className="memo-stamp">
+              <span className="stamp-seal">TTA-MVP</span>
+              <span className="stamp-date">READ-ONLY CASE</span>
+            </div>
+            <div className="memo-title-block">
+              <h1 className="memo-title">TAX TREATY AGENT</h1>
+              <p className="memo-subtitle">Loading saved case...</p>
+            </div>
+            <div className="memo-meta">
+              <span className="meta-label">STATUS</span>
+              <span className="meta-value">LOADING</span>
+            </div>
+          </header>
+        </div>
+      );
+    }
+
+    if (!savedCaseView) {
+      return (
+        <div className="document-body">
+          <header className="memo-header">
+            <div className="memo-stamp">
+              <span className="stamp-seal">TTA-MVP</span>
+              <span className="stamp-date">READ-ONLY CASE</span>
+            </div>
+            <div className="memo-title-block">
+              <h1 className="memo-title">TAX TREATY AGENT</h1>
+              <p className="memo-subtitle">Saved case unavailable.</p>
+            </div>
+            <div className="memo-meta">
+              <span className="meta-label">STATUS</span>
+              <span className="meta-value">UNAVAILABLE</span>
+            </div>
+          </header>
+          {error && (
+            <main className="review-main">
+              <section className="output-section">
+                <div className="memo-alert alert-error">
+                  <span className="alert-marker">!</span>
+                  <p>{error}</p>
+                </div>
+              </section>
+            </main>
+          )}
+        </div>
+      );
+    }
+
+    const savedResult = savedCaseView.response_snapshot;
+    const workpaperLink = buildWorkpaperLink(savedCaseView.case_id, caseTokenParam);
+    const savedCaseStatusLabel =
+      savedCaseView.view_role === "creator" ? "CREATOR PACKAGE" : "REVIEWER PACKAGE";
+    const savedCaseSubtitle =
+      savedCaseView.view_role === "creator"
+        ? "Read-only creator package with printable workpaper access."
+        : "Read-only reviewer package with printable workpaper access.";
+
+    return (
+      <div className="document-body">
+        <header className="memo-header">
+          <div className="memo-stamp">
+            <span className="stamp-seal">TTA-MVP</span>
+            <span className="stamp-date">READ-ONLY CASE</span>
+          </div>
+          <div className="memo-title-block">
+            <h1 className="memo-title">TAX TREATY AGENT</h1>
+            <p className="memo-subtitle">{savedCaseSubtitle}</p>
+          </div>
+          <div className="memo-meta">
+            <span className="meta-label">STATUS</span>
+            <span className="meta-value">{savedCaseStatusLabel}</span>
+          </div>
+        </header>
+
+        <main className="review-main">
+          <section className="output-section" aria-live="polite">
+            <h2 className="section-heading">Saved Case</h2>
+
+            <div className="formal-record success-record">
+              <div className="record-body">
+                <div className="record-row highlight-row">
+                  <div className="row-label">Case Header</div>
+                  <div className="row-value">
+                    <ul className="formal-list">
+                      <li>Case ID: {savedCaseView.case_id}</li>
+                      <li>Saved at: {savedCaseView.saved_at}</li>
+                      <li>Schema version: {savedCaseView.schema_version}</li>
+                      <li>Input mode: {savedCaseView.input_mode_used}</li>
+                      <li>View role: {savedCaseView.view_role}</li>
+                      <li>Reviewer share ready: {savedCaseView.reviewer_share_ready ? "yes" : "no"}</li>
+                    </ul>
+                    <div className="action-row">
+                      <a className="btn-seal" href={workpaperLink} target="_blank" rel="noreferrer">
+                        Open Printable Workpaper
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {renderSavedCasePackageSummary(savedCaseView)}
+                {renderSavedCaseReviewerRiskSummary(savedCaseView)}
+                {renderSavedCaseInputSnapshot(savedCaseView)}
+                {renderReviewStateBlock(savedResult.review_state)}
+                {savedResult.supported && renderFactCompletionStatus(savedResult.fact_completion_status)}
+                {savedResult.supported && renderConfirmedScope(savedResult.confirmed_scope)}
+                {renderInputInterpretation(savedResult.input_interpretation)}
+                {savedResult.supported && renderBOPrecheck(savedResult.bo_precheck)}
+                {savedResult.supported &&
+                  renderSourceChain(savedResult.result.source_trace, savedResult.result.mli_context)}
+                {savedResult.supported && renderUserDeclaredFacts(savedResult.user_declared_facts)}
+                {savedResult.supported && renderChangeSummary(savedResult.change_summary)}
+                {renderNextActions(savedResult.next_actions)}
+                {renderWorkflowHandoff(savedResult.handoff_package)}
+
+                <div className="record-row">
+                  <div className="row-label">Boundary Note</div>
+                  <div className="row-value">
+                    <p>
+                      {savedResult.supported
+                        ? savedResult.result.boundary_note
+                        : savedResult.handoff_package?.human_review_brief.handoff_note ??
+                          "This output is a bounded pre-review record, not a final tax opinion."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {error && (
+              <div className="memo-alert alert-error">
+                <span className="alert-marker">!</span>
+                <p>{error}</p>
+              </div>
+            )}
+          </section>
+        </main>
+      </div>
+    );
+  }
+
+  if (isSavedCaseMode) {
+    return renderSavedCaseView();
   }
 
   return (
@@ -1068,190 +1826,195 @@ export default function App() {
             <div className="form-group">
               <span className="section-heading">I. Scenario Submission</span>
               <p className="section-desc">
-                Guided input is the primary path. Legacy free-text remains available for demo and parser validation.
+                Guided input is the public submission path. The older parser lane stays tucked behind
+                an internal validation panel for compatibility checks only.
               </p>
+            </div>
+
+            <div className="form-group">
+              <div className="record-row">
+                <div className="row-label">
+                  <label htmlFor="guided-payer">Payer jurisdiction</label>
+                </div>
+                <div className="row-value">
+                  <select
+                    id="guided-payer"
+                    value={guidedPayerCountry}
+                    onChange={(event) => setGuidedPayerCountry(event.target.value)}
+                  >
+                    <option value="">-- Select --</option>
+                    <option value="CN">CN</option>
+                    <option value="KR">KR</option>
+                    <option value="NL">NL</option>
+                    <option value="SG">SG</option>
+                    <option value="US">US</option>
+                  </select>
+                </div>
+              </div>
+              <div className="record-row">
+                <div className="row-label">
+                  <label htmlFor="guided-payee">Payee jurisdiction</label>
+                </div>
+                <div className="row-value">
+                  <select
+                    id="guided-payee"
+                    value={guidedPayeeCountry}
+                    onChange={(event) => setGuidedPayeeCountry(event.target.value)}
+                  >
+                    <option value="">-- Select --</option>
+                    <option value="NL">NL</option>
+                    <option value="CN">CN</option>
+                    <option value="KR">KR</option>
+                    <option value="SG">SG</option>
+                    <option value="US">US</option>
+                  </select>
+                </div>
+              </div>
+              <div className="record-row">
+                <div className="row-label">
+                  <label htmlFor="guided-income-type">Income type</label>
+                </div>
+                <div className="row-value">
+                  <select
+                    id="guided-income-type"
+                    value={guidedIncomeType}
+                    onChange={(event) =>
+                      handleGuidedIncomeTypeChange(event.target.value as GuidedIncomeType)
+                    }
+                  >
+                    <option value="dividends">dividends</option>
+                    <option value="interest">interest</option>
+                    <option value="royalties">royalties</option>
+                  </select>
+                </div>
+              </div>
+
+              {getGuidedFactsForIncomeType(guidedIncomeType).map((fact) => (
+                <div className="record-row" key={fact.fact_key}>
+                  <div className="row-label">
+                    <label htmlFor={`guided-fact-${fact.fact_key}`}>{fact.prompt}</label>
+                  </div>
+                  <div className="row-value">
+                    {fact.input_type === "text" ? (
+                      <input
+                        id={`guided-fact-${fact.fact_key}`}
+                        type="text"
+                        value={guidedFacts[fact.fact_key] ?? ""}
+                        onChange={(event) =>
+                          setGuidedFacts((current) => ({
+                            ...current,
+                            [fact.fact_key]: event.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <select
+                        id={`guided-fact-${fact.fact_key}`}
+                        value={guidedFacts[fact.fact_key] ?? "unknown"}
+                        onChange={(event) =>
+                          setGuidedFacts((current) => ({
+                            ...current,
+                            [fact.fact_key]: event.target.value,
+                          }))
+                        }
+                      >
+                        <option value="yes">yes</option>
+                        <option value="no">no</option>
+                        <option value="unknown">unknown</option>
+                      </select>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              <div className="record-row">
+                <div className="row-label">
+                  <label htmlFor="guided-scenario-text">Supplemental scenario text</label>
+                </div>
+                <div className="row-value">
+                  <textarea
+                    id="guided-scenario-text"
+                    rows={3}
+                    value={guidedScenarioText}
+                    onChange={(event) => setGuidedScenarioText(event.target.value)}
+                    className="typewriter-input"
+                  />
+                </div>
+              </div>
+
               <div className="action-row">
                 <button
                   type="button"
+                  disabled={isLoading}
                   className="btn-seal"
-                  onClick={() => setSubmissionMode("guided")}
+                  onClick={() => {
+                    setSubmissionMode("guided");
+                    void submitReview("guided");
+                  }}
                 >
-                  Guided Workspace
-                </button>
-                <button
-                  type="button"
-                  className="btn-seal"
-                  onClick={() => setSubmissionMode("free_text")}
-                >
-                  Legacy Free-Text
+                  {isLoading && submissionMode === "guided" ? "Running Review..." : "Run Guided Review"}
                 </button>
               </div>
             </div>
 
-            {submissionMode === "guided" && (
+            <div className="form-group">
+              <p className="section-desc">
+                Need the older parser lane for compatibility or demo checks? Open the internal parser
+                validation panel.
+              </p>
+              <div className="action-row">
+                <button
+                  type="button"
+                  className="text-link-button"
+                  onClick={() => {
+                    setShowLegacyParserValidation((current) => !current);
+                    setSubmissionMode("free_text");
+                  }}
+                >
+                  {showLegacyParserValidation ? "Hide Parser Validation" : "Open Parser Validation"}
+                </button>
+              </div>
+            </div>
+
+            {showLegacyParserValidation && (
               <div className="form-group">
-                <div className="record-row">
-                  <div className="row-label">
-                    <label htmlFor="guided-payer">Payer jurisdiction</label>
-                  </div>
-                  <div className="row-value">
-                    <select
-                      id="guided-payer"
-                      value={guidedPayerCountry}
-                      onChange={(event) => setGuidedPayerCountry(event.target.value)}
-                    >
-                      <option value="CN">CN</option>
-                      <option value="KR">KR</option>
-                      <option value="NL">NL</option>
-                      <option value="SG">SG</option>
-                      <option value="US">US</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="record-row">
-                  <div className="row-label">
-                    <label htmlFor="guided-payee">Payee jurisdiction</label>
-                  </div>
-                  <div className="row-value">
-                    <select
-                      id="guided-payee"
-                      value={guidedPayeeCountry}
-                      onChange={(event) => setGuidedPayeeCountry(event.target.value)}
-                    >
-                      <option value="NL">NL</option>
-                      <option value="CN">CN</option>
-                      <option value="KR">KR</option>
-                      <option value="SG">SG</option>
-                      <option value="US">US</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="record-row">
-                  <div className="row-label">
-                    <label htmlFor="guided-income-type">Income type</label>
-                  </div>
-                  <div className="row-value">
-                    <select
-                      id="guided-income-type"
-                      value={guidedIncomeType}
-                      onChange={(event) =>
-                        handleGuidedIncomeTypeChange(event.target.value as GuidedIncomeType)
-                      }
-                    >
-                      <option value="dividends">dividends</option>
-                      <option value="interest">interest</option>
-                      <option value="royalties">royalties</option>
-                    </select>
-                  </div>
-                </div>
+                <label htmlFor="scenario-input" className="section-heading">
+                  Parser Validation Input
+                  <span className="sr-only">Cross-border scenario</span>
+                </label>
+                <p className="section-desc">
+                  Use the older parser-oriented lane for internal validation only.
+                </p>
 
-                {getGuidedFactsForIncomeType(guidedIncomeType).map((fact) => (
-                  <div className="record-row" key={fact.fact_key}>
-                    <div className="row-label">
-                      <label htmlFor={`guided-fact-${fact.fact_key}`}>{fact.prompt}</label>
-                    </div>
-                    <div className="row-value">
-                      {fact.input_type === "text" ? (
-                        <input
-                          id={`guided-fact-${fact.fact_key}`}
-                          type="text"
-                          value={guidedFacts[fact.fact_key] ?? ""}
-                          onChange={(event) =>
-                            setGuidedFacts((current) => ({
-                              ...current,
-                              [fact.fact_key]: event.target.value,
-                            }))
-                          }
-                        />
-                      ) : (
-                        <select
-                          id={`guided-fact-${fact.fact_key}`}
-                          value={guidedFacts[fact.fact_key] ?? "unknown"}
-                          onChange={(event) =>
-                            setGuidedFacts((current) => ({
-                              ...current,
-                              [fact.fact_key]: event.target.value,
-                            }))
-                          }
-                        >
-                          <option value="yes">yes</option>
-                          <option value="no">no</option>
-                          <option value="unknown">unknown</option>
-                        </select>
-                      )}
-                    </div>
-                  </div>
-                ))}
-
-                <div className="record-row">
-                  <div className="row-label">
-                    <label htmlFor="guided-scenario-text">Supplemental scenario text</label>
-                  </div>
-                  <div className="row-value">
-                    <textarea
-                      id="guided-scenario-text"
-                      rows={3}
-                      value={guidedScenarioText}
-                      onChange={(event) => setGuidedScenarioText(event.target.value)}
-                      className="typewriter-input"
-                    />
-                  </div>
+                <div className="paper-input-wrapper">
+                  <textarea
+                    id="scenario-input"
+                    name="scenario"
+                    placeholder="[Enter payer, payee, and income type...]"
+                    rows={4}
+                    value={scenario}
+                    onChange={(event) => setScenario(event.target.value)}
+                    className="typewriter-input"
+                  />
                 </div>
 
                 <div className="action-row">
                   <button
                     type="button"
-                    disabled={isLoading}
+                    disabled={isLoading || !scenario.trim()}
                     className="btn-seal"
                     onClick={() => {
-                      setSubmissionMode("guided");
-                      void submitReview("guided");
+                      setSubmissionMode("free_text");
+                      void submitReview("free_text");
                     }}
                   >
-                    {isLoading && submissionMode === "guided" ? "Running Review..." : "Run Guided Review"}
+                    {isLoading && submissionMode === "free_text"
+                      ? "Running Parser Review..."
+                      : "Run Parser Review"}
                   </button>
                 </div>
               </div>
             )}
-
-            <div className="form-group">
-              {submissionMode !== "free_text" && (
-                <p className="section-desc">Legacy free-text stays available as a secondary compatibility lane.</p>
-              )}
-              <label htmlFor="scenario-input" className="section-heading">
-                Legacy Free-Text
-                <span className="sr-only">Cross-border scenario</span>
-              </label>
-              <p className="section-desc">
-                Use the older parser-oriented lane for demo and validation only.
-              </p>
-
-              <div className="paper-input-wrapper">
-                <textarea
-                  id="scenario-input"
-                  name="scenario"
-                  placeholder="[Enter payer, payee, and income type...]"
-                  rows={4}
-                  value={scenario}
-                  onChange={(event) => setScenario(event.target.value)}
-                  className="typewriter-input"
-                />
-              </div>
-
-              <div className="action-row">
-                <button
-                  type="button"
-                  disabled={isLoading || !scenario.trim()}
-                  className="btn-seal"
-                  onClick={() => {
-                    setSubmissionMode("free_text");
-                    void submitReview("free_text");
-                  }}
-                >
-                  {isLoading && submissionMode === "free_text" ? "Running Review..." : "Run Review"}
-                </button>
-              </div>
-            </div>
 
             <div className="archive-reference-block">
               <span className="reference-label">Reference Cases</span>
@@ -1262,8 +2025,17 @@ export default function App() {
                       type="button"
                       className="text-link-button"
                       onClick={() => {
-                        setSubmissionMode("free_text");
-                        setScenario(example.scenario);
+                        applyReferencePreset(
+                          example.scenario,
+                          setGuidedPayerCountry,
+                          setGuidedPayeeCountry,
+                          setGuidedIncomeType,
+                          setGuidedFacts,
+                          setGuidedScenarioText,
+                          setShowLegacyParserValidation,
+                          setSubmissionMode,
+                          setScenario,
+                        );
                       }}
                     >
                       <span className="example-state-tag">[{example.state}]</span>{" "}
@@ -1287,6 +2059,19 @@ export default function App() {
 
         <section className="output-section" aria-live="polite">
           <h2 className="section-heading">II. Review Record</h2>
+          {canSaveCurrentCase() && (
+            <div className="action-row">
+              <button
+                type="button"
+                className="btn-seal"
+                onClick={() => void handleSaveCase()}
+                disabled={isSavingCase}
+              >
+                {isSavingCase ? "Saving Case..." : "Save Case"}
+              </button>
+            </div>
+          )}
+          {renderSavedCaseLinks()}
           {result === null ? (
             <div className="empty-record">
               <p>[ NO REVIEW RECORD YET ]</p>

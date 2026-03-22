@@ -235,6 +235,62 @@ def build_cn_kr_source_payload() -> dict:
     }
 
 
+def build_cn_kr_protocol_source_payload() -> dict:
+    return {
+        "document": {
+            "document_id": "cn-kr-dividend-protocol",
+            "title": "China-Korea Dividend Protocol",
+            "document_type": "protocol_text",
+            "jurisdictions": ["CN", "KR"],
+            "notes": ["Protocol fixture overriding the Article 10 dividend branch."],
+        },
+        "parsed_articles": [
+            {
+                "article_number": "10",
+                "article_title": "Dividends",
+                "article_label": "Article 10",
+                "income_type": "dividends",
+                "summary": "Protocol fixture overriding the main Article 10 branch.",
+                "article_notes": [],
+                "paragraphs": [
+                    {
+                        "paragraph_id": "art10-p2",
+                        "paragraph_label": "Article 10(2)",
+                        "source_reference": "Article 10(2)",
+                        "source_language": "en",
+                        "source_segments": [
+                            {
+                                "segment_id": "art10-p2-protocol-s1",
+                                "segment_order": 1,
+                                "page_hint": 2,
+                                "source_kind": "article_paragraph",
+                                "text_quality": "clean",
+                                "normalization_status": "verbatim",
+                                "text": "Notwithstanding the main treaty text, the tax charged in the State of source shall not exceed 5 per cent of the gross amount of the dividends.",
+                            }
+                        ],
+                        "extracted_rules": [
+                            {
+                                "rule_id": "cn-kr-protocol-art10-p2-r1",
+                                "rule_type": "source_tax_limit",
+                                "rate": "5%",
+                                "direction": "bidirectional",
+                                "candidate_rank": 1,
+                                "is_primary_candidate": True,
+                                "extraction_confidence": 0.99,
+                                "derived_from_segments": ["art10-p2-protocol-s1"],
+                                "conditions": ["Protocol override branch."],
+                                "human_review_required": True,
+                                "review_reason": "Protocol override branch.",
+                            }
+                        ],
+                    }
+                ],
+            }
+        ],
+    }
+
+
 def build_initial_manifest_payload(tmp_path: Path) -> dict:
     return {
         "pair_id": "cn-kr",
@@ -449,6 +505,77 @@ def test_load_manifest_resolves_optional_baseline_reference_path(tmp_path: Path)
     assert manifest["baseline_reference"] == str((tmp_path / "baseline.reference.json").resolve())
 
 
+def test_load_manifest_supports_source_bundle_and_authority_topics(tmp_path: Path):
+    manifest_path = tmp_path / "cn-sg.bundle.json"
+    payload = build_manifest_payload(tmp_path)
+    payload.pop("source_documents")
+    payload["source_bundle"] = [
+        {
+            "path": str(CN_SG_SOURCE_PATH),
+            "role": "treaty_text",
+            "compile_target": True,
+            "source_ids": ["iras-cn-sg-dta-full-text-pdf"],
+        }
+    ]
+    payload["authority_topics"] = [
+        {
+            "topic": "treaty_basis",
+            "source_ids": ["iras-cn-sg-dta-full-text-pdf"],
+        },
+        {
+            "topic": "mli_ppt",
+            "source_ids": ["oecd-mli-signatories-and-parties"],
+        },
+        {
+            "topic": "domestic_law",
+            "source_ids": [],
+            "missing_reason_code": "DATA_MISSING",
+        },
+    ]
+    write_json(Path(payload["stable_reference_dataset"]), load_json(CN_SG_STABLE_DATASET_PATH))
+    write_json(manifest_path, payload)
+
+    manifest = treaty_onboarding.load_manifest(manifest_path)
+
+    assert manifest["source_documents"] == [str(CN_SG_SOURCE_PATH.resolve())]
+    assert manifest["source_bundle"] == [
+        {
+            "path": str(CN_SG_SOURCE_PATH.resolve()),
+            "role": "treaty_text",
+            "compile_target": True,
+            "source_ids": ["iras-cn-sg-dta-full-text-pdf"],
+        }
+    ]
+    assert manifest["authority_topics"][2] == {
+        "topic": "domestic_law",
+        "source_ids": [],
+        "missing_reason_code": "DATA_MISSING",
+    }
+
+
+def test_load_manifest_rejects_invalid_compile_target_role_in_source_bundle(tmp_path: Path):
+    manifest_path = tmp_path / "cn-sg.invalid-bundle.json"
+    payload = build_manifest_payload(tmp_path)
+    payload.pop("source_documents")
+    payload["source_bundle"] = [
+        {
+            "path": str(CN_SG_SOURCE_PATH),
+            "role": "metadata_page",
+            "compile_target": True,
+            "source_ids": ["iras-cn-sg-third-protocol-newsroom"],
+        }
+    ]
+    payload["authority_topics"] = []
+    write_json(Path(payload["stable_reference_dataset"]), load_json(CN_SG_STABLE_DATASET_PATH))
+    write_json(manifest_path, payload)
+
+    with pytest.raises(
+        treaty_onboarding.ManifestValidationError,
+        match="compile_target",
+    ):
+        treaty_onboarding.load_manifest(manifest_path)
+
+
 def test_extract_compilation_units_filters_target_articles_and_ignores_existing_rules():
     source_payload = load_json(CN_SG_SOURCE_PATH)
 
@@ -458,6 +585,8 @@ def test_extract_compilation_units_filters_target_articles_and_ignores_existing_
     assert "rules" not in units[0]["paragraphs"][0]
     assert units[0]["paragraphs"][0]["text"].startswith("10 per cent")
     assert units[1]["paragraphs"][0]["source_reference"] == "CN-SG Article 12(2)"
+    assert units[0]["paragraphs"][0]["document_id"] == source_payload["document"]["document_id"]
+    assert units[0]["paragraphs"][0]["document_role"] == source_payload["document"]["document_type"]
 
 
 def test_build_compiler_request_payload_includes_baseline_reference_units_when_present():
@@ -475,6 +604,20 @@ def test_build_compiler_request_payload_includes_baseline_reference_units_when_p
     assert "parsed_articles" in content
     assert content["baseline_reference"]["baseline_id"] == baseline_reference["baseline_id"]
     assert content["baseline_reference"]["articles"][0]["article_number"] == "10"
+
+
+def test_build_compiler_request_payload_adds_protocol_override_instruction():
+    source_payload = build_cn_kr_protocol_source_payload()
+    units = treaty_onboarding.extract_compilation_units(source_payload, ["10"])
+
+    payload = treaty_onboarding.build_compiler_request_payload(
+        units,
+        model="deepseek-chat",
+        document_role="protocol_text",
+    )
+
+    system_prompt = payload["messages"][0]["content"]
+    assert "protocol_text MUST prevail" in system_prompt
 
 
 def test_load_manifest_supports_cn_nl_shadow_shape(tmp_path: Path):
@@ -519,6 +662,49 @@ def test_build_compiled_source_assigns_pair_specific_deterministic_ids(tmp_path:
     assert first_rule["candidate_rank"] == 1
     assert first_rule["is_primary_candidate"] is True
     assert first_rule["derived_from_segments"] == ["art10-p2b-s1"]
+
+
+def test_build_compiled_source_prefers_protocol_candidates_and_marks_provenance():
+    treaty_payload = build_cn_kr_source_payload()
+    protocol_payload = build_cn_kr_protocol_source_payload()
+    manifest = {
+        "pair_id": "cn-kr",
+        "target_articles": ["10"],
+        "treaty_metadata": {
+            "version": "v3",
+            "source_type": "manual_structured_from_official_text",
+            "notes": ["Protocol override test manifest."],
+            "source_trace": treaty_payload["document"]["source_trace"],
+            "mli_context": treaty_payload["document"]["mli_context"],
+        },
+    }
+
+    compiled_source = treaty_onboarding.build_compiled_source(
+        manifest=manifest,
+        raw_candidates_by_role={
+            "treaty_text": build_raw_candidate_response_from_source(
+                {"parsed_articles": [treaty_payload["parsed_articles"][0]]}
+            ),
+            "protocol_text": build_raw_candidate_response_from_source(protocol_payload),
+        },
+        source_payloads_by_role={
+            "treaty_text": treaty_payload,
+            "protocol_text": protocol_payload,
+        },
+    )
+
+    paragraph = compiled_source["parsed_articles"][0]["paragraphs"][0]
+    rule = paragraph["extracted_rules"][0]
+
+    assert rule["rate"] == "5%"
+    assert paragraph["effective_document_id"] == "cn-kr-dividend-protocol"
+    assert paragraph["effective_document_role"] == "protocol_text"
+    assert paragraph["modified_by_protocol"] is True
+    assert paragraph["overridden_document_id"] == "cn-kr-main-treaty"
+    assert rule["effective_document_id"] == "cn-kr-dividend-protocol"
+    assert rule["effective_document_role"] == "protocol_text"
+    assert rule["modified_by_protocol"] is True
+    assert rule["overridden_document_id"] == "cn-kr-main-treaty"
 
 
 def test_build_dataset_from_source_reconciles_cn_nl_governed_notes_against_reference(tmp_path: Path):
@@ -1056,6 +1242,72 @@ def test_build_workspace_returns_timing_summary_for_initial_onboarding(tmp_path:
     assert workspace["timing"]["durations"]["review_seconds"] == 245
     assert workspace["timing"]["durations"]["end_to_end_seconds"] == 1280
     assert workspace["timing"]["review_session_active"] is True
+
+
+def test_build_workspace_includes_source_bundle_summary_authority_coverage_and_protocol_override_count(
+    tmp_path: Path,
+):
+    source_payload = build_cn_kr_source_payload()
+    protocol_payload = build_cn_kr_protocol_source_payload()
+    source_path = tmp_path / "cn-kr-main-treaty.json"
+    protocol_path = tmp_path / "cn-kr-dividend-protocol.json"
+    baseline_path = tmp_path / "baseline.reference.json"
+    manifest_path = tmp_path / "cn-kr.bundle.json"
+    write_json(source_path, source_payload)
+    write_json(protocol_path, protocol_payload)
+    write_json(baseline_path, build_baseline_reference_payload())
+
+    manifest_payload = build_initial_manifest_payload(tmp_path)
+    manifest_payload.pop("source_documents")
+    manifest_payload["source_bundle"] = [
+        {
+            "path": str(source_path),
+            "role": "treaty_text",
+            "compile_target": True,
+            "source_ids": ["unts-cn-kr-treaty-pdf"],
+        },
+        {
+            "path": str(protocol_path),
+            "role": "protocol_text",
+            "compile_target": True,
+            "source_ids": ["nts-cn-kr-taxlaw-detail"],
+        },
+    ]
+    manifest_payload["authority_topics"] = [
+        {"topic": "treaty_basis", "source_ids": ["unts-cn-kr-treaty-pdf"]},
+        {"topic": "mli_ppt", "source_ids": ["oecd-mli-signatories-and-parties"]},
+        {"topic": "domestic_law", "source_ids": [], "missing_reason_code": "DATA_MISSING"},
+    ]
+    write_json(manifest_path, manifest_payload)
+
+    manifest = treaty_onboarding.load_manifest(manifest_path)
+    compiled_source = treaty_onboarding.build_compiled_source(
+        manifest=manifest,
+        raw_candidates_by_role={
+            "treaty_text": build_raw_candidate_response_from_source(
+                {"parsed_articles": [source_payload["parsed_articles"][0]]}
+            ),
+            "protocol_text": build_raw_candidate_response_from_source(protocol_payload),
+        },
+        source_payloads_by_role={
+            "treaty_text": source_payload,
+            "protocol_text": protocol_payload,
+        },
+    )
+    work_dir = Path(manifest["work_dir"])
+    write_json(work_dir / "compiled.source.json", compiled_source)
+
+    workspace = treaty_onboarding.build_workspace(manifest_path)
+
+    assert workspace["source_bundle_summary"]["document_count"] == 2
+    assert workspace["source_bundle_summary"]["compile_target_count"] == 2
+    assert workspace["source_bundle_summary"]["compile_target_roles"] == [
+        "protocol_text",
+        "treaty_text",
+    ]
+    assert workspace["authority_coverage"]["configured_topic_count"] == 3
+    assert workspace["authority_coverage"]["gap_topics"] == ["domestic_law"]
+    assert workspace["protocol_override_count"] == 1
 
 
 def write_manifest(tmp_path: Path, pair_id: str = "cn-sg", include_baseline: bool = False) -> Path:

@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
 
+from app.cases import CASE_NOT_FOUND_DETAIL, build_workpaper_html, create_case_snapshot, load_case_view
 from app.contracts import (
     AnalyzeRequest,
     InternalAnalyzeRequest,
@@ -44,6 +46,42 @@ def analyze(request: AnalyzeRequest) -> dict:
         guided_input=request.guided_input.model_dump(exclude_none=True)
         if request.guided_input is not None
         else None,
+    )
+
+
+@app.post("/cases")
+def create_case(request: AnalyzeRequest) -> dict[str, object]:
+    if request.guided_input is None or request.input_mode == "free_text":
+        raise HTTPException(
+            status_code=400,
+            detail="Case persistence currently supports guided input only.",
+        )
+
+    request_snapshot = request.model_dump(exclude_none=True)
+    response_snapshot = analyze_scenario(
+        request.scenario,
+        input_mode="guided",
+        guided_input=request.guided_input.model_dump(exclude_none=True),
+    )
+    return create_case_snapshot(request_snapshot, response_snapshot)
+
+
+@app.get("/cases/{case_id}")
+def get_case(case_id: str, token: str) -> dict[str, object]:
+    case_view = load_case_view(case_id, token)
+    if case_view is None:
+        raise HTTPException(status_code=404, detail=CASE_NOT_FOUND_DETAIL)
+    return case_view
+
+
+@app.get("/cases/{case_id}/workpaper", response_class=HTMLResponse)
+def get_case_workpaper(case_id: str, token: str) -> HTMLResponse:
+    case_view = load_case_view(case_id, token)
+    if case_view is None:
+        raise HTTPException(status_code=404, detail=CASE_NOT_FOUND_DETAIL)
+    return HTMLResponse(
+        content=build_workpaper_html(case_view),
+        headers={"Content-Disposition": f'inline; filename="{case_id}-workpaper.html"'},
     )
 
 

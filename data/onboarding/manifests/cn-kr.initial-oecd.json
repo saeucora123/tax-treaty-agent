@@ -4,6 +4,38 @@
   "jurisdictions": ["CN", "KR"],
   "target_articles": ["10", "11", "12"],
   "source_documents": ["../../source_documents/cn-kr-main-treaty.json"],
+  "source_bundle": [
+    {
+      "path": "../../source_documents/cn-kr-main-treaty.json",
+      "role": "treaty_text",
+      "compile_target": true,
+      "source_ids": ["unts-cn-kr-treaty-pdf"]
+    }
+  ],
+  "authority_topics": [
+    {
+      "topic": "treaty_basis",
+      "source_ids": ["unts-cn-kr-treaty-pdf"]
+    },
+    {
+      "topic": "mli_ppt",
+      "source_ids": ["oecd-mli-signatories-and-parties", "oecd-korea-treaty-abuse-peer-review-2024"]
+    },
+    {
+      "topic": "beneficial_owner",
+      "source_ids": [],
+      "missing_reason_code": "DATA_MISSING"
+    },
+    {
+      "topic": "domestic_law",
+      "source_ids": [],
+      "missing_reason_code": "DATA_MISSING"
+    },
+    {
+      "topic": "working_paper",
+      "source_ids": []
+    }
+  ],
   "promotion_target_dataset": "../../treaties/cn-kr.v3.json",
   "work_dir": "../workdirs/cn-kr-initial-oecd",
   "baseline_reference": "../baselines/oecd-model-2017.articles10-12.reference.json",

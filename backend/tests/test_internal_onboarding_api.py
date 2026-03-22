@@ -44,6 +44,16 @@ def test_internal_onboarding_workspace_endpoint_returns_workspace_snapshot(monke
                 "mode": "initial_onboarding",
                 "source_build_available": True,
             },
+            "source_bundle_summary": {
+                "document_count": 2,
+                "compile_target_count": 2,
+                "compile_target_roles": ["protocol_text", "treaty_text"],
+            },
+            "authority_coverage": {
+                "configured_topic_count": 3,
+                "gap_topics": ["domestic_law"],
+            },
+            "protocol_override_count": 1,
             "source_build": {"status": "ok", "report": {"article_count": 3}},
             "compile": {
                 "status": "ok",
@@ -71,6 +81,9 @@ def test_internal_onboarding_workspace_endpoint_returns_workspace_snapshot(monke
     assert response.status_code == 200
     payload = response.json()
     assert payload["manifest"]["pair_id"] == "cn-kr"
+    assert payload["source_bundle_summary"]["document_count"] == 2
+    assert payload["authority_coverage"]["gap_topics"] == ["domestic_law"]
+    assert payload["protocol_override_count"] == 1
     assert payload["compile"]["delta_report"]["delta_item_count"] == 4
     assert payload["timing"]["status"] == "not_started"
     assert payload["reviewed_source"]["content"] == "{\"ok\": true}"

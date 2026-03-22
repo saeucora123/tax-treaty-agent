@@ -7,6 +7,31 @@ function setLocationSearch(search: string) {
   window.history.pushState({}, "", search);
 }
 
+async function openParserValidationPanel(user: ReturnType<typeof userEvent.setup>) {
+  if (!screen.queryByLabelText(/cross-border scenario/i)) {
+    await user.click(screen.getByRole("button", { name: /open parser validation/i }));
+  }
+}
+
+async function submitParserValidationScenario(
+  user: ReturnType<typeof userEvent.setup>,
+  scenario: string,
+) {
+  await openParserValidationPanel(user);
+  await user.type(screen.getByLabelText(/cross-border scenario/i), scenario);
+  await user.click(screen.getByRole("button", { name: /run parser review/i }));
+}
+
+function getLatestByLabelText(text: RegExp | string) {
+  const matches = screen.getAllByLabelText(text);
+  return matches[matches.length - 1];
+}
+
+async function findLatestByLabelText(text: RegExp | string) {
+  const matches = await screen.findAllByLabelText(text);
+  return matches[matches.length - 1];
+}
+
 afterEach(() => {
   setLocationSearch("/");
 });
@@ -22,6 +47,94 @@ test("shows reference cases only for states the live demo can actually reach", (
   expect(screen.getByText("[Incomplete]")).toBeInTheDocument();
   expect(screen.queryByText("[Priority Review]")).not.toBeInTheDocument();
   expect(screen.queryByText("[Hold]")).not.toBeInTheDocument();
+});
+
+test("defaults to the guided workspace without showing the legacy public parser lane", () => {
+  globalThis.fetch = vi.fn() as typeof fetch;
+
+  render(<App />);
+
+  expect(screen.getByRole("button", { name: /run guided review/i })).toBeInTheDocument();
+  expect(screen.queryByText(/legacy free-text/i)).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /^run review$/i })).not.toBeInTheDocument();
+});
+
+test("clicking a public supported reference case keeps the app on the guided path", async () => {
+  const user = userEvent.setup();
+  globalThis.fetch = vi.fn() as typeof fetch;
+
+  render(<App />);
+
+  await user.click(screen.getByRole("button", { name: /中国居民企业向荷兰支付特许权使用费/i }));
+
+  expect(screen.queryByLabelText(/cross-border scenario/i)).not.toBeInTheDocument();
+  expect(screen.getByLabelText(/payer jurisdiction/i)).toHaveValue("CN");
+  expect(screen.getByLabelText(/payee jurisdiction/i)).toHaveValue("NL");
+  expect(screen.getByLabelText(/income type/i)).toHaveValue("royalties");
+  expect(screen.getByLabelText(/supplemental scenario text/i)).toHaveValue(
+    "中国居民企业向荷兰支付特许权使用费",
+  );
+});
+
+test("clicking a public incomplete reference case stays guided and preserves the missing payer fact", async () => {
+  const user = userEvent.setup();
+  globalThis.fetch = vi.fn() as typeof fetch;
+
+  render(<App />);
+
+  await user.click(screen.getByRole("button", { name: /向荷兰公司支付股息/i }));
+
+  expect(screen.queryByLabelText(/cross-border scenario/i)).not.toBeInTheDocument();
+  expect(screen.getByLabelText(/payer jurisdiction/i)).toHaveValue("");
+  expect(screen.getByLabelText(/payee jurisdiction/i)).toHaveValue("NL");
+  expect(screen.getByLabelText(/income type/i)).toHaveValue("dividends");
+  expect(screen.getByLabelText(/supplemental scenario text/i)).toHaveValue("向荷兰公司支付股息");
+});
+
+test("public reference cases submit guided payloads instead of parser text payloads", async () => {
+  const user = userEvent.setup();
+  globalThis.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({
+      supported: false,
+      reason: "incomplete_scenario",
+      message: "Need more facts.",
+      immediate_action: "Complete guided facts.",
+      missing_fields: ["payer_country"],
+      suggested_examples: [],
+    }),
+  }) as typeof fetch;
+
+  render(<App />);
+
+  await user.click(screen.getByRole("button", { name: /向荷兰公司支付股息/i }));
+  await user.click(screen.getByRole("button", { name: /run guided review/i }));
+
+  await waitFor(() => {
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      "/api/analyze",
+      expect.objectContaining({
+        body: JSON.stringify({
+          input_mode: "guided",
+          guided_input: {
+            payer_country: "",
+            payee_country: "NL",
+            income_type: "dividends",
+            facts: {
+              direct_holding_percentage: "",
+              payment_date: "",
+              holding_period_months: "",
+              beneficial_owner_confirmed: "unknown",
+              pe_effectively_connected: "unknown",
+              holding_structure_is_direct: "unknown",
+              mli_ppt_risk_flag: "unknown",
+            },
+            scenario_text: "向荷兰公司支付股息",
+          },
+        }),
+      }),
+    );
+  });
 });
 
 
@@ -99,6 +212,53 @@ test("shows structured treaty analysis after submitting a supported scenario", a
           ],
           handoff_note: "This is a bounded pre-review output, not a final tax opinion.",
         },
+        authority_memo: {
+          status: "available",
+          reviewer_note: "Use this memo as reviewer-facing authority support only.",
+          topics: [
+            {
+              topic: "treaty_basis",
+              summary: "Runtime basis is anchored to the official treaty text sources.",
+              citations: [
+                {
+                  source_id: "sat-cn-nl-2013-en-pdf",
+                  title: "China-Netherlands treaty English text",
+                  source_type: "treaty_text",
+                  official_url: "https://www.chinatax.gov.cn/example/treaty.pdf",
+                  note: "Primary treaty basis for the current runtime lane.",
+                },
+              ],
+              gap: null,
+            },
+            {
+              topic: "mli_ppt",
+              summary: "PPT is treated as a reviewer-only signal, not a runtime conclusion.",
+              citations: [
+                {
+                  source_id: "sat-cn-nl-mli-en-pdf",
+                  title: "Synthesised text of the MLI and the China-Netherlands tax treaty",
+                  source_type: "mli_synthesized_text",
+                  official_url: "https://www.chinatax.gov.cn/example/mli.pdf",
+                  note: "基于税务机关发布的 MLI 综合文本，仅供复核参考。具体适用受限于双边最终的 MLI 缔约立场。",
+                },
+              ],
+              gap: null,
+            },
+            {
+              topic: "domestic_law",
+              summary: "",
+              citations: [],
+              gap: "No mapped domestic-law source is configured for this pair yet.",
+            },
+          ],
+          coverage_gaps: [
+            {
+              topic: "domestic_law",
+              reason_code: "DATA_MISSING",
+              note: "No mapped domestic-law source is configured for this pair yet.",
+            },
+          ],
+        },
       },
       input_interpretation: {
         parser_source: "llm",
@@ -171,11 +331,7 @@ test("shows structured treaty analysis after submitting a supported scenario", a
 
   render(<App />);
 
-  await user.type(
-    screen.getByLabelText(/cross-border scenario/i),
-    "中国居民企业向荷兰支付特许权使用费",
-  );
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "中国居民企业向荷兰支付特许权使用费");
 
   expect(
     await screen.findByText(/preliminary view: article 12 royalties appears relevant/i),
@@ -222,6 +378,10 @@ test("shows structured treaty analysis after submitting a supported scenario", a
   expect(screen.getByText(/workflow handoff/i)).toBeInTheDocument();
   expect(screen.getByText(/proceed with standard human review/i)).toBeInTheDocument();
   expect(screen.getByText(/cn -> nl royalties falls inside current treaty scope/i)).toBeInTheDocument();
+  expect(screen.getByText(/authority memo/i)).toBeInTheDocument();
+  expect(screen.getByText(/runtime basis is anchored to the official treaty text sources/i)).toBeInTheDocument();
+  expect(screen.getByText(/coverage gaps: 1/i)).toBeInTheDocument();
+  expect(screen.getByText(/基于税务机关发布的 MLI 综合文本/i)).toBeInTheDocument();
 });
 
 
@@ -293,11 +453,7 @@ test("shows a stronger review warning for medium-confidence treaty extraction", 
 
   render(<App />);
 
-  await user.type(
-    screen.getByLabelText(/cross-border scenario/i),
-    "中国居民企业向荷兰支付特许权使用费",
-  );
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "中国居民企业向荷兰支付特许权使用费");
 
   expect(
     await screen.findByText(/prioritize manual review before relying on this result/i),
@@ -384,11 +540,7 @@ test("holds automatic treaty conclusion when source confidence is very low", asy
 
   render(<App />);
 
-  await user.type(
-    screen.getByLabelText(/cross-border scenario/i),
-    "中国居民企业向荷兰支付特许权使用费",
-  );
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "中国居民企业向荷兰支付特许权使用费");
 
   expect(
     await screen.findByText(/this version should not issue an automatic conclusion/i),
@@ -483,8 +635,7 @@ test("describes branch-ambiguity hold states without pretending the issue is low
 
   render(<App />);
 
-  await user.type(screen.getByLabelText(/cross-border scenario/i), "中国公司向荷兰公司支付股息");
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "中国公司向荷兰公司支付股息");
 
   expect(await screen.findByText(/manual branch review required/i)).toBeInTheDocument();
   expect(screen.getByText("可补全")).toBeInTheDocument();
@@ -567,11 +718,7 @@ test("shows missing-input guidance for unsupported or incomplete scenarios", asy
 
   render(<App />);
 
-  await user.type(
-    screen.getByLabelText(/cross-border scenario/i),
-    "向荷兰公司支付股息",
-  );
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "向荷兰公司支付股息");
 
   expect(await screen.findByText("可补全")).toBeInTheDocument();
   expect(screen.getByText("系统仍在当前预审范围内，但需要补充缺失事实后才能继续缩小结果。")).toBeInTheDocument();
@@ -648,8 +795,7 @@ test("shows multiple possible rates instead of a single anchored treaty rate whe
 
   render(<App />);
 
-  await user.type(screen.getByLabelText(/cross-border scenario/i), "中国公司向荷兰公司支付股息");
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "中国公司向荷兰公司支付股息");
 
   expect(await screen.findByText(/multiple treaty rate branches \(5% \/ 10%\) are possible/i)).toBeInTheDocument();
   expect(screen.getByText(/possible treaty rates/i)).toBeInTheDocument();
@@ -761,8 +907,7 @@ test("renders a bounded fact-completion form for CN-NL dividend branch ambiguity
 
   render(<App />);
 
-  await user.type(screen.getByLabelText(/cross-border scenario/i), "中国公司向荷兰公司支付股息");
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "中国公司向荷兰公司支付股息");
 
   expect(await screen.findByText(/complete missing facts/i)).toBeInTheDocument();
   expect(screen.getByText("待补事实")).toBeInTheDocument();
@@ -994,8 +1139,7 @@ test("re-runs the review with bounded fact inputs and shows user-declared facts"
 
   render(<App />);
 
-  await user.type(screen.getByLabelText(/cross-border scenario/i), "中国公司向荷兰公司支付股息");
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "中国公司向荷兰公司支付股息");
 
   await user.selectOptions(
     await screen.findByLabelText(/does the dutch recipient directly hold capital in the chinese payer/i),
@@ -1006,26 +1150,26 @@ test("re-runs the review with bounded fact inputs and shows user-declared facts"
     "yes",
   );
   await user.selectOptions(
-    screen.getByLabelText(/has beneficial-owner status been separately confirmed outside this tool/i),
+    getLatestByLabelText(/has beneficial-owner status been separately confirmed outside this tool/i),
     "yes",
   );
   expect(
-    screen.getByLabelText(
+    getLatestByLabelText(
       /is the dividend effectively connected with a permanent establishment or fixed base of the dutch recipient in china/i,
     ),
   ).toBeInTheDocument();
   expect(
-    screen.getByLabelText(
+    getLatestByLabelText(
       /is the holding structure confirmed to be direct with no intermediate holding entity between the recipient and the paying company/i,
     ),
   ).toBeInTheDocument();
   expect(
-    screen.getByLabelText(
+    getLatestByLabelText(
       /has a principal purpose test \(ppt\) risk assessment been performed for this dividend payment under the mli/i,
     ),
   ).toBeInTheDocument();
   await user.selectOptions(
-    screen.getByLabelText(
+    getLatestByLabelText(
       /is the holding structure confirmed to be direct with no intermediate holding entity between the recipient and the paying company/i,
     ),
     "yes",
@@ -1283,8 +1427,7 @@ test("shows a terminated exit when the user still cannot confirm the key branch 
 
   render(<App />);
 
-  await user.type(screen.getByLabelText(/cross-border scenario/i), "中国公司向荷兰公司支付股息");
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "中国公司向荷兰公司支付股息");
 
   await user.selectOptions(
     await screen.findByLabelText(/does the dutch recipient directly hold capital in the chinese payer/i),
@@ -1514,11 +1657,10 @@ test("shows a terminated PE-exclusion exit when the user flags effectively conne
 
   render(<App />);
 
-  await user.type(screen.getByLabelText(/cross-border scenario/i), "中国公司向荷兰公司支付股息");
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "中国公司向荷兰公司支付股息");
 
   await user.selectOptions(
-    await screen.findByLabelText(
+    await findLatestByLabelText(
       /is the dividend effectively connected with a permanent establishment or fixed base of the dutch recipient in china/i,
     ),
     "yes",
@@ -1774,8 +1916,7 @@ test("shows a beneficial-owner termination exit when the prerequisite has not be
 
   render(<App />);
 
-  await user.type(screen.getByLabelText(/cross-border scenario/i), "中国公司向荷兰公司支付股息");
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "中国公司向荷兰公司支付股息");
 
   await user.selectOptions(
     await screen.findByLabelText(/does the dutch recipient directly hold capital in the chinese payer/i),
@@ -1786,7 +1927,7 @@ test("shows a beneficial-owner termination exit when the prerequisite has not be
     "yes",
   );
   await user.selectOptions(
-    screen.getByLabelText(/has beneficial-owner status been separately confirmed outside this tool/i),
+    getLatestByLabelText(/has beneficial-owner status been separately confirmed outside this tool/i),
     "no",
   );
   await user.click(screen.getByRole("button", { name: /re-run with these facts/i }));
@@ -2014,8 +2155,7 @@ test("shows a conflicting-facts termination exit when user-declared answers cont
 
   render(<App />);
 
-  await user.type(screen.getByLabelText(/cross-border scenario/i), "中国公司向荷兰公司支付股息");
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "中国公司向荷兰公司支付股息");
 
   await user.selectOptions(
     await screen.findByLabelText(/does the dutch recipient directly hold capital in the chinese payer/i),
@@ -2078,8 +2218,7 @@ test("shows a bridge note when business wording is normalized into a treaty cate
 
   render(<App />);
 
-  await user.type(screen.getByLabelText(/cross-border scenario/i), "向荷兰公司支付软件许可费");
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "向荷兰公司支付软件许可费");
 
   expect(await screen.findByText(/review unavailable/i)).toBeInTheDocument();
   expect(screen.getByText(/classification note/i)).toBeInTheDocument();
@@ -2158,8 +2297,7 @@ test("shows explicit out-of-scope state when the scenario is outside the treaty 
 
   render(<App />);
 
-  await user.type(screen.getByLabelText(/cross-border scenario/i), "中国居民企业向美国支付特许权使用费");
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "中国居民企业向美国支付特许权使用费");
 
   expect(await screen.findByText("不在支持范围")).toBeInTheDocument();
   expect(screen.getByText("当前查询超出本产品的国家对或收入类型支持范围。")).toBeInTheDocument();
@@ -2301,14 +2439,168 @@ test("keeps workflow handoff visible alongside stage-4 fact completion controls"
 
   render(<App />);
 
-  await user.type(screen.getByLabelText(/cross-border scenario/i), "中国公司向荷兰公司支付股息");
-  await user.click(screen.getByRole("button", { name: /run review/i }));
+  await submitParserValidationScenario(user, "中国公司向荷兰公司支付股息");
 
   expect(await screen.findByText(/complete missing facts/i)).toBeInTheDocument();
   expect(screen.getByText(/workflow handoff/i)).toBeInTheDocument();
   expect(screen.getByText(/complete the missing facts and rerun the pre-review/i)).toBeInTheDocument();
   expect(screen.getByText(/determining condition priority: n\/a/i)).toBeInTheDocument();
   expect(screen.getByText(/mli ppt review required: yes/i)).toBeInTheDocument();
+});
+
+test("re-runs guided fact completion without requiring legacy scenario text", async () => {
+  const user = userEvent.setup();
+
+  globalThis.fetch = vi
+    .fn()
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        schema_version: "slice1.v1",
+        input_mode_used: "guided",
+        supported: true,
+        review_state: {
+          state_code: "can_be_completed",
+          state_label_zh: "可补全",
+          state_summary: "请补充一个持股事实后继续缩小股息分支。",
+        },
+        fact_completion_status: {
+          status_code: "awaiting_user_facts",
+          status_label_zh: "待补事实",
+          status_summary: "请先补充关键持股事实，系统才能继续缩小股息税率分支。",
+        },
+        fact_completion: {
+          flow_type: "bounded_form",
+          session_type: "pseudo_multiturn",
+          user_declaration_note: "Facts entered here are user-declared and not independently verified.",
+          facts: [
+            {
+              fact_key: "direct_holding_confirmed",
+              prompt: "Does the Dutch recipient directly hold capital in the Chinese payer?",
+              input_type: "single_select",
+              options: ["yes", "no", "unknown"],
+            },
+          ],
+        },
+        normalized_input: {
+          payer_country: "CN",
+          payee_country: "NL",
+          transaction_type: "dividends",
+        },
+        result: {
+          summary:
+            "Preliminary view: Article 10 Dividends appears relevant, but multiple treaty rate branches (5% / 10%) are possible and this version should not issue an automatic conclusion.",
+          boundary_note:
+            "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          immediate_action:
+            "Do not rely on this result yet. Resolve the missing facts and supporting documents before any treaty conclusion.",
+          article_number: "10",
+          article_title: "Dividends",
+          source_reference: "Article 10(2)(b)",
+          source_language: "en",
+          source_excerpt: "Treaty excerpt.",
+          rate: "5% / 10%",
+          extraction_confidence: 0.98,
+          auto_conclusion_allowed: false,
+          key_missing_facts: [],
+          review_checklist: [],
+          conditions: ["Applies when the reduced-rate branch is not established."],
+          notes: [],
+          human_review_required: true,
+          review_priority: "high",
+          review_reason:
+            "Multiple treaty rate branches were found in this article, and the current scenario does not provide enough facts to choose one automatically.",
+        },
+      }),
+    })
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        schema_version: "slice1.v1",
+        input_mode_used: "guided",
+        supported: true,
+        review_state: {
+          state_code: "pre_review_complete",
+          state_label_zh: "预审完成",
+          state_summary: "系统已根据补充事实将结果缩减为单一候选分支。",
+        },
+        change_summary: {
+          summary_label: "Result Change Summary",
+          state_change: "可补全 -> 预审完成",
+          rate_change: "5% / 10% -> 5%",
+          trigger_facts: ["Direct holding confirmed: yes"],
+        },
+        user_declared_facts: {
+          declaration_label: "User-Declared Facts (Unverified)",
+          facts: [
+            {
+              fact_key: "direct_holding_confirmed",
+              value: "yes",
+              label: "Direct holding confirmed",
+            },
+          ],
+        },
+        normalized_input: {
+          payer_country: "CN",
+          payee_country: "NL",
+          transaction_type: "dividends",
+        },
+        result: {
+          summary:
+            "Preliminary view: Article 10 Dividends now narrows to one candidate treaty rate branch.",
+          boundary_note:
+            "This is a first-pass treaty pre-review based on limited scenario facts. Final eligibility still depends on additional facts, documents, and analysis outside the current review scope.",
+          immediate_action:
+            "Proceed with manual review of the narrowed dividend branch before relying on the treaty position.",
+          article_number: "10",
+          article_title: "Dividends",
+          source_reference: "Article 10(2)(a)",
+          source_language: "en",
+          source_excerpt: "Treaty excerpt.",
+          rate: "5%",
+          extraction_confidence: 0.98,
+          auto_conclusion_allowed: false,
+          key_missing_facts: [],
+          review_checklist: [],
+          conditions: ["Applies when direct holding is confirmed."],
+          notes: [],
+          human_review_required: true,
+          review_priority: "normal",
+          review_reason:
+            "The reduced-rate branch still needs manual verification before reliance.",
+        },
+      }),
+    }) as typeof fetch;
+
+  render(<App />);
+
+  expect(screen.queryByLabelText(/cross-border scenario/i)).not.toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: /run guided review/i }));
+  await user.selectOptions(
+    await screen.findByLabelText(/does the dutch recipient directly hold capital in the chinese payer/i),
+    "yes",
+  );
+  await user.click(screen.getByRole("button", { name: /re-run with these facts/i }));
+
+  expect(await screen.findByText(/user-declared facts \(unverified\)/i)).toBeInTheDocument();
+  expect(globalThis.fetch).toHaveBeenNthCalledWith(
+    2,
+    "/api/analyze",
+    expect.objectContaining({
+      body: JSON.stringify({
+        input_mode: "guided",
+        guided_input: {
+          payer_country: "CN",
+          payee_country: "NL",
+          income_type: "dividends",
+          facts: {
+            direct_holding_confirmed: "yes",
+          },
+        },
+      }),
+    }),
+  );
 });
 
 
@@ -2455,7 +2747,7 @@ test("submits a guided royalties review from the wizard-first workspace", async 
 });
 
 
-test("renders a guided-input conflict warning while keeping legacy free-text secondary", async () => {
+test("renders a guided-input conflict warning while keeping the parser lane demoted", async () => {
   const user = userEvent.setup();
 
   globalThis.fetch = vi.fn().mockResolvedValue({
@@ -2577,7 +2869,8 @@ test("renders a guided-input conflict warning while keeping legacy free-text sec
 
   render(<App />);
 
-  expect(screen.getByRole("button", { name: /legacy free-text/i })).toBeInTheDocument();
+  expect(screen.queryByText(/legacy free-text/i)).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /open parser validation/i })).toBeInTheDocument();
 
   await user.selectOptions(screen.getByLabelText(/payer jurisdiction/i), "CN");
   await user.selectOptions(screen.getByLabelText(/payee jurisdiction/i), "NL");
@@ -2643,6 +2936,16 @@ test("renders the internal onboarding workspace when query-param mode is enabled
           baseline_reference:
             "D:/repo/data/onboarding/baselines/oecd-model-2017.articles10-12.reference.json",
         },
+        source_bundle_summary: {
+          document_count: 2,
+          compile_target_count: 2,
+          compile_target_roles: ["protocol_text", "treaty_text"],
+        },
+        authority_coverage: {
+          configured_topic_count: 3,
+          gap_topics: ["domestic_law"],
+        },
+        protocol_override_count: 1,
         source_build: {
           available: true,
           manifest_path: "D:/repo/data/source_documents/manifests/cn-kr-main-treaty.build.json",
@@ -2693,6 +2996,9 @@ test("renders the internal onboarding workspace when query-param mode is enabled
   expect(await screen.findByText(/internal onboarding workspace/i)).toBeInTheDocument();
   expect(screen.getByLabelText(/onboarding manifest/i)).toBeInTheDocument();
   expect(screen.getByText(/compiled delta summary/i)).toBeInTheDocument();
+  expect(screen.getByText(/source bundle summary/i)).toBeInTheDocument();
+  expect(screen.getByText(/protocol overrides: 1/i)).toBeInTheDocument();
+  expect(screen.getByText(/domestic_law/i)).toBeInTheDocument();
   expect(screen.getByText(/timing summary/i)).toBeInTheDocument();
   expect(screen.getByText(/active_review_session/i)).toBeInTheDocument();
   expect(screen.getByText(/245/)).toBeInTheDocument();

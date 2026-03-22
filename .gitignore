@@ -7,6 +7,7 @@ dist/
 .DS_Store
 .env
 logs/
+data/runtime/
 A?ENTS.md
 .c[o]dex/
 archive/internal-history/
@@ -16,3 +17,8 @@ docs/site-assets/frame-contact-sheet.png
 docs/site-assets/walkthrough-main-frame-check.png
 docs/site-assets/walkthrough-section-check.png
 docs/site-assets/record-check-*.png
+
+# Tencent Cloud EdgeOne
+.edgeone/*
+.tef_dist/*
+.wrangler/
